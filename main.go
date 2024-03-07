@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"go-gin/handler"
+	"go-gin/handlers"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,7 +15,7 @@ func main() {
 	server := gin.New()
 	server.HandleMethodNotAllowed = true
 
-	handler.RegisterHandlers(server)
+	handlers.RegisterHandlers(server)
 
 	port := ":8080"
 	fmt.Printf("Starting server at localhost%s...\n", port)
