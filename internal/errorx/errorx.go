@@ -1,6 +1,6 @@
 package errorx
 
-const defaultCode = 1001
+const DefaultErrorCode = 1001
 
 type MYError struct {
 	Code int
@@ -8,7 +8,7 @@ type MYError struct {
 }
 
 func NewDefault(msg string) MYError {
-	return New(defaultCode, msg)
+	return New(DefaultErrorCode, msg)
 }
 
 func New(code int, msg string) MYError {
