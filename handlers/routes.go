@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"go-gin/handlers/user"
 	"go-gin/internal/errorx"
 	"go-gin/utils/httpx"
 	"net/http"
@@ -16,6 +17,9 @@ func RegisterHandlers(r *gin.Engine) {
 	r.NoRoute(func(ctx *gin.Context) {
 		httpx.Error(ctx, errorx.New(http.StatusNotFound, "路由不存在"))
 	})
+
+	r.GET("/list", user.ListUser())
+	r.GET("/add", user.AddUser())
 
 	r.GET("/", func(ctx *gin.Context) {
 		httpx.Ok(ctx, "世界你好")
