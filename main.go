@@ -12,6 +12,7 @@ var configFile = flag.String("f", "./.env.yaml", "the config file")
 
 func main() {
 	flag.Parse()
+
 	server := gin.New()
 	server.HandleMethodNotAllowed = true
 
