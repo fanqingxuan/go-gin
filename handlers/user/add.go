@@ -2,6 +2,7 @@ package user
 
 import (
 	"go-gin/internal/errorx"
+	"go-gin/logic/user"
 	"go-gin/types"
 	"go-gin/utils/httpx"
 
@@ -15,9 +16,14 @@ func AddUser() gin.HandlerFunc {
 			httpx.Error(ctx, errorx.NewWithError(err))
 			return
 		}
-		httpx.Ok(ctx, types.AddUserReply{
-			Message: "hello" + req.Name,
-		})
+
+		l := user.NewAddUser()
+		resp, err := l.Handle(req)
+		if err != nil {
+			httpx.Error(ctx, err)
+			return
+		}
+		httpx.Ok(ctx, resp)
 
 	}
 }
