@@ -1,9 +1,11 @@
 package sqlx
 
 import (
+	"bytes"
 	"context"
 	"database/sql"
 	"fmt"
+	"unicode"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -40,16 +42,32 @@ func NewSqlConn(driverName, dataSourceName string) SqlConn {
 	if err != nil {
 		panic(fmt.Sprintf("db connect error,err=%s", err))
 	}
+	conn.MapperFunc(camelToSnake)
 	return &commonSqlConn{
 		conn: conn,
 	}
 }
 
+func camelToSnake(camelCase string) string {
+	var snakeCase bytes.Buffer
+
+	for i, char := range camelCase {
+		if i > 0 && unicode.IsUpper(char) {
+			snakeCase.WriteRune('_')
+		}
+		snakeCase.WriteRune(unicode.ToLower(char))
+	}
+
+	return snakeCase.String()
+}
+
 // NewSqlConnFromDB returns a SqlConn with the given sql.DB.
 // Use it with caution, it's provided for other ORM to interact with.
 func NewSqlConnFromDB(db *sql.DB, driverName string) SqlConn {
+	conn := sqlx.NewDb(db, driverName)
+	conn.MapperFunc(camelToSnake)
 	return &commonSqlConn{
-		conn: sqlx.NewDb(db, driverName),
+		conn: conn,
 	}
 }
 
