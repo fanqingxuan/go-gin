@@ -3,7 +3,7 @@ package filex
 import (
 	"os"
 
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 func MustLoad(filename string, v interface{}) {

@@ -2,12 +2,12 @@ package middlewares
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/zeromicro/go-zero/core/utils"
+	"github.com/google/uuid"
 )
 
 func traceId() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		traceId := utils.NewUuid()
+		traceId := uuid.New().String()
 		ctx.Set("requestId", traceId)
 		ctx.Next()
 	}
