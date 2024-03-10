@@ -37,12 +37,14 @@ type commonSqlConn struct {
 var _ SqlConn = &commonSqlConn{}
 
 // NewSqlConn returns a SqlConn with given driver name and datasource.
-func NewSqlConn(driverName, dataSourceName string) SqlConn {
-	conn, err := sqlx.Connect(driverName, dataSourceName)
+func NewSqlConn(driverName string, c Config) SqlConn {
+	conn, err := sqlx.Connect(driverName, c.DataSource)
 	if err != nil {
 		panic(fmt.Sprintf("db connect error,err=%s", err))
 	}
 	conn.MapperFunc(camelToSnake)
+	conn.SetMaxIdleConns(c.MaxIdleConns)
+	conn.SetMaxOpenConns(c.MaxOpenConns)
 	return &commonSqlConn{
 		conn: conn,
 	}
