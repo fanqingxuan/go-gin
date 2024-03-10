@@ -4,8 +4,6 @@ import (
 	"go-gin/config"
 	"go-gin/svc/redisx"
 	"go-gin/svc/sqlx"
-
-	_ "github.com/go-sql-driver/mysql"
 )
 
 type ServiceContext struct {
