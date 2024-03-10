@@ -14,12 +14,13 @@ type AddUserReply struct {
 }
 
 type ListUserReq struct {
+	Name string `json:"name" form:"name"`
 }
 
 type User struct {
 	Name  string `json:"name"`
-	Ctime string
+	Ctime string `json:"ctime"`
 }
 type ListUserReply struct {
-	User []User
+	User []User `json:"users"`
 }
