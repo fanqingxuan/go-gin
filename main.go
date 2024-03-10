@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"go-gin/handlers"
+	"go-gin/middlewares"
 	"go-gin/svc"
 
 	"github.com/gin-gonic/gin"
@@ -17,6 +18,8 @@ func main() {
 	server := gin.New()
 	server.HandleMethodNotAllowed = true
 	serverCtx := svc.NewServiceContext()
+
+	middlewares.RegisterGlobalMiddlewares(server)
 
 	handlers.RegisterHandlers(server, serverCtx)
 
