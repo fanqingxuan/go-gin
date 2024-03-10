@@ -10,13 +10,14 @@ import (
 	"go-gin/utils/filex"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-module/carbon/v2"
 )
 
 var configFile = flag.String("f", "./.env.yaml", "the config file")
 
 func main() {
 	flag.Parse()
-
+	setTimeDefault()
 	var c config.Config
 	filex.MustLoad(*configFile, &c)
 
@@ -39,4 +40,13 @@ func main() {
 	if err := server.Run(c.App.Port); err != nil {
 		fmt.Printf("Start server error,err=%v", err)
 	}
+}
+
+func setTimeDefault() {
+	carbon.SetDefault(carbon.Default{
+		Layout:       carbon.DateTimeLayout,
+		Timezone:     carbon.PRC,
+		WeekStartsAt: carbon.Sunday,
+		Locale:       "zh-CN",
+	})
 }

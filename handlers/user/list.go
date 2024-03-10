@@ -7,6 +7,8 @@ import (
 	"go-gin/types"
 	"go-gin/utils/httpx"
 	"time"
+
+	"github.com/golang-module/carbon/v2"
 )
 
 type ListUserHandler struct {
@@ -29,11 +31,14 @@ func (h *ListUserHandler) Handle(request interface{}) (interface{}, error) {
 	if !ok {
 		return nil, errorx.NewDefault("无效参数类型")
 	}
+	fmt.Println(carbon.Now().ToTimeString())
+
 	h.Redis.Set(h.GinCtx, "tt", "dd", time.Hour)
 	users, err := h.userModel.FindAll(3)
 	if err != nil {
 		return nil, err
 	}
+
 	return types.ListUserReply{
 		User: users,
 	}, nil
