@@ -3,6 +3,7 @@ package user
 import (
 	"fmt"
 	"go-gin/internal/errorx"
+	"go-gin/models"
 	"go-gin/types"
 	"go-gin/utils/httpx"
 	"time"
@@ -10,10 +11,15 @@ import (
 
 type ListUserHandler struct {
 	httpx.BaseHandler
+	userModel models.UserModel
 }
 
 func NewListUserHandler() *ListUserHandler {
 	return new(ListUserHandler)
+}
+
+func (h *ListUserHandler) Prepare() {
+	h.userModel = models.NewUserModel(h.GinCtx, h.DB)
 }
 
 func (h *ListUserHandler) Handle(request interface{}) (interface{}, error) {
@@ -24,15 +30,11 @@ func (h *ListUserHandler) Handle(request interface{}) (interface{}, error) {
 		return nil, errorx.NewDefault("无效参数类型")
 	}
 	h.Redis.Set(h.GinCtx, "tt", "dd", time.Hour)
-	// return nil, errorx.NewDefault("查询数据不存在")
+	users, err := h.userModel.FindAll(3)
+	if err != nil {
+		return nil, err
+	}
 	return types.ListUserReply{
-		User: []types.User{
-			{
-				Name: "测试",
-			},
-			{
-				Name: "测试222",
-			},
-		},
+		User: users,
 	}, nil
 }

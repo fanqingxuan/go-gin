@@ -29,9 +29,9 @@ func OkWithMessage(ctx *gin.Context, data any, message string) {
 
 func Error(ctx *gin.Context, err error) {
 
-	httpStatus := http.StatusOK
-	code := errorx.DefaultErrorCode
-	message := err.Error()
+	httpStatus := http.StatusInternalServerError
+	code := http.StatusInternalServerError
+	message := "服务器内部错误"
 	switch e := err.(type) {
 	case errorx.MYError:
 		message = e.Msg

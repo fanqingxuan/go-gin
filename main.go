@@ -28,7 +28,7 @@ func main() {
 	server := gin.New()
 	server.HandleMethodNotAllowed = true
 
-	serverCtx := svc.NewServiceContext()
+	serverCtx := svc.NewServiceContext(c)
 
 	middlewares.RegisterGlobalMiddlewares(server)
 

@@ -1,6 +1,9 @@
 package types
 
-import "time"
+import (
+	"go-gin/models"
+	"time"
+)
 
 type AddUserReq struct {
 	Name   string    `json:"name" form:"name" binding:"required"`
@@ -17,10 +20,6 @@ type ListUserReq struct {
 	Name string `json:"name" form:"name"`
 }
 
-type User struct {
-	Name  string `json:"name"`
-	Ctime string `json:"ctime"`
-}
 type ListUserReply struct {
-	User []User `json:"users"`
+	User []models.User `json:"users"`
 }
