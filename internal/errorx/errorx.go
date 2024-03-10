@@ -15,10 +15,6 @@ func New(code int, msg string) MYError {
 	return MYError{Code: code, Msg: msg}
 }
 
-func NewWithError(err error) MYError {
-	return NewDefault(err.Error())
-}
-
 func (c MYError) Error() string {
 	return c.Msg
 }

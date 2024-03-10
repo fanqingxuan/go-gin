@@ -42,7 +42,7 @@ func WrapHandler(h Handler, svcCtx *svc.ServiceContext, req interface{}) gin.Han
 	}
 	return func(c *gin.Context) {
 		if err := c.ShouldBind(requestPtr); err != nil {
-			Error(c, errorx.NewWithError(err))
+			Error(c, errorx.NewDefault(err.Error()))
 			return
 		}
 		if req != nil {

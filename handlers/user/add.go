@@ -16,7 +16,7 @@ func AddUser(serverCtx *svc.ServiceContext) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var req types.AddUserReq
 		if err := ctx.ShouldBind(&req); err != nil {
-			httpx.Error(ctx, errorx.NewWithError(err))
+			httpx.Error(ctx, errorx.NewDefault(err.Error()))
 			return
 		}
 
