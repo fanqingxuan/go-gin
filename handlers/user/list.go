@@ -26,8 +26,7 @@ func (h *ListUserHandler) Prepare() {
 
 func (h *ListUserHandler) Handle(request interface{}) (interface{}, error) {
 	req, ok := request.(types.ListUserReq)
-	fmt.Println(req, ok)
-
+	fmt.Println(req)
 	if !ok {
 		return nil, errorx.NewDefault("无效参数类型")
 	}

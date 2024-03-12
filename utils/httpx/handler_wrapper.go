@@ -1,6 +1,7 @@
 package httpx
 
 import (
+	"fmt"
 	"go-gin/internal/errorx"
 	"go-gin/svc"
 	"reflect"
@@ -42,6 +43,7 @@ func WrapHandler(h Handler, svcCtx *svc.ServiceContext, req interface{}) gin.Han
 	}
 	return func(c *gin.Context) {
 		if err := c.ShouldBind(requestPtr); err != nil {
+			fmt.Println(err)
 			Error(c, errorx.NewDefault(err.Error()))
 			return
 		}

@@ -8,6 +8,7 @@ import (
 	"go-gin/middlewares"
 	"go-gin/svc"
 	"go-gin/utils/filex"
+	"go-gin/validators"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
@@ -31,6 +32,8 @@ func main() {
 	server.HandleMethodNotAllowed = true
 
 	serverCtx := svc.NewServiceContext(c)
+
+	validators.RegisterValidators()
 
 	middlewares.RegisterGlobalMiddlewares(server)
 

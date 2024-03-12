@@ -2,7 +2,6 @@ package models
 
 import (
 	"context"
-	"fmt"
 	"go-gin/svc/sqlx"
 
 	"github.com/guregu/null/v5"
@@ -29,6 +28,5 @@ func NewUserModel(ctx context.Context, sqlconn sqlx.SqlConn) UserModel {
 func (u UserModel) FindAll(id uint64) ([]User, error) {
 	var users []User
 	err := u.sqlconn.QueryRowsCtx(u.ctx, &users, "select username,age,create_time from user where id>?", id)
-	fmt.Println(err)
 	return users, err
 }
