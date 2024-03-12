@@ -17,7 +17,7 @@ type AddUserReply struct {
 }
 
 type ListUserReq struct {
-	Name string `json:"name" form:"name" binding:"required,email" label:"用户名"`
+	Name string `json:"name" form:"name" binding:"required,email,sample" label:"用户名"`
 	Age  int    `json:"age" form:"age" binding:"min=0,max=100" label:"年龄"`
 }
 

@@ -26,7 +26,7 @@ func (h *ListUserHandler) Prepare() {
 }
 
 type T struct {
-	Name string `binding:"required"`
+	Name string `binding:"required" label:"学生姓名"`
 }
 
 func (h *ListUserHandler) Handle(request interface{}) (interface{}, error) {
@@ -36,7 +36,7 @@ func (h *ListUserHandler) Handle(request interface{}) (interface{}, error) {
 		return nil, errorx.NewDefault("无效参数类型")
 	}
 	fmt.Println(carbon.Now().ToTimeString())
-	t := T{"dd"}
+	t := T{""}
 	if err := validators.Validate(t); err != nil {
 		return nil, err
 	}
