@@ -24,6 +24,6 @@ func upAddTableUser(tx *sql.Tx) error {
 }
 
 func downAddTableUser(tx *sql.Tx) error {
-	_, err := tx.Exec("drop table if exists user")
+	_, err := tx.Exec("drop table user if exists")
 	return err
 }

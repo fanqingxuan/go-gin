@@ -6,10 +6,10 @@ import (
 	_ "go-gin/migrations"
 	"go-gin/svc/sqlx"
 	"go-gin/utils/filex"
+	"log"
 	"os"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/labstack/gommon/color"
 
 	"github.com/pressly/goose"
 )
@@ -20,30 +20,6 @@ var (
 	flags      = flag.NewFlagSet("goose", flag.ExitOnError)
 )
 
-type clog struct {
-}
-
-var _ goose.Logger = &clog{}
-
-func (*clog) Fatal(v ...interface{}) {
-	color.Println(color.Red(fmt.Sprint(v...)))
-}
-
-func (*clog) Fatalf(format string, v ...interface{}) {
-	color.Println(color.Red(fmt.Sprintf(format, v...)))
-}
-
-func (*clog) Print(v ...interface{}) {
-	color.Println(color.White(fmt.Sprint(v...)))
-
-}
-func (*clog) Println(v ...interface{}) {
-	color.Println(color.White(fmt.Sprint(v...)))
-}
-func (*clog) Printf(format string, v ...interface{}) {
-	color.Println(color.Green(fmt.Sprintf(format, v...)))
-}
-
 type Config struct {
 	Mysql sqlx.Config `yaml:"Mysql"`
 }
@@ -51,11 +27,9 @@ type Config struct {
 func main() {
 	flags.Parse(os.Args[1:])
 	args := flags.Args()
-	color.Enable()
-	goose.SetLogger(&clog{})
-
+	fmt.Println(args)
 	if len(args) < 1 {
-		color.Println(color.Red(`please input the execute command[up|down|create]`))
+		log.Fatal("please input the execute command[up|down|create]\n")
 		return
 	}
 
@@ -66,11 +40,12 @@ func main() {
 
 	db, err := goose.OpenDBWithDriver("mysql", c.Mysql.DataSource)
 	if err != nil {
-		color.Println(color.Red(fmt.Sprintf("goose: failed to open DB: %v\n", err)))
+		log.Fatalf("goose: failed to open DB: %v\n", err)
 	}
+
 	defer func() {
 		if err := db.Close(); err != nil {
-			color.Println(color.Red(fmt.Sprintf("goose: failed to close DB: %v\n", err)))
+			log.Fatalf("goose: failed to close DB: %v\n", err)
 		}
 	}()
 
@@ -79,8 +54,7 @@ func main() {
 		arguments = append(arguments, args[1:]...)
 	}
 	goose.SetTableName("migrations")
-
 	if err := goose.Run(command, db, dir, arguments...); err != nil {
-		color.Println(color.Red(fmt.Sprintf("goose %v: %v", command, err)))
+		log.Fatalf("goose %v: %v", command, err)
 	}
 }
