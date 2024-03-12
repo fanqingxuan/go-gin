@@ -6,6 +6,7 @@ import (
 	"go-gin/models"
 	"go-gin/types"
 	"go-gin/utils/httpx"
+	"go-gin/validators"
 	"time"
 
 	"github.com/golang-module/carbon/v2"
@@ -24,6 +25,10 @@ func (h *ListUserHandler) Prepare() {
 	h.userModel = models.NewUserModel(h.GinCtx, h.DB)
 }
 
+type T struct {
+	Name string `binding:"required"`
+}
+
 func (h *ListUserHandler) Handle(request interface{}) (interface{}, error) {
 	req, ok := request.(types.ListUserReq)
 	fmt.Println(req)
@@ -31,7 +36,10 @@ func (h *ListUserHandler) Handle(request interface{}) (interface{}, error) {
 		return nil, errorx.NewDefault("无效参数类型")
 	}
 	fmt.Println(carbon.Now().ToTimeString())
-
+	t := T{"dd"}
+	if err := validators.Validate(t); err != nil {
+		return nil, err
+	}
 	h.Redis.Set(h.GinCtx, "tt", "dd", time.Hour)
 	users, err := h.userModel.FindAll(3)
 	if err != nil {

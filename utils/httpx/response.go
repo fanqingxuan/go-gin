@@ -28,22 +28,20 @@ func OkWithMessage(ctx *gin.Context, data any, message string) {
 }
 
 func Error(ctx *gin.Context, err error) {
+	httpStatus := ctx.Writer.Status()
+	code := httpStatus
+	message := http.StatusText(httpStatus)
 
-	httpStatus := http.StatusInternalServerError
-	code := http.StatusInternalServerError
-	fmt.Println(err)
-
-	message := "服务器内部错误"
 	switch e := err.(type) {
 	case errorx.MYError:
 		message = e.Msg
-		if e.Code >= 100 && e.Code <= 511 {
-			httpStatus = e.Code
-			if message == "" {
-				message = http.StatusText(e.Code)
-			}
-		}
+		httpStatus = http.StatusOK
 		code = e.Code
+	case error:
+		message = "服务器内部错误"
+		httpStatus = http.StatusInternalServerError
+		code = httpStatus
+		fmt.Println(err)
 	}
 	result := Result{
 		Code:    code,
