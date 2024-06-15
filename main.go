@@ -10,7 +10,7 @@ import (
 	"go-gin/pkg/redis"
 	filex "go-gin/utils/file"
 	"go-gin/utils/httpx"
-	"go-gin/validators"
+	"go-gin/utils/validators"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"

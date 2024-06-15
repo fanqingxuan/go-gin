@@ -7,6 +7,7 @@ import (
 	"go-gin/types"
 	"go-gin/utils/errorx"
 	"go-gin/utils/httpx"
+	"go-gin/utils/validators"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,6 +21,15 @@ var UserController = &userController{
 }
 
 func (c *userController) Index(ctx *gin.Context) {
+	type User struct {
+		Name string `binding:"required" label:"姓,44名"`
+	}
+	u := User{}
+	err := validators.Validate(u)
+	if err != nil {
+		httpx.Error(ctx, err)
+		return
+	}
 	httpx.Ok(ctx, "hello world")
 }
 
