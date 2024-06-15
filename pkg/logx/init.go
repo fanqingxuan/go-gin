@@ -1,17 +1,16 @@
 package logx
 
 import (
-	"io"
-	"os"
 	"strings"
 	"time"
 
+	"github.com/labstack/gommon/color"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
 
 var (
-	ConsoleWriter io.Writer = os.Stdout
+	ConsoleWriter = &ConsoleLevelWriter{}
 )
 
 var (
@@ -20,6 +19,7 @@ var (
 )
 
 func Init() {
+	color.Enable()
 	zerolog.TimeFieldFormat = time.DateTime
 	zerolog.LevelFieldMarshalFunc = func(l zerolog.Level) string {
 		return strings.ToUpper(l.String())

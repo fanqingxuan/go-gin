@@ -38,6 +38,9 @@ func (c *userController) Index(ctx *gin.Context) {
 
 func (c *userController) List(ctx *gin.Context) {
 	logx.WithContext(ctx).Debug("获悉信息", "这是debug日志")
+	logx.WithContext(ctx).Info("获悉信息", "这是debug日志")
+	logx.WithContext(ctx).Warn("获悉信息", "这是debug日志")
+	logx.WithContext(ctx).Error("获悉信息", "这是debug日志")
 	u, err := c.userService.GetAllUsers(ctx)
 	httpx.Handle(ctx, u, err)
 }
