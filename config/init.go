@@ -31,3 +31,7 @@ func LogLevel() zerolog.Level {
 func GetRedis() Redis {
 	return instance.Redis
 }
+
+func GetDB() DB {
+	return instance.DB
+}

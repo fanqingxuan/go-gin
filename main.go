@@ -25,7 +25,12 @@ func main() {
 
 	logx.Init(config.LogLevel(), config.IsDebugMode())
 
-	db.Init()
+	dbConfig := config.GetDB()
+	db.Init(db.Config{
+		DSN:          dbConfig.DSN,
+		MaxOpenConns: dbConfig.MaxOpenConns,
+		MaxIdleConns: dbConfig.MaxIdleConns,
+	})
 
 	redisConfig := config.GetRedis()
 	options := &redis.Options{
