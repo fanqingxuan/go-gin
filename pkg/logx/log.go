@@ -12,7 +12,7 @@ type default_log struct {
 	ctx context.Context
 }
 
-var l Logger = (*default_log)(nil)
+var _ Logger = (*default_log)(nil)
 
 func WithContext(ctx context.Context) Logger {
 	return &default_log{ctx}

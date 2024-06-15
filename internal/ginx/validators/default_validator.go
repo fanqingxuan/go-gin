@@ -94,7 +94,7 @@ func (v *defaultValidator) lazyinit() {
 			return name
 		})
 		v.trans = getZhTranslator()
-		zhTrans.RegisterDefaultTranslations(v.validate, v.trans)
+		_ = zhTrans.RegisterDefaultTranslations(v.validate, v.trans)
 		v.validate.SetTagName("binding")
 	})
 }
