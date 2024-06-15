@@ -5,7 +5,7 @@ package validators
 // license that can be found in the LICENSE file.
 
 import (
-	"fmt"
+	"go-gin/internal/errorx"
 	"reflect"
 	"strings"
 	"sync"
@@ -106,7 +106,7 @@ func (v *defaultValidator) formatValidationErrors(errs validator.ValidationError
 		errorMessage += e.Translate(v.trans) + "\n"
 	}
 
-	return fmt.Errorf(errorMessage)
+	return errorx.New(errorx.ErrValidateFailedCode, errorMessage)
 }
 
 // getZhTranslator 获取中文翻译器

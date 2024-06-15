@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"fmt"
-	"go-gin/internal/errorx"
 	"go-gin/internal/ginx/httpx"
 	"go-gin/internal/ginx/validators"
 	"go-gin/models"
@@ -25,7 +24,7 @@ func (c *userController) Index(ctx *gin.Context) {
 	type User struct {
 		Name string `binding:"required,min=5" label:"姓,44名"`
 	}
-	u := User{Name: "测试我们啊"}
+	u := User{Name: "测试们啊"}
 	err := validators.Validate(u)
 	if err != nil {
 		httpx.Error(ctx, err)
@@ -48,7 +47,7 @@ func (c *userController) List(ctx *gin.Context) {
 func (c *userController) AddUser(ctx *gin.Context) {
 	var req types.AddUserReq
 	if err := ctx.ShouldBind(&req); err != nil {
-		httpx.Error(ctx, errorx.NewDefault(err.Error()))
+		httpx.Error(ctx, err)
 		return
 	}
 	user := &models.User{

@@ -7,10 +7,6 @@ type BizError struct {
 	Msg  string
 }
 
-func NewDefault(msg string) BizError {
-	return New(DefaultErrorCode, msg)
-}
-
 func New(code int, msg string) BizError {
 	return BizError{Code: code, Msg: msg}
 }

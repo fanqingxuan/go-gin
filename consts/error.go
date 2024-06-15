@@ -10,5 +10,5 @@ var (
 	ErrNoRoute             = errorx.NewHHttpError(http.StatusNotFound)
 	ErrInternalServerError = errorx.NewHHttpError(http.StatusInternalServerError)
 
-	ErrUserNotFound = errorx.New(1002, "用户不存在")
+	ErrUserNotFound = errorx.New(2001, "用户不存在")
 )
