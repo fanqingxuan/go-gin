@@ -1,9 +1,11 @@
 package config
 
 import (
+	"go-gin/internal/components/db"
 	filex "go-gin/internal/file"
 	"os"
 
+	"github.com/redis/go-redis/v9"
 	"github.com/rs/zerolog"
 )
 
@@ -29,12 +31,22 @@ func LogLevel() zerolog.Level {
 	return l
 }
 
-func GetRedis() Redis {
-	return instance.Redis
+func GetRedisConf() *redis.Options {
+	redisConfig := instance.Redis
+	return &redis.Options{
+		Addr:     redisConfig.Addr,
+		Username: redisConfig.Username,
+		Password: redisConfig.Password, // no password set
+		DB:       redisConfig.DB,       // use default DB
+	}
 }
 
-func GetDB() DB {
-	return instance.DB
+func GetDBConf() db.Config {
+	return db.Config{
+		DSN:          instance.DB.DSN,
+		MaxOpenConns: instance.DB.MaxOpenConns,
+		MaxIdleConns: instance.DB.MaxIdleConns,
+	}
 }
 
 func LoadTimeZone() {

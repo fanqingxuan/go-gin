@@ -14,7 +14,6 @@ import (
 	"go-gin/middlewares"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/redis/go-redis/v9"
 )
 
 var configFile = flag.String("f", "./.env.yaml", "the config file")
@@ -24,25 +23,14 @@ func main() {
 	flag.Parse()
 
 	config.Init(*configFile)
+
 	config.LoadTimeZone()
 
 	logx.Init(config.LogLevel(), config.IsDebugMode())
 
-	dbConfig := config.GetDB()
-	db.Init(db.Config{
-		DSN:          dbConfig.DSN,
-		MaxOpenConns: dbConfig.MaxOpenConns,
-		MaxIdleConns: dbConfig.MaxIdleConns,
-	})
+	db.Init(config.GetDBConf())
 
-	redisConfig := config.GetRedis()
-	options := &redis.Options{
-		Addr:     redisConfig.Addr,
-		Username: redisConfig.Username,
-		Password: redisConfig.Password, // no password set
-		DB:       redisConfig.DB,       // use default DB
-	}
-	redisx.Init(options)
+	redisx.Init(config.GetRedisConf())
 
 	httpx.DefaultSuccessCodeValue = 0
 
