@@ -1,6 +1,7 @@
 package logx
 
 import (
+	"io"
 	"strings"
 	"time"
 
@@ -24,8 +25,8 @@ var (
 )
 
 var (
-	AccessLoggerInstance zerolog.Logger = zerolog.New(zerolog.MultiLevelWriter(ConsoleWriter, AcessFileWriter)).Level(zerolog.InfoLevel).With().Timestamp().Logger().Hook(TracingHook{})
-	PanicLoggerInstance                 = zerolog.New(zerolog.MultiLevelWriter(ConsoleWriter, FileWriter)).Level(zerolog.ErrorLevel).With().Timestamp().Logger().Hook(TracingHook{})
+	AccessLoggerInstance zerolog.Logger = zerolog.New(AcessFileWriter).Level(zerolog.InfoLevel).With().Timestamp().Logger().Hook(TracingHook{})
+	PanicLoggerInstance                 = (zerolog.Logger{})
 )
 
 func Init(level zerolog.Level, isDebugMode bool) {
@@ -37,7 +38,15 @@ func Init(level zerolog.Level, isDebugMode bool) {
 		return strings.ToUpper(l.String())
 	}
 
-	multi := zerolog.MultiLevelWriter(ConsoleWriter, FileWriter)
+	writers := []io.Writer{FileWriter}
+	if isDebugMode {
+		writers = append(writers, ConsoleWriter)
+	}
+
+	multi := zerolog.MultiLevelWriter(writers...)
 
 	log.Logger = log.Output(multi).Level(level).With().Logger().Hook(TracingHook{})
+
+	PanicLoggerInstance = zerolog.New(zerolog.MultiLevelWriter(multi)).Level(zerolog.ErrorLevel).With().Timestamp().Logger().Hook(TracingHook{})
+
 }
