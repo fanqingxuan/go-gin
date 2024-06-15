@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"go-gin/consts"
-	"go-gin/utils/httpx"
+	"go-gin/internal/ginx/httpx"
 
 	"github.com/gin-gonic/gin"
 )
