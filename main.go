@@ -4,22 +4,22 @@ import (
 	"flag"
 	"fmt"
 	"go-gin/config"
-	"go-gin/handlers"
+	"go-gin/controllers"
 	"go-gin/middlewares"
-	"go-gin/svc"
-	"go-gin/utils/filex"
+	"go-gin/pkg/db"
+	"go-gin/pkg/redis"
+	filex "go-gin/utils/file"
+	"go-gin/utils/httpx"
 	"go-gin/validators"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/golang-module/carbon/v2"
 )
 
 var configFile = flag.String("f", "./.env.yaml", "the config file")
 
 func main() {
 	flag.Parse()
-	setTimeDefault()
 	var c config.Config
 	filex.MustLoad(*configFile, &c)
 
@@ -31,26 +31,21 @@ func main() {
 	server := gin.New()
 	server.HandleMethodNotAllowed = true
 
-	serverCtx := svc.NewServiceContext(c)
+	validators.Init()
 
-	validators.RegisterValidators()
+	middlewares.Init(server)
 
-	middlewares.RegisterGlobalMiddlewares(server)
+	db.Init()
 
-	handlers.RegisterHandlers(server, serverCtx)
+	redis.Init()
+
+	httpx.DefaultSuccessCodeValue = 0
+
+	controllers.Init(server)
 
 	fmt.Printf("Starting server at localhost%s...\n", c.App.Port)
 
 	if err := server.Run(c.App.Port); err != nil {
 		fmt.Printf("Start server error,err=%v", err)
 	}
-}
-
-func setTimeDefault() {
-	carbon.SetDefault(carbon.Default{
-		Layout:       carbon.DateTimeLayout,
-		Timezone:     carbon.PRC,
-		WeekStartsAt: carbon.Sunday,
-		Locale:       "zh-CN",
-	})
 }

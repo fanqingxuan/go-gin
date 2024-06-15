@@ -2,9 +2,8 @@ package middlewares
 
 import (
 	"fmt"
-	"go-gin/internal/errorx"
+	"go-gin/consts"
 	"go-gin/utils/httpx"
-	"net/http"
 	"runtime/debug"
 
 	"github.com/gin-gonic/gin"
@@ -16,7 +15,7 @@ func recoverLog() gin.HandlerFunc {
 			if err := recover(); err != nil {
 				fmt.Println(err)
 				fmt.Println(string(debug.Stack()))
-				httpx.Error(ctx, errorx.New(http.StatusInternalServerError, "服务器内部错误"))
+				httpx.Error(ctx, consts.ErrInternalServerError)
 				ctx.Abort()
 			}
 		}()

@@ -1,7 +1,7 @@
 package validators
 
 import (
-	"go-gin/internal/errorx"
+	"go-gin/utils/errorx"
 
 	"github.com/gin-gonic/gin/binding"
 	ut "github.com/go-playground/universal-translator"
@@ -9,7 +9,7 @@ import (
 
 var Trans ut.Translator
 
-func RegisterValidators() {
+func Init() {
 	binding.Validator = &defaultValidator{}
 
 }
