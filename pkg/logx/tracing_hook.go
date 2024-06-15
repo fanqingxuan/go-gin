@@ -2,7 +2,7 @@ package logx
 
 import (
 	"context"
-	"go-gin/pkg/traceid"
+	"go-gin/internal/traceid"
 
 	"github.com/rs/zerolog"
 )

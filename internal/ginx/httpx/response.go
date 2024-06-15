@@ -3,7 +3,7 @@ package httpx
 import (
 	"context"
 	"go-gin/internal/errorx"
-	"go-gin/pkg/traceid"
+	"go-gin/internal/traceid"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

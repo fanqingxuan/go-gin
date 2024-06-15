@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"go-gin/pkg/traceid"
+	"go-gin/internal/traceid"
 
 	"github.com/gin-gonic/gin"
 )
