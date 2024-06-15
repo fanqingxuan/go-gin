@@ -1,7 +1,0 @@
-linters-settings:
-  # Specify the rules for unused imports
-  unused-imports:
-    # Set the check for internal packages to error
-    check-exported: true
-    check-testimports: true
-    dirs: ./

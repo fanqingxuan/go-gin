@@ -11,6 +11,7 @@ import (
 	"go-gin/internal/ginx"
 	"go-gin/internal/ginx/httpx"
 	"go-gin/middlewares"
+	"os"
 
 	_ "go-gin/internal/utils"
 
@@ -22,6 +23,11 @@ var configFile = flag.String("f", "./.env.yaml", "the config file")
 
 func main() {
 	flag.Parse()
+
+	err := os.Setenv("TZ", "Asia/Shanghai")
+	if err != nil {
+		panic("设置环境变量失败:" + err.Error())
+	}
 
 	config.Init(*configFile)
 

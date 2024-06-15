@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"path/filepath"
 	"runtime"
 	"strconv"
@@ -15,7 +14,6 @@ func init() {
 	// compatible solution to get gorm source directory with various operating systems
 	dir := filepath.Dir(filepath.Dir(filepath.Dir(file)))
 	ProjectDir = filepath.ToSlash(dir) + "/"
-	fmt.Println(ProjectDir)
 }
 
 // FileWithLineNum return the file name and line number of the current file
