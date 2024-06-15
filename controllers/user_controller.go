@@ -2,13 +2,13 @@ package controllers
 
 import (
 	"fmt"
+	"go-gin/internal/errorx"
 	"go-gin/internal/ginx/httpx"
 	"go-gin/internal/ginx/validators"
 	"go-gin/models"
 	"go-gin/pkg/logx"
 	"go-gin/services"
 	"go-gin/types"
-	"go-gin/utils/errorx"
 
 	"github.com/gin-gonic/gin"
 )

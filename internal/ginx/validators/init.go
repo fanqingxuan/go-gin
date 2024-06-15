@@ -1,7 +1,7 @@
 package validators
 
 import (
-	"go-gin/utils/errorx"
+	"go-gin/internal/errorx"
 
 	"github.com/gin-gonic/gin/binding"
 )

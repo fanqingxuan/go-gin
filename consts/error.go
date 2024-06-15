@@ -1,7 +1,7 @@
 package consts
 
 import (
-	"go-gin/utils/errorx"
+	"go-gin/internal/errorx"
 	"net/http"
 )
 
