@@ -12,6 +12,8 @@ import (
 	"go-gin/internal/ginx/httpx"
 	"go-gin/middlewares"
 
+	_ "go-gin/internal/utils"
+
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/redis/go-redis/v9"
 )
