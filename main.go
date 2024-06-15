@@ -10,19 +10,32 @@ import (
 	"go-gin/middlewares"
 	"go-gin/pkg/db"
 	"go-gin/pkg/logx"
-	"go-gin/pkg/redis"
+	"go-gin/pkg/redisx"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/redis/go-redis/v9"
 )
 
 var configFile = flag.String("f", "./.env.yaml", "the config file")
 
 func main() {
 	flag.Parse()
+
 	config.Init(*configFile)
+
 	logx.Init(config.LogLevel(), config.IsDebugMode())
+
 	db.Init()
-	redis.Init()
+
+	redisConfig := config.GetRedis()
+	options := &redis.Options{
+		Addr:     redisConfig.Addr,
+		Username: redisConfig.Username,
+		Password: redisConfig.Password, // no password set
+		DB:       redisConfig.DB,       // use default DB
+	}
+	redisx.Init(options)
+
 	httpx.DefaultSuccessCodeValue = 0
 
 	engine := ginx.Init(config.IsDebugMode())

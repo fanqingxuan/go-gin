@@ -27,3 +27,7 @@ func LogLevel() zerolog.Level {
 	}
 	return l
 }
+
+func GetRedis() Redis {
+	return instance.Redis
+}

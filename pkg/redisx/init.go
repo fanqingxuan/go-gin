@@ -1,4 +1,4 @@
-package redis
+package redisx
 
 import (
 	"context"
@@ -8,13 +8,9 @@ import (
 
 var instance *redis.Client
 
-func Init() {
+func Init(options *redis.Options) {
 
-	rdb := redis.NewClient(&redis.Options{
-		Addr:     "host.docker.internal:6379",
-		Password: "", // no password set
-		DB:       0,  // use default DB
-	})
+	rdb := redis.NewClient(options)
 	rdb.AddHook(&LogHook{})
 	err := rdb.Ping(context.Background()).Err()
 	if err != nil {

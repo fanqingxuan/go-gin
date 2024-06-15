@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"go-gin/models"
 	"go-gin/pkg/db"
-	"go-gin/pkg/redis"
+	"go-gin/pkg/redisx"
 )
 
 type UserService struct {
@@ -21,8 +21,8 @@ func (svc *UserService) GetAllUsers(ctx context.Context) ([]models.User, error) 
 		return nil, err
 	}
 
-	redis.GetInstance().HSet(ctx, "name", "age", 43)
-	fmt.Println(redis.GetInstance().Get(ctx, "name").String())
+	redisx.GetInstance().HSet(ctx, "name", "age", 43)
+	fmt.Println(redisx.GetInstance().Get(ctx, "name").String())
 	return u, nil
 
 }
