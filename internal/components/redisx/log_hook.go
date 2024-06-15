@@ -2,7 +2,7 @@ package redisx
 
 import (
 	"context"
-	"go-gin/pkg/logx"
+	"go-gin/internal/components/logx"
 	"net"
 	"path/filepath"
 	"runtime"

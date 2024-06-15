@@ -3,9 +3,9 @@ package services
 import (
 	"context"
 	"fmt"
+	"go-gin/internal/components/db"
+	"go-gin/internal/components/redisx"
 	"go-gin/models"
-	"go-gin/pkg/db"
-	"go-gin/pkg/redisx"
 )
 
 type UserService struct {

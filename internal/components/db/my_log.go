@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"go-gin/pkg/logx"
+	"go-gin/internal/components/logx"
 	"path/filepath"
 	"runtime"
 	"strconv"

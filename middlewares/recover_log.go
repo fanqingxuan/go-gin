@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"go-gin/pkg/logx"
+	"go-gin/internal/components/logx"
 	"path/filepath"
 	"runtime"
 	"strconv"
