@@ -20,7 +20,7 @@ var configFile = flag.String("f", "./.env.yaml", "the config file")
 func main() {
 	flag.Parse()
 	config.Init(*configFile)
-	logx.Init()
+	logx.Init(config.LogLevel(), config.IsDebugMode())
 	db.Init()
 	redis.Init()
 	httpx.DefaultSuccessCodeValue = 0

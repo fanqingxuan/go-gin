@@ -2,6 +2,8 @@ package config
 
 import (
 	filex "go-gin/internal/file"
+
+	"github.com/rs/zerolog"
 )
 
 var instance Config
@@ -16,4 +18,12 @@ func IsDebugMode() bool {
 
 func Port() string {
 	return instance.App.Port
+}
+
+func LogLevel() zerolog.Level {
+	l, err := zerolog.ParseLevel(instance.Log.Level)
+	if err != nil {
+		panic(err)
+	}
+	return l
 }

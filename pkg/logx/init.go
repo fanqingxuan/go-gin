@@ -18,15 +18,16 @@ var (
 	PanicLoggerInstance                 = zerolog.New(ConsoleWriter).Level(zerolog.ErrorLevel).With().Timestamp().Logger().Hook(TracingHook{})
 )
 
-func Init() {
-	color.Enable()
+func Init(level zerolog.Level, isDebugMode bool) {
+	if isDebugMode {
+		color.Enable()
+	}
 	zerolog.TimeFieldFormat = time.DateTime
 	zerolog.LevelFieldMarshalFunc = func(l zerolog.Level) string {
 		return strings.ToUpper(l.String())
 	}
-	// zerolog.MessageFieldName = "m"
 
 	multi := zerolog.MultiLevelWriter(ConsoleWriter)
 
-	log.Logger = log.Output(multi).Level(zerolog.DebugLevel).With().Timestamp().Logger().Hook(TracingHook{})
+	log.Logger = log.Output(multi).Level(level).With().Timestamp().Logger().Hook(TracingHook{})
 }
