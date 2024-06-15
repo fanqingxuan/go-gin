@@ -2,6 +2,7 @@ package config
 
 import (
 	filex "go-gin/internal/file"
+	"os"
 
 	"github.com/rs/zerolog"
 )
@@ -34,4 +35,11 @@ func GetRedis() Redis {
 
 func GetDB() DB {
 	return instance.DB
+}
+
+func LoadTimeZone() {
+	err := os.Setenv("TZ", instance.TimeZone)
+	if err != nil {
+		panic("设置环境变量失败:" + err.Error())
+	}
 }

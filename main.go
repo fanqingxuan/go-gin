@@ -10,10 +10,8 @@ import (
 	"go-gin/internal/components/redisx"
 	"go-gin/internal/ginx"
 	"go-gin/internal/ginx/httpx"
-	"go-gin/middlewares"
-	"os"
-
 	_ "go-gin/internal/utils"
+	"go-gin/middlewares"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/redis/go-redis/v9"
@@ -22,14 +20,11 @@ import (
 var configFile = flag.String("f", "./.env.yaml", "the config file")
 
 func main() {
+
 	flag.Parse()
 
-	err := os.Setenv("TZ", "Asia/Shanghai")
-	if err != nil {
-		panic("设置环境变量失败:" + err.Error())
-	}
-
 	config.Init(*configFile)
+	config.LoadTimeZone()
 
 	logx.Init(config.LogLevel(), config.IsDebugMode())
 
