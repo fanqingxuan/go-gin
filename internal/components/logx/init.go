@@ -11,11 +11,21 @@ import (
 
 var (
 	ConsoleWriter = &ConsoleLevelWriter{}
+
+	FileWriter = zerolog.SyncWriter(&FileLevelWriter{
+		Dirname:     "",
+		FilePattern: time.DateOnly,
+	})
+
+	AcessFileWriter = zerolog.SyncWriter(&FileLevelWriter{
+		Dirname:     "acecss/",
+		FilePattern: time.DateOnly,
+	})
 )
 
 var (
-	AccessLoggerInstance zerolog.Logger = zerolog.New(ConsoleWriter).Level(zerolog.InfoLevel).With().Timestamp().Logger().Hook(TracingHook{})
-	PanicLoggerInstance                 = zerolog.New(ConsoleWriter).Level(zerolog.ErrorLevel).With().Timestamp().Logger().Hook(TracingHook{})
+	AccessLoggerInstance zerolog.Logger = zerolog.New(zerolog.MultiLevelWriter(ConsoleWriter, AcessFileWriter)).Level(zerolog.InfoLevel).With().Timestamp().Logger().Hook(TracingHook{})
+	PanicLoggerInstance                 = zerolog.New(zerolog.MultiLevelWriter(ConsoleWriter, FileWriter)).Level(zerolog.ErrorLevel).With().Timestamp().Logger().Hook(TracingHook{})
 )
 
 func Init(level zerolog.Level, isDebugMode bool) {
@@ -27,7 +37,7 @@ func Init(level zerolog.Level, isDebugMode bool) {
 		return strings.ToUpper(l.String())
 	}
 
-	multi := zerolog.MultiLevelWriter(ConsoleWriter)
+	multi := zerolog.MultiLevelWriter(ConsoleWriter, FileWriter)
 
-	log.Logger = log.Output(multi).Level(level).With().Timestamp().Logger().Hook(TracingHook{})
+	log.Logger = log.Output(multi).Level(level).With().Logger().Hook(TracingHook{})
 }
