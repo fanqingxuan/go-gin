@@ -2,13 +2,13 @@ package controllers
 
 import (
 	"fmt"
+	"go-gin/internal/ginx/validators"
 	"go-gin/models"
 	"go-gin/pkg/logx"
 	"go-gin/services"
 	"go-gin/types"
 	"go-gin/utils/errorx"
 	"go-gin/utils/httpx"
-	"go-gin/utils/validators"
 
 	"github.com/gin-gonic/gin"
 )
@@ -23,9 +23,9 @@ var UserController = &userController{
 
 func (c *userController) Index(ctx *gin.Context) {
 	type User struct {
-		Name string `binding:"required" label:"姓,44名"`
+		Name string `binding:"required,min=5" label:"姓,44名"`
 	}
-	u := User{Name: "测试"}
+	u := User{Name: "测试我们啊"}
 	err := validators.Validate(u)
 	if err != nil {
 		httpx.Error(ctx, err)
