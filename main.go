@@ -7,6 +7,7 @@ import (
 	"go-gin/controllers"
 	"go-gin/middlewares"
 	"go-gin/pkg/db"
+	"go-gin/pkg/logx"
 	"go-gin/pkg/redis"
 	filex "go-gin/utils/file"
 	"go-gin/utils/httpx"
@@ -22,7 +23,7 @@ func main() {
 	flag.Parse()
 	var c config.Config
 	filex.MustLoad(*configFile, &c)
-
+	logx.Init()
 	if c.Debug {
 		gin.SetMode(gin.DebugMode)
 	} else {

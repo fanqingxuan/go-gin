@@ -21,7 +21,7 @@ func (svc *UserService) GetAllUsers(ctx context.Context) ([]models.User, error) 
 		return nil, err
 	}
 
-	redis.GetInstance().Set(ctx, "name", "测试", 3600)
+	redis.GetInstance().HSet(ctx, "name", "age", 43)
 	fmt.Println(redis.GetInstance().Get(ctx, "name").String())
 	return u, nil
 

@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"fmt"
+	"go-gin/pkg/logx"
 	"net/url"
 	"time"
 
@@ -22,22 +22,21 @@ func requestLog() gin.HandlerFunc {
 		if raw != "" {
 			path = path + "?" + raw
 		}
-		fmt.Println(raw)
 		TimeStamp := time.Now()
 		Cost := TimeStamp.Sub(start)
 		if Cost > time.Minute {
 			Cost = Cost.Truncate(time.Second)
 		}
 
-		requestMap := map[string]interface{}{
-			"Path":     path,
-			"Method":   c.Request.Method,
-			"ClientIP": c.ClientIP(),
-			"Cost":     Cost.String(),
-			"Status":   c.Writer.Status(),
-			"Proto":    c.Request.Proto,
-		}
+		logx.AccessLoggerInstance.Info().Ctx(c).
+			Str("path", path).
+			Str("method", c.Request.Method).
+			Str("ip", c.ClientIP()).
+			Str("cost", Cost.String()).
+			Int("status", c.Writer.Status()).
+			Str("proto", c.Request.Proto).
+			Str("user_agent", c.Request.UserAgent()).
+			Send()
 
-		fmt.Println(requestMap)
 	}
 }

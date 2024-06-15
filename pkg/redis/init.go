@@ -9,11 +9,13 @@ import (
 var instance *redis.Client
 
 func Init() {
+
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     "host.docker.internal:6379",
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})
+	rdb.AddHook(&LogHook{})
 	err := rdb.Ping(context.Background()).Err()
 	if err != nil {
 		panic(err)

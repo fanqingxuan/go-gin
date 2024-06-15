@@ -2,6 +2,7 @@ package httpx
 
 import (
 	"context"
+	"go-gin/pkg/traceid"
 	"go-gin/utils/errorx"
 	"net/http"
 
@@ -11,15 +12,14 @@ import (
 var CodeFieldName = "code"
 var ResultFieldName = "data"
 var MessageFieldName = "message"
-var RequestIdFieldName = "requestId"
 
 var DefaultSuccessCodeValue = http.StatusOK
 
 type Result struct {
-	Code      int
-	Message   string
-	Data      any
-	RequestId string
+	Code    int
+	Message string
+	Data    any
+	TraceId string
 }
 
 func Ok(ctx *gin.Context, data any) {
@@ -66,12 +66,12 @@ func Handle(ctx *gin.Context, data any, err error) {
 }
 
 func transform(ctx context.Context, result Result) map[string]any {
-	s, _ := ctx.Value("requestId").(string)
+	s, _ := ctx.Value(traceid.TraceIdFieldName).(string)
 
 	return map[string]any{
-		CodeFieldName:      result.Code,
-		MessageFieldName:   result.Message,
-		ResultFieldName:    result.Data,
-		RequestIdFieldName: s,
+		CodeFieldName:            result.Code,
+		MessageFieldName:         result.Message,
+		ResultFieldName:          result.Data,
+		traceid.TraceIdFieldName: s,
 	}
 }

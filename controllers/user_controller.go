@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"go-gin/models"
+	"go-gin/pkg/logx"
 	"go-gin/services"
 	"go-gin/types"
 	"go-gin/utils/errorx"
@@ -24,16 +25,19 @@ func (c *userController) Index(ctx *gin.Context) {
 	type User struct {
 		Name string `binding:"required" label:"姓,44名"`
 	}
-	u := User{}
+	u := User{Name: "测试"}
 	err := validators.Validate(u)
 	if err != nil {
 		httpx.Error(ctx, err)
 		return
 	}
+	logx.WithContext(ctx).Info("门店编程", u)
+	logx.WithContext(ctx).Infof("关键字", "这是什么%s/%s", "54", "5444")
 	httpx.Ok(ctx, "hello world")
 }
 
 func (c *userController) List(ctx *gin.Context) {
+	logx.WithContext(ctx).Debug("获悉信息", "这是debug日志")
 	u, err := c.userService.GetAllUsers(ctx)
 	httpx.Handle(ctx, u, err)
 }
