@@ -40,15 +40,16 @@ func Error(ctx *gin.Context, err error) {
 	case errorx.HttpError:
 		code = e.Code
 		httpStatus = e.Code
-		message = http.StatusText(httpStatus)
+		message = e.Msg
 	case errorx.BizError:
 		message = e.Msg
 		httpStatus = http.StatusOK
-		code = DefaultSuccessCodeValue
+		code = e.Code
 	case error:
-		message = "服务器内部错误"
+
 		httpStatus = http.StatusInternalServerError
-		code = httpStatus
+		code = http.StatusInternalServerError
+		message = "服务器内部错误"
 	}
 	result := Result{
 		Code:    code,

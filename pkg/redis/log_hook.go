@@ -27,7 +27,7 @@ func (LogHook) DialHook(next redis.DialHook) redis.DialHook {
 	return func(ctx context.Context, network, addr string) (net.Conn, error) {
 		conn, err := next(ctx, network, addr)
 		if err != nil {
-			logx.WithContext(ctx).Warnf("redis", "%s dail error=%s", err)
+			logx.WithContext(ctx).Warnf("redis", "dail error=%s", err.Error())
 		}
 		return conn, err
 	}
