@@ -12,7 +12,10 @@ import (
 var instance Config
 
 func Init(filename string) {
-	filex.MustLoad(filename, &instance)
+	err := filex.MustLoad(filename, &instance)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func IsDebugMode() bool {

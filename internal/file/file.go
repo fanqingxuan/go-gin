@@ -1,20 +1,22 @@
 package filex
 
 import (
+	"fmt"
 	"os"
 
 	"gopkg.in/yaml.v3"
 )
 
-func MustLoad(filename string, v interface{}) {
+func MustLoad(filename string, v interface{}) error {
 	content, err := os.ReadFile(filename)
 
 	if err != nil {
-		panic("read file " + filename + " error:" + err.Error())
+		return fmt.Errorf("read file error," + err.Error())
 	}
 	err = yaml.Unmarshal(content, v)
 
 	if err != nil {
-		panic("parse config content error:" + err.Error())
+		return fmt.Errorf("parse config content error:" + err.Error())
 	}
+	return nil
 }
