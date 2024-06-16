@@ -11,7 +11,7 @@ import (
 	"go-gin/job"
 )
 
-var configFile = flag.String("f", "./.env.yaml", "the config file")
+var configFile = flag.String("f", "./.env", "the config file")
 
 func main() {
 	c := cron.New()

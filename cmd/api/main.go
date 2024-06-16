@@ -16,7 +16,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-var configFile = flag.String("f", "./.env.yaml", "the config file")
+var configFile = flag.String("f", "./.env", "the config file")
 
 func main() {
 
