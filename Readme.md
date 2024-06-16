@@ -140,17 +140,17 @@ gorm.io/gorm v1.25.10
     未来系统中可能会存在很多业务常量，这里预先建立了目录，当前内置了一些关于错误的预定义常量，这样在业务逻辑中直接使用即可，不需要到处写相同的错误，另外使错误相关更加集中，方便管理，也提高了可维护性
     ```go
     var (
-        ErrMethodNotAllowed    = errorx.NewHHttpError(http.StatusMethodNotAllowed)
-        ErrNoRoute             = errorx.NewHHttpError(http.StatusNotFound)
-        ErrInternalServerError = errorx.NewHHttpError(http.StatusInternalServerError)
+        ErrMethodNotAllowed    = errorx.NewServerError(http.StatusMethodNotAllowed)
+        ErrNoRoute             = errorx.NewServerError(http.StatusNotFound)
+        ErrInternalServerError = errorx.NewServerError(http.StatusInternalServerError)
 
         ErrUserNotFound = errorx.New(2001, "用户不存在")
     )
 
     ```
 - 错误类型
-    系统内置了两种错误类型`BizError`和`HttpError`
-    - `HttpError`主要是为了处理no method或者method not allowed以及其他gin框架可以通过中间件或者方法获取的错误，便于响应返回正确的http状态码和统一一致的响应结构
+    系统内置了两种错误类型`BizError`和`ServerError`
+    - `ServerError`主要是为了处理no method或者method not allowed以及其他服务上的错误，便于响应返回正确的http状态码和统一一致的响应结构
     - `BizError`是我们业务开发中使用更多的错误结构，就是业务中定义的异常错误类型，这种类型返回的http状态码都是200，响应结构的状态码、消息均来源于`BizError`变量中。`BizError`的变量定义方式如下
         ```go
         errorx.New(2001, "用户不存在")

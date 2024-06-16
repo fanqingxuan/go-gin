@@ -4,21 +4,21 @@ import (
 	"net/http"
 )
 
-type HttpError struct {
+type ServerError struct {
 	Code int
 	Msg  string
 }
 
-func NewHHttpError(code int) HttpError {
+func NewServerError(code int) ServerError {
 
 	msg, ok := StatusText(code)
 	if !ok {
 		msg = "未知错误"
 	}
-	return HttpError{Code: code, Msg: msg}
+	return ServerError{Code: code, Msg: msg}
 }
 
-func (c HttpError) Error() string {
+func (c ServerError) Error() string {
 	return c.Msg
 }
 

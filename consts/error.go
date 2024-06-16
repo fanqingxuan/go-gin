@@ -5,10 +5,14 @@ import (
 	"net/http"
 )
 
-var (
-	ErrMethodNotAllowed    = errorx.NewHHttpError(http.StatusMethodNotAllowed)
-	ErrNoRoute             = errorx.NewHHttpError(http.StatusNotFound)
-	ErrInternalServerError = errorx.NewHHttpError(http.StatusInternalServerError)
+const (
+	ErrCodeUserNotFound = 2001
+)
 
-	ErrUserNotFound = errorx.New(2001, "用户不存在")
+var (
+	ErrMethodNotAllowed    = errorx.NewServerError(http.StatusMethodNotAllowed)
+	ErrNoRoute             = errorx.NewServerError(http.StatusNotFound)
+	ErrInternalServerError = errorx.NewServerError(http.StatusInternalServerError)
+
+	ErrUserNotFound = errorx.New(ErrCodeUserNotFound, "用户不存在")
 )

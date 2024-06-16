@@ -42,7 +42,7 @@ func Error(ctx *gin.Context, err error) {
 	var message string
 
 	switch e := err.(type) {
-	case errorx.HttpError:
+	case errorx.ServerError:
 		code = e.Code
 		httpStatus = e.Code
 		message = e.Msg
