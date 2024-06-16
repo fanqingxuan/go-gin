@@ -1,5 +1,5 @@
 package errorx
 
 var (
-	ErrValidateFailedCode = 1001
+	ErrCodeValidateFailed = 1001
 )

@@ -106,7 +106,7 @@ func (v *defaultValidator) formatValidationErrors(errs validator.ValidationError
 		errorMessage += e.Translate(v.trans) + "\n"
 	}
 
-	return errorx.New(errorx.ErrValidateFailedCode, errorMessage)
+	return errorx.New(errorx.ErrCodeValidateFailed, errorMessage)
 }
 
 // getZhTranslator 获取中文翻译器
