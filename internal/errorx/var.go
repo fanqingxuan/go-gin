@@ -1,5 +1,5 @@
 package errorx
 
-var (
+const (
 	ErrCodeValidateFailed = 1001
 )

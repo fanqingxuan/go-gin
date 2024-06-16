@@ -33,6 +33,7 @@ func main() {
 	redisx.Init(config.GetRedisConf())
 
 	httpx.DefaultSuccessCodeValue = 0
+	httpx.DefaultSuccessMessageValue = "成功"
 
 	engine := ginx.Init(config.IsDebugMode())
 	middlewares.Init(engine)

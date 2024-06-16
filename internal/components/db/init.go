@@ -18,7 +18,7 @@ type Config struct {
 func Init(c Config) {
 	var err error
 
-	conn, err = gorm.Open(mysql.New(mysql.Config{
+	conn, _ = gorm.Open(mysql.New(mysql.Config{
 		DSN:                       c.DSN, // DSN data source name
 		DefaultStringSize:         256,   // string 类型字段的默认长度
 		DisableDatetimePrecision:  true,  // 禁用 datetime 精度，MySQL 5.6 之前的数据库不支持
@@ -28,9 +28,6 @@ func Init(c Config) {
 	}), &gorm.Config{
 		Logger: &my_log{},
 	})
-	if err != nil {
-		panic(err)
-	}
 
 	sqlDB, err := conn.DB()
 	if err != nil {

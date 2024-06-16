@@ -14,6 +14,7 @@ var ResultFieldName = "data"
 var MessageFieldName = "message"
 
 var DefaultSuccessCodeValue = http.StatusOK
+var DefaultSuccessMessageValue = "操作成功"
 
 type Result struct {
 	Code    int
@@ -23,7 +24,7 @@ type Result struct {
 }
 
 func Ok(ctx *gin.Context, data any) {
-	OkWithMessage(ctx, data, "操作成功")
+	OkWithMessage(ctx, data, DefaultSuccessMessageValue)
 }
 
 func OkWithMessage(ctx *gin.Context, data any, msg string) {

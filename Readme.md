@@ -91,6 +91,7 @@ gorm.io/gorm v1.25.10
     func main() {
         // to do something
         httpx.DefaultSuccessCodeValue = 0 // 定义成功的code默认值,默认是0，你也可以改成200
+        httpx.DefaultSuccessMessageValue = "成功" // 定义成功的message默认值,默认是'操作成功'
         httpx.CodeFieldName = "code" // 定义响应结构的code字段名，你也可以改成status
         httpx.MessageFieldName="msg"// 定义响应结构的消息字段名
         httpx.ResultFieldName = "data"// 定义响应结构的数据字段名
