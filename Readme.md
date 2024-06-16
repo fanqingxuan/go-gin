@@ -75,7 +75,7 @@ gorm.io/gorm v1.25.10
 
     httpx.Handle(ctx *gin.Context, data any, err error) //既可以输出正常的响应，又可以说出异常的响应
     ```
-    封装响应的原因是定义了输出的响应结构，如下，永远返回包含code、data、message、trace_id四个字段的结构，使相应结果结构化
+    封装响应的原因是定义了输出的响应结构，如下，永远返回包含code、data、message、trace_id四个字段的结构，使响应结果结构化
     ```shell
     {
         "code": 0,
@@ -86,7 +86,7 @@ gorm.io/gorm v1.25.10
         "trace_id": "dc119c64-d4b9-4af1-9e02-d15fc4ba2e42"
     }
     ```
-    如果相应结构字段名字不符合你的预期，可以进行自定义
+    如果响应结构字段名字不符合你的预期，可以进行自定义
     ```go
     func main() {
         // to do something
