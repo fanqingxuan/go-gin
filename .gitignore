@@ -2,3 +2,4 @@
 /.devcontainer
 *.exe
 /tmp
+/vendor
