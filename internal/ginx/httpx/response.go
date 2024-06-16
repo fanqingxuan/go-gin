@@ -23,10 +23,14 @@ type Result struct {
 }
 
 func Ok(ctx *gin.Context, data any) {
+	OkWithMessage(ctx, data, "操作成功")
+}
+
+func OkWithMessage(ctx *gin.Context, data any, msg string) {
 	result := Result{
 		Code:    DefaultSuccessCodeValue,
 		Data:    data,
-		Message: "操作成功",
+		Message: msg,
 	}
 	ctx.JSON(http.StatusOK, transform(ctx, result))
 }
