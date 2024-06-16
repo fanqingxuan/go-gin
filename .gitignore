@@ -3,3 +3,5 @@
 *.exe
 /tmp
 /vendor
+/storage/logs/*
+fresh.conf

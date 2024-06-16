@@ -13,6 +13,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/labstack/gommon v0.4.2
 	github.com/redis/go-redis/v9 v9.5.1
+	github.com/robfig/cron v1.2.0
 	github.com/rs/zerolog v1.33.0
 	golang.org/x/text v0.14.0
 	gopkg.in/yaml.v3 v3.0.1
