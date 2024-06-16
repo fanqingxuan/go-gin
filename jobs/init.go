@@ -1,4 +1,4 @@
-package job
+package jobs
 
 import "go-gin/internal/cron"
 

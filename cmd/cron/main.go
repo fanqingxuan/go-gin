@@ -8,7 +8,7 @@ import (
 	"go-gin/internal/components/redisx"
 	"go-gin/internal/cron"
 	"go-gin/internal/ginx/httpx"
-	"go-gin/job"
+	"go-gin/jobs"
 )
 
 var configFile = flag.String("f", "./.env", "the config file")
@@ -29,10 +29,7 @@ func main() {
 
 	httpx.DefaultSuccessCodeValue = 0
 
-	job.Init(c)
-	// c.AddFunc("%every 1s", func() { fmt.Println("Every hour on the half hour") })
-	// c.AddFunc("@hourly", func() { fmt.Println("Every hour") })
-	// c.AddFunc("@every 1h30m", func() { fmt.Println("Every hour thirty") })
+	jobs.Init(c)
 
 	c.Run()
 
