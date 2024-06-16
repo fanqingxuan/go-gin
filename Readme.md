@@ -125,7 +125,7 @@ gorm.io/gorm v1.25.10
     ```
 - redis
 
-    系统的redis库用的是`go-redis`,没有进行过多的封装，所以获取redis连接后，使用方式参考`go-redis`手册，获取`go-redis`方式如下,需要调用`GetInstance()`方法
+    系统的redis库用的是`go-redis`,没有进行过多的封装，获取redis连接后，使用方法上就跟`go-redis`一样了,调用`GetInstance()`方法获取redis资源对象
     ```go
     redisx.GetInstance().HSet(ctx, "name", "age", 43)
     ```
@@ -133,7 +133,37 @@ gorm.io/gorm v1.25.10
 - 定时任务
 - 验证器
 - 参数、响应结构
+
 - 常量
+
+    未来系统中可能会存在很多业务常量，这里预先建立了目录，当前内置了一些关于错误的预定义常量，这样在业务逻辑中直接使用即可，不需要到处写相同的错误，另外使错误相关更加集中，方便管理，也提高了可维护性
+    ```go
+    var (
+        ErrMethodNotAllowed    = errorx.NewHHttpError(http.StatusMethodNotAllowed)
+        ErrNoRoute             = errorx.NewHHttpError(http.StatusNotFound)
+        ErrInternalServerError = errorx.NewHHttpError(http.StatusInternalServerError)
+
+        ErrUserNotFound = errorx.New(2001, "用户不存在")
+    )
+
+    ```
+- 错误类型
+    系统内置了两种错误类型`BizError`和`HttpError`
+    - `HttpError`主要是为了处理no method或者method not allowed以及其他gin框架可以通过中间件或者方法获取的错误，便于响应返回正确的http状态码和统一一致的响应结构
+    - `BizError`是我们业务开发中使用更多的错误结构，就是业务中定义的异常错误类型，这种类型返回的http状态码都是200，响应结构的状态码、消息均来源于`BizError`变量中。`BizError`的变量定义方式如下
+        ```go
+        errorx.New(2001, "用户不存在")
+        ```
+        注意，新增的业务错误码建议从2000开始，因为`internal`底层可能会定义1000-2000之内的业务错误码，例如校验失败的错误码是`ErrValidateFailedCode`,值为1001
+    - `error`,error应该是其他错误的超类，如果非上述两种错误，我们统一用`error`捕获，并且返回相应http状态码500，响应结构如下，理论上我们自己的业务代码中不应该直接返回给这种类型给上层，除非redis、数据库底层不可捕获的error抛出来了
+        ```
+        {
+            "code": 500,
+            "data": null,
+            "message": "服务器内部错误",
+            "trace_id": "dc119c64-d4b9-4af1-9e02-d15fc4ba2e42"
+        }
+        ```
 ### 快速启动
 
 ```shell
