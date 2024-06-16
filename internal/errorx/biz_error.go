@@ -1,7 +1,5 @@
 package errorx
 
-const DefaultErrorCode = 1001
-
 type BizError struct {
 	Code int
 	Msg  string
