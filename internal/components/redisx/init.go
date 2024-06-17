@@ -2,6 +2,7 @@ package redisx
 
 import (
 	"context"
+	"go-gin/internal/components/logx"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -14,7 +15,7 @@ func Init(options *redis.Options) {
 	rdb.AddHook(&LogHook{})
 	err := rdb.Ping(context.Background()).Err()
 	if err != nil {
-		panic(err)
+		logx.WithContext(context.Background()).Error("redis", err)
 	}
 	instance = rdb
 }
