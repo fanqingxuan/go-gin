@@ -1,5 +1,6 @@
 package errorx
 
 const (
-	ErrCodeValidateFailed = 1001
+	ErrCodeDefaultCommon  = 10000
+	ErrCodeValidateFailed = 10001
 )

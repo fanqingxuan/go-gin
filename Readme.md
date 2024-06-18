@@ -153,10 +153,11 @@ gorm.io/gorm v1.25.10
     - `ServerError`主要是为了处理no method或者method not allowed以及其他服务上的错误，便于响应返回正确的http状态码和统一一致的响应结构
     - `BizError`是我们业务开发中使用更多的错误结构，就是业务中定义的异常错误类型，这种类型返回的http状态码都是200，响应结构的状态码、消息均来源于`BizError`变量中。`BizError`的变量定义方式如下
         ```go
-        errorx.New(2001, "用户不存在")
+        errorx.New(20001, "用户不存在")
+        errorx.NewDefault("用户不存在")  // code默认值为ErrCodeDefaultCommon的值，也就是10000
         ```
-        注意，新增的业务错误码建议从2000开始，因为`internal`底层可能会定义1000-2000之内的业务错误码，例如校验失败的错误码是`ErrCodeValidateFailed`,值为1001
-    - `error`,error应该是其他错误的超类，如果非上述两种错误，我们统一用`error`捕获，并且返回响应http状态码500，响应结构如下，理论上我们自己的业务代码中不应该直接返回这种类型给上层，除非redis、数据库等底层扔出的错误，认为这种错误是异常的。用这个类型兜底的一个好处是业务层不需要捕获底层返回的错误然后转换成业务层错误，这样业务层少了关于if判断是否存在错误，存在错误则进行错误类型转化的逻辑
+        注意，新增的业务错误码建议从20000开始，因为`internal`底层可能会定义10000-20000之内的业务错误码，例如校验失败的错误码是`ErrCodeValidateFailed`值为10001,通用错误`ErrCodeDefaultCommon`值为10000
+    - `error`,error应该是其他错误的超类，如果非上述两种错误，我们统一用`error`捕获，并且返回响应http状态码200,code为默认值`ErrCodeDefaultCommon`，也就是10000
         ```
         {
             "code": 500,

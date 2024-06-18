@@ -51,10 +51,9 @@ func Error(ctx *gin.Context, err error) {
 		httpStatus = http.StatusOK
 		code = e.Code
 	case error:
-
-		httpStatus = http.StatusInternalServerError
-		code = http.StatusInternalServerError
-		message = "服务器内部错误"
+		httpStatus = http.StatusOK
+		code = errorx.ErrCodeDefaultCommon
+		message = err.Error()
 	}
 	result := Result{
 		Code:    code,
