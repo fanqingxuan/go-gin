@@ -17,6 +17,7 @@ type Config struct {
 	DSN          string
 	MaxOpenConns int
 	MaxIdleConns int
+	LogLevel     string
 }
 
 func Init(c Config) {
@@ -40,7 +41,9 @@ func Connect() (err error) {
 		DontSupportRenameColumn:   true,               // 用 `change` 重命名列，MySQL 8 之前的数据库和 MariaDB 不支持重命名列
 		SkipInitializeWithVersion: false,              // 根据当前 MySQL 版本自动配置
 	}), &gorm.Config{
-		Logger: &my_log{},
+		Logger: &db_log{
+			LogLevel: ParseLevel(configInstance.LogLevel),
+		},
 	})
 	if err != nil {
 		instance = nil

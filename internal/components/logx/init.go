@@ -29,9 +29,13 @@ var (
 	PanicLoggerInstance                 = (zerolog.Logger{})
 )
 
-func Init(level zerolog.Level, isDebugMode bool) {
+func Init(levelstr string, isDebugMode bool) {
 	if isDebugMode {
 		color.Enable()
+	}
+	level, err := zerolog.ParseLevel(levelstr)
+	if err != nil {
+		level = zerolog.InfoLevel
 	}
 	zerolog.TimeFieldFormat = time.DateTime
 	zerolog.LevelFieldMarshalFunc = func(l zerolog.Level) string {

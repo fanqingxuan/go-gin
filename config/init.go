@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/redis/go-redis/v9"
-	"github.com/rs/zerolog"
 )
 
 var instance Config
@@ -26,12 +25,8 @@ func Port() string {
 	return instance.App.Port
 }
 
-func LogLevel() zerolog.Level {
-	l, err := zerolog.ParseLevel(instance.Log.Level)
-	if err != nil {
-		panic(err)
-	}
-	return l
+func LogLevel() string {
+	return instance.Log.Level
 }
 
 func GetRedisConf() *redis.Options {
@@ -49,6 +44,7 @@ func GetDBConf() db.Config {
 		DSN:          instance.DB.DSN,
 		MaxOpenConns: instance.DB.MaxOpenConns,
 		MaxIdleConns: instance.DB.MaxIdleConns,
+		LogLevel:     instance.Log.Level,
 	}
 }
 
