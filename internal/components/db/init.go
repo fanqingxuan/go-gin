@@ -2,12 +2,16 @@ package db
 
 import (
 	"context"
+	"go-gin/internal/components/logx"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
-var conn *gorm.DB
+var (
+	instance       *gorm.DB
+	configInstance Config
+)
 
 type Config struct {
 	DSN          string
@@ -16,38 +20,51 @@ type Config struct {
 }
 
 func Init(c Config) {
-	var err error
+	configInstance = c
+	err := Connect()
+	if err != nil {
+		logx.WithContext(context.Background()).Error("db", err)
+	}
+}
 
-	conn, err = gorm.Open(mysql.New(mysql.Config{
-		DSN:                       c.DSN, // DSN data source name
-		DefaultStringSize:         256,   // string 类型字段的默认长度
-		DisableDatetimePrecision:  true,  // 禁用 datetime 精度，MySQL 5.6 之前的数据库不支持
-		DontSupportRenameIndex:    true,  // 重命名索引时采用删除并新建的方式，MySQL 5.7 之前的数据库和 MariaDB 不支持重命名索引
-		DontSupportRenameColumn:   true,  // 用 `change` 重命名列，MySQL 8 之前的数据库和 MariaDB 不支持重命名列
-		SkipInitializeWithVersion: false, // 根据当前 MySQL 版本自动配置
+func IsNotOpened() bool {
+	return instance == nil
+}
+
+func Connect() (err error) {
+	instance, err = gorm.Open(mysql.New(mysql.Config{
+		DSN:                       configInstance.DSN, // DSN data source name
+		DefaultStringSize:         256,                // string 类型字段的默认长度
+		DisableDatetimePrecision:  true,               // 禁用 datetime 精度，MySQL 5.6 之前的数据库不支持
+		DontSupportRenameIndex:    true,               // 重命名索引时采用删除并新建的方式，MySQL 5.7 之前的数据库和 MariaDB 不支持重命名索引
+		DontSupportRenameColumn:   true,               // 用 `change` 重命名列，MySQL 8 之前的数据库和 MariaDB 不支持重命名列
+		SkipInitializeWithVersion: false,              // 根据当前 MySQL 版本自动配置
 	}), &gorm.Config{
 		Logger: &my_log{},
 	})
 	if err != nil {
-		panic(err)
+		instance = nil
+		return
 	}
 
-	sqlDB, err := conn.DB()
+	sqlDB, err := instance.DB()
 	if err != nil {
-		panic(err)
+		instance = nil
+		return
 	}
 
-	if err := sqlDB.Ping(); err != nil {
-		panic(err)
+	if err = sqlDB.Ping(); err != nil {
+		instance = nil
+		return
 	}
 	// SetMaxIdleConns sets the maximum number of connections in the idle connection pool.
-	sqlDB.SetMaxIdleConns(c.MaxIdleConns)
+	sqlDB.SetMaxIdleConns(configInstance.MaxIdleConns)
 
 	// SetMaxOpenConns sets the maximum number of open connections to the database.
-	sqlDB.SetMaxOpenConns(c.MaxOpenConns)
-
+	sqlDB.SetMaxOpenConns(configInstance.MaxOpenConns)
+	return
 }
 
 func WithContext(ctx context.Context) *gorm.DB {
-	return conn.WithContext(ctx)
+	return instance.WithContext(ctx)
 }
