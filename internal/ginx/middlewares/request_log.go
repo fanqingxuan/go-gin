@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func requestLog() gin.HandlerFunc {
+func RequestLog() gin.HandlerFunc {
 
 	return func(c *gin.Context) {
 		// Start timer
