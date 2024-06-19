@@ -10,6 +10,13 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
+type Config struct {
+	App   `yaml:"app"`
+	Redis `yaml:"redis"`
+	DB    `yaml:"db"`
+	Log   `yaml:"log"`
+}
+
 var instance Config
 
 func Init(filename string) {
