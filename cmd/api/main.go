@@ -26,7 +26,7 @@ func main() {
 
 	config.LoadTimeZone()
 
-	logx.Init(config.LogLevel(), config.IsDebugMode())
+	logx.Init(config.GetLogConf())
 
 	db.Init(config.GetDBConf())
 

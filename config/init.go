@@ -2,8 +2,10 @@ package config
 
 import (
 	"go-gin/internal/components/db"
+	"go-gin/internal/components/logx"
 	filex "go-gin/internal/file"
 	"os"
+	"path/filepath"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -25,8 +27,12 @@ func Port() string {
 	return instance.App.Port
 }
 
-func LogLevel() string {
-	return instance.Log.Level
+func GetLogConf() logx.Config {
+	return logx.Config{
+		Level:       instance.Log.Level,
+		Path:        filepath.ToSlash(instance.Log.Path) + "/",
+		IsDebugMode: IsDebugMode(),
+	}
 }
 
 func GetRedisConf() *redis.Options {

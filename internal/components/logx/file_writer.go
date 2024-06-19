@@ -3,16 +3,9 @@ package logx
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 	"time"
 
 	"github.com/rs/zerolog"
-)
-
-var (
-	StorageDir    = "storage"
-	LogFolderName = "logs"
-	LogDir        = filepath.ToSlash(filepath.Join(StorageDir, LogFolderName)) + "/"
 )
 
 type FileLevelWriter struct {
@@ -40,7 +33,7 @@ func (w FileLevelWriter) WriteLevel(l zerolog.Level, p []byte) (n int, err error
 
 func (w FileLevelWriter) output(suffix string, p []byte) {
 	pattern := time.Now().Format(w.FilePattern)
-	dir := LogDir + w.Dirname
+	dir := w.Dirname
 	_, err := os.Stat(dir)
 	if os.IsNotExist(err) {
 		err := os.MkdirAll(dir, 0744)

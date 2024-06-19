@@ -13,27 +13,27 @@ import (
 var (
 	ConsoleWriter = &ConsoleLevelWriter{}
 
-	FileWriter = zerolog.SyncWriter(&FileLevelWriter{
-		Dirname:     "",
-		FilePattern: time.DateOnly,
-	})
+	FileWriter io.Writer
 
-	AcessFileWriter = zerolog.SyncWriter(&FileLevelWriter{
-		Dirname:     "acecss/",
-		FilePattern: time.DateOnly,
-	})
+	AccessFileWriter io.Writer
 )
 
 var (
-	AccessLoggerInstance zerolog.Logger = zerolog.New(AcessFileWriter).Level(zerolog.InfoLevel).With().Timestamp().Logger().Hook(TracingHook{})
-	PanicLoggerInstance                 = (zerolog.Logger{})
+	AccessLoggerInstance zerolog.Logger
+	PanicLoggerInstance  zerolog.Logger
 )
 
-func Init(levelstr string, isDebugMode bool) {
-	if isDebugMode {
+type Config struct {
+	Level       string
+	Path        string
+	IsDebugMode bool
+}
+
+func Init(conf Config) {
+	if conf.IsDebugMode {
 		color.Enable()
 	}
-	level, err := zerolog.ParseLevel(levelstr)
+	level, err := zerolog.ParseLevel(conf.Level)
 	if err != nil {
 		level = zerolog.InfoLevel
 	}
@@ -42,8 +42,18 @@ func Init(levelstr string, isDebugMode bool) {
 		return strings.ToUpper(l.String())
 	}
 
+	FileWriter = zerolog.SyncWriter(&FileLevelWriter{
+		Dirname:     conf.Path,
+		FilePattern: time.DateOnly,
+	})
+
+	AccessFileWriter = zerolog.SyncWriter(&FileLevelWriter{
+		Dirname:     conf.Path + "access/",
+		FilePattern: time.DateOnly,
+	})
+
 	writers := []io.Writer{FileWriter}
-	if isDebugMode {
+	if conf.IsDebugMode {
 		writers = append(writers, ConsoleWriter)
 	}
 
@@ -51,6 +61,7 @@ func Init(levelstr string, isDebugMode bool) {
 
 	log.Logger = log.Output(multi).Level(level).With().Logger().Hook(TracingHook{})
 
+	AccessLoggerInstance = zerolog.New(AccessFileWriter).Level(zerolog.InfoLevel).With().Timestamp().Logger().Hook(TracingHook{})
 	PanicLoggerInstance = zerolog.New(zerolog.MultiLevelWriter(multi)).Level(zerolog.ErrorLevel).With().Timestamp().Logger().Hook(TracingHook{})
 
 }
