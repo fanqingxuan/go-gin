@@ -135,6 +135,51 @@ gorm.io/gorm v1.25.10
 - 验证器
 - 参数、响应结构
 
+    定义了可以规范化请求参数、响应结构的目录，使代码更容易维护，结构定义在`types/`目录，一个模块一个文件名，如`user.go`
+    
+    结构定义如下
+    ```go
+        package types
+
+        import (
+            "time"
+        )
+
+        type AddUserReq struct {
+            Name   string    `form:"name"`
+            Age    int       `form:"age"`
+            Status bool      `form:"status"`
+            Ctime  time.Time `form:"ctime"`
+        }
+
+        type AddUserReply struct {
+            Message string `json:"message"`
+        }
+
+    ```
+    使用方式,在`controller`层使用
+    ```go
+    var req types.AddUserReq
+	if err := ctx.ShouldBind(&req); err != nil {
+		logx.WithContext(ctx).Warn("ShouldBind异常", err)
+		httpx.Error(ctx, err)
+		return
+	}
+
+    ```
+    其实就是使用了`gin`框架本身提供的shouldbind特性，将参数绑定到结构体，后面逻辑直接可以使用结构体里面的字段进行操作了，参数需要包括那些字段，通过结构体很容易看到，实现了参数的可维护性
+    ```go
+    resp := types.AddUserReply{
+		Message: fmt.Sprintf("add user succcess %s=%d", user.Name, user.Id),
+	}
+	httpx.Ok(ctx, resp)
+    ```
+    响应结构体如上，结构体数据响应中转成json渲染到`data`域，这样实现相应的结构化和可维护性，响应结果如下
+    ```
+    {"code":0,"data":{"message":"add user succcess ddddd=125"},"message":"成功","trace_id":"b1a9e4f8-7772-4c3a-bb3d-99a22d6a0ff6"}
+    ```
+    
+
 - 常量
 
     未来系统中可能会存在很多业务常量，这里预先建立了目录，当前内置了一些关于错误的预定义常量，这样在业务逻辑中直接使用即可，不需要到处写相同的错误，另外使错误相关更加集中，方便管理，也提高了可维护性
