@@ -98,6 +98,15 @@ gorm.io/gorm v1.25.10
         traceid.TraceIdFieldName="request_id" // 定义响应以及日志中traceid的字段名字
     }
     ```
+    响应结果类似如下
+    ```
+    {
+        "code": 10001,
+        "data": null,
+        "msg": "年龄为必填字段\n",
+        "request_id": "8ddb97db-be44-4df0-8110-0d38a0cc4657"
+    }
+    ```
 - 服务层
 
     服务层代码没有什么特别的，需要说明的是方法的第一个参数建议是`context.Context`,一是统一规范，而是可以日志记录traceid
@@ -132,6 +141,7 @@ gorm.io/gorm v1.25.10
     ```
 - 日志
 - 定时任务
+
 - 验证器
 
     验证器主要是对`gin`内置的binding进行的扩展
