@@ -133,6 +133,54 @@ gorm.io/gorm v1.25.10
 - 日志
 - 定时任务
 - 验证器
+
+    验证器主要是对`gin`内置的binding进行的扩展
+    - 支持中文化提示
+        ```go
+        type AddUserReq struct {
+            Name   string    `form:"name" binding:"required"`
+            Age    int       `form:"age" binding:"required"`
+            Status bool      `form:"status"`
+            Ctime  time.Time `form:"ctime"`
+        }
+
+        // controller
+        var req types.AddUserReq
+            if err := ctx.ShouldBind(&req); err != nil {
+                logx.WithContext(ctx).Warn("ShouldBind异常", err)
+                httpx.Error(ctx, err)
+                return
+            }
+        ```
+        如上如果参数不包括name的时候，会提示如下,自动进行了中文化处理
+        ```
+        {"code":10001,"data":null,"message":"Name为必填字段\n年龄为必填字段\n","trace_id":"695517e3-1b68-4845-839d-c0e58d8f3a43"}
+    - 支持自定义提示语的字段名字
+
+        使用`label`标签定义字段名字
+
+        ```go
+        type AddUserReq struct {
+            Name   string    `form:"name" binding:"required"`
+            Age    int       `form:"age" binding:"required" label:"年龄"`
+            Status bool      `form:"status"`
+            Ctime  time.Time `form:"ctime"`
+        }
+        ```
+        如上提示语不再提示`Age为必填字段`，而是提示`年龄为必填字段`
+
+    - 支持非`gin`框架方式使用验证器
+        提供了`validators.Validate()`方法进行验证结构字段的值是否合理
+        ```go
+        var req = types.AddUserReq{
+            Name: "测试",
+        }
+        if err := validators.Validate(&req); err != nil {
+            httpx.Error(ctx, err)
+            return
+        }
+        ```
+        **注意:**`validators.Validate`和`ctx.ShouldBind`验证失败返回的是`BizError`类型错误,错误码是`ErrCodeValidateFailed`,默认值是`10001`，你也可以通过`errorx.ErrCodeValidateFailed = xxx`在main入口修改默认值
 - 参数、响应结构
 
     定义了可以规范化请求参数、响应结构的目录，使代码更容易维护，结构定义在`types/`目录，一个模块一个文件名，如`user.go`
