@@ -109,7 +109,7 @@ gorm.io/gorm v1.25.10
     ```
 - 服务层
 
-    服务层代码没有什么特别的，需要说明的是方法的第一个参数建议是`context.Context`,一是统一规范，而是可以日志记录traceid
+    服务层代码没有什么特别的，需要说明的是方法的第一个参数建议是`context.Context`,一是统一规范，二是可以日志记录traceid
     ```go
     type UserService struct {
     }
@@ -142,6 +142,36 @@ gorm.io/gorm v1.25.10
 - 日志
 - 定时任务
 
+    定时任务的入口文件为`cmd/cron/main.go`,具体业务代码在`jobs`目录编写。定时任务业务代码可以像api模式一样使用`log`、`db`
+
+    定义一个job首先要定义一个实现了`cron.Job`的接口的结构,`cron.Job`接口如下
+    ```go
+    type Job interface {
+        Name() string // 定义job的名称
+        Handle(ctx context.Context) error // 实现业务逻辑
+    }
+    ```
+    例子如下
+    ```go
+    type SampleJob struct{}
+
+    func (j *SampleJob) Name() string {
+        return "sample job"
+    }
+
+    func (j *SampleJob) Handle(ctx context.Context) error {
+
+        var u models.User
+        db.WithContext(ctx).Find(&u)
+
+        return nil
+    }
+    ```
+    然后在`jobs/init.go`文件定义cron的任务执行频率即可，如下定义`SampleJob`每3s执行一次
+    ```
+    cron.AddJob("@every 3s", &SampleJob{})
+    ```
+    定时任务其它执行频率的定义方式可以参考[https://github.com/robfig/cron](https://github.com/robfig/cron)
 - 验证器
 
     验证器主要是对`gin`内置的binding进行的扩展
