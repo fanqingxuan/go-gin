@@ -263,9 +263,9 @@ gorm.io/gorm v1.25.10
     - `error`,error应该是其他错误的超类，如果非上述两种错误，我们统一用`error`捕获，并且返回响应http状态码200,code为默认值`ErrCodeDefaultCommon`，也就是10000
         ```
         {
-            "code": 500,
+            "code": 10000,
             "data": null,
-            "message": "服务器内部错误",
+            "message": "用户不存在",
             "trace_id": "dc119c64-d4b9-4af1-9e02-d15fc4ba2e42"
         }
         ```
