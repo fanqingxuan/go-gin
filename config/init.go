@@ -3,18 +3,24 @@ package config
 import (
 	"go-gin/internal/components/db"
 	"go-gin/internal/components/logx"
+	"go-gin/internal/components/redisx"
+	"go-gin/internal/environment"
 	filex "go-gin/internal/file"
-	"os"
-	"path/filepath"
-
-	"github.com/redis/go-redis/v9"
+	"go-gin/internal/ginx"
 )
 
+type App struct {
+	Name     string           `yaml:"name"`
+	Port     string           `yaml:"port"`
+	Mode     environment.Mode `yaml:"mode"`
+	TimeZone string           `yaml:"timezone"`
+}
+
 type Config struct {
-	App   `yaml:"app"`
-	Redis `yaml:"redis"`
-	DB    `yaml:"db"`
-	Log   `yaml:"log"`
+	App   App           `yaml:"app"`
+	Redis redisx.Config `yaml:"redis"`
+	DB    db.Config     `yaml:"db"`
+	Log   logx.Config   `yaml:"log"`
 }
 
 var instance Config
@@ -24,46 +30,15 @@ func Init(filename string) {
 	if err != nil {
 		panic(err)
 	}
+	environment.SetEnvMode(instance.App.Mode)
+	environment.SetTimeZone(instance.App.TimeZone)
+	ginx.InitConfig(ginx.Config{Port: instance.App.Port})
+
+	logx.InitConfig(instance.Log)
+	redisx.InitConfig(instance.Redis)
+	db.InitConfig(instance.DB)
 }
 
-func IsDebugMode() bool {
-	return instance.App.Debug
-}
-
-func Port() string {
-	return instance.App.Port
-}
-
-func GetLogConf() logx.Config {
-	return logx.Config{
-		Level:       instance.Log.Level,
-		Path:        filepath.ToSlash(instance.Log.Path) + "/",
-		IsDebugMode: IsDebugMode(),
-	}
-}
-
-func GetRedisConf() *redis.Options {
-	redisConfig := instance.Redis
-	return &redis.Options{
-		Addr:     redisConfig.Addr,
-		Username: redisConfig.Username,
-		Password: redisConfig.Password, // no password set
-		DB:       redisConfig.DB,       // use default DB
-	}
-}
-
-func GetDBConf() db.Config {
-	return db.Config{
-		DSN:          instance.DB.DSN,
-		MaxOpenConns: instance.DB.MaxOpenConns,
-		MaxIdleConns: instance.DB.MaxIdleConns,
-		LogLevel:     instance.Log.Level,
-	}
-}
-
-func LoadTimeZone() {
-	err := os.Setenv("TZ", instance.TimeZone)
-	if err != nil {
-		panic("设置环境变量失败:" + err.Error())
-	}
+func GetAppConf() App {
+	return instance.App
 }

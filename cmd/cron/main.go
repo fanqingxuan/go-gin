@@ -18,14 +18,9 @@ func main() {
 	flag.Parse()
 
 	config.Init(*configFile)
-
-	config.LoadTimeZone()
-
-	logx.Init(config.GetLogConf())
-
-	db.Init(config.GetDBConf())
-
-	redisx.Init(config.GetRedisConf())
+	logx.Init()
+	db.Init()
+	redisx.Init()
 
 	httpx.DefaultSuccessCodeValue = 0
 

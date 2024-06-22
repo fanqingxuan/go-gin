@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"go-gin/config"
 	"go-gin/controllers"
 	"go-gin/internal/components/db"
@@ -23,24 +22,17 @@ func main() {
 	flag.Parse()
 
 	config.Init(*configFile)
-
-	config.LoadTimeZone()
-
-	logx.Init(config.GetLogConf())
-
-	db.Init(config.GetDBConf())
-
-	redisx.Init(config.GetRedisConf())
+	logx.Init()
+	db.Init()
+	redisx.Init()
 
 	httpx.DefaultSuccessCodeValue = 0
 	httpx.DefaultSuccessMessageValue = "成功"
 
-	engine := ginx.Init(config.IsDebugMode())
+	engine := ginx.Init()
 	middlewares.Init(engine)
 	controllers.Init(engine)
 
-	fmt.Printf("Starting server at localhost%s...\n", config.Port())
-	if err := engine.Run(config.Port()); err != nil {
-		fmt.Printf("Start server error,err=%v", err)
-	}
+	ginx.Start(engine)
+
 }

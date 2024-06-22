@@ -19,11 +19,11 @@ var (
 
 	// 1开头的是用于定义数据库、redis、文件解析、json解析等非业务错误
 	// 数据库错误
-	ErrDBConnectFailed      = errorx.New(10001, "数据库连接异常")
-	ErrDBCreateRecordFailed = errorx.New(10001, "创建记录失败")
-	ErrDBDeleteRecordFailed = errorx.New(10002, "删除记录失败")
-	ErrDBModifyRecordFailed = errorx.New(10003, "修改记录失败")
-	ErrDBQueryRecordFailed  = errorx.New(10004, "查询记录失败")
+	ErrDBConnectFailed      = errorx.New(11000, "数据库连接异常")
+	ErrDBCreateRecordFailed = errorx.New(11001, "创建记录失败")
+	ErrDBDeleteRecordFailed = errorx.New(11002, "删除记录失败")
+	ErrDBModifyRecordFailed = errorx.New(11003, "修改记录失败")
+	ErrDBQueryRecordFailed  = errorx.New(11004, "查询记录失败")
 
 	// 以下定义业务上的错误
 	ErrUserNotFound = errorx.New(ErrCodeUserNotFound, "用户不存在")

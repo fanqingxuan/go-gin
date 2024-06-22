@@ -18,7 +18,7 @@ var (
 	traceErrStr  = "%s %s [%.3fms] [rows:%v] %s"
 )
 
-type db_log struct {
+type DBLog struct {
 	LogLevel logger.LogLevel
 }
 
@@ -38,34 +38,34 @@ func ParseLevel(levelStr string) logger.LogLevel {
 }
 
 // LogMode log mode
-func (l *db_log) LogMode(level logger.LogLevel) logger.Interface {
+func (l *DBLog) LogMode(level logger.LogLevel) logger.Interface {
 
-	return &db_log{
+	return &DBLog{
 		LogLevel: level,
 	}
 }
 
 // Info print info
-func (l *db_log) Info(ctx context.Context, msg string, data ...interface{}) {
+func (l *DBLog) Info(ctx context.Context, msg string, data ...interface{}) {
 }
 
 // Warn print warn messages
-func (l *db_log) Warn(ctx context.Context, msg string, data ...interface{}) {
+func (l *DBLog) Warn(ctx context.Context, msg string, data ...interface{}) {
 }
 
 // Error print error messages
-func (l *db_log) Error(ctx context.Context, msg string, data ...interface{}) {
+func (l *DBLog) Error(ctx context.Context, msg string, data ...interface{}) {
 }
 
 // Trace print sql message
 //
 //nolint:cyclop
-func (l *db_log) Trace(ctx context.Context, begin time.Time, fc func() (string, int64), err error) {
+func (l *DBLog) Trace(ctx context.Context, begin time.Time, fc func() (string, int64), err error) {
 	if l.LogLevel <= logger.Silent {
 		return
 	}
 	elapsed := time.Since(begin)
-	slowThreshold := 3 * time.Second
+	slowThreshold := 10 * time.Second
 	switch {
 	case err != nil && l.LogLevel >= logger.Error && !errors.Is(err, logger.ErrRecordNotFound):
 		sql, rows := fc()
@@ -78,9 +78,9 @@ func (l *db_log) Trace(ctx context.Context, begin time.Time, fc func() (string, 
 		sql, rows := fc()
 		slowLog := fmt.Sprintf("SLOW SQL >= %v", slowThreshold)
 		if rows == -1 {
-			logx.WithContext(ctx).Debugf("sql", traceWarnStr, utils.FileWithLineNum(), slowLog, float64(elapsed.Nanoseconds())/1e6, '-', sql)
+			logx.WithContext(ctx).Warnf("sql", traceWarnStr, utils.FileWithLineNum(), slowLog, float64(elapsed.Nanoseconds())/1e6, '-', sql)
 		} else {
-			logx.WithContext(ctx).Debugf("sql", traceWarnStr, utils.FileWithLineNum(), slowLog, float64(elapsed.Nanoseconds())/1e6, rows, sql)
+			logx.WithContext(ctx).Warnf("sql", traceWarnStr, utils.FileWithLineNum(), slowLog, float64(elapsed.Nanoseconds())/1e6, rows, sql)
 
 		}
 	case l.LogLevel == logger.Info:

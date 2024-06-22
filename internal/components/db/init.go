@@ -9,19 +9,22 @@ import (
 )
 
 var (
-	instance       *gorm.DB
-	configInstance Config
+	instance *gorm.DB
+	conf     Config
 )
 
 type Config struct {
-	DSN          string
-	MaxOpenConns int
-	MaxIdleConns int
-	LogLevel     string
+	DSN          string `yaml:"dsn"`
+	MaxOpenConns int    `yaml:"max-open-conn"`
+	MaxIdleConns int    `yaml:"max-idle-conn"`
+	LogLevel     string `yaml:"log-level"`
 }
 
-func Init(c Config) {
-	configInstance = c
+func InitConfig(c Config) {
+	conf = c
+}
+
+func Init() {
 	err := Connect()
 	if err != nil {
 		logx.WithContext(context.Background()).Error("db", err)
@@ -34,15 +37,15 @@ func IsNotOpened() bool {
 
 func Connect() (err error) {
 	instance, err = gorm.Open(mysql.New(mysql.Config{
-		DSN:                       configInstance.DSN, // DSN data source name
-		DefaultStringSize:         256,                // string 类型字段的默认长度
-		DisableDatetimePrecision:  true,               // 禁用 datetime 精度，MySQL 5.6 之前的数据库不支持
-		DontSupportRenameIndex:    true,               // 重命名索引时采用删除并新建的方式，MySQL 5.7 之前的数据库和 MariaDB 不支持重命名索引
-		DontSupportRenameColumn:   true,               // 用 `change` 重命名列，MySQL 8 之前的数据库和 MariaDB 不支持重命名列
-		SkipInitializeWithVersion: false,              // 根据当前 MySQL 版本自动配置
+		DSN:                       conf.DSN, // DSN data source name
+		DefaultStringSize:         256,      // string 类型字段的默认长度
+		DisableDatetimePrecision:  true,     // 禁用 datetime 精度，MySQL 5.6 之前的数据库不支持
+		DontSupportRenameIndex:    true,     // 重命名索引时采用删除并新建的方式，MySQL 5.7 之前的数据库和 MariaDB 不支持重命名索引
+		DontSupportRenameColumn:   true,     // 用 `change` 重命名列，MySQL 8 之前的数据库和 MariaDB 不支持重命名列
+		SkipInitializeWithVersion: false,    // 根据当前 MySQL 版本自动配置
 	}), &gorm.Config{
-		Logger: &db_log{
-			LogLevel: ParseLevel(configInstance.LogLevel),
+		Logger: &DBLog{
+			LogLevel: ParseLevel(conf.LogLevel),
 		},
 	})
 	if err != nil {
@@ -61,10 +64,10 @@ func Connect() (err error) {
 		return
 	}
 	// SetMaxIdleConns sets the maximum number of connections in the idle connection pool.
-	sqlDB.SetMaxIdleConns(configInstance.MaxIdleConns)
+	sqlDB.SetMaxIdleConns(conf.MaxIdleConns)
 
 	// SetMaxOpenConns sets the maximum number of open connections to the database.
-	sqlDB.SetMaxOpenConns(configInstance.MaxOpenConns)
+	sqlDB.SetMaxOpenConns(conf.MaxOpenConns)
 	return
 }
 

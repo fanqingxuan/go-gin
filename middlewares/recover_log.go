@@ -13,11 +13,12 @@ func recoverLog() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		defer func() {
 			if err := recover(); err != nil {
-				logx.PanicLoggerInstance.Error().
-					Ctx(ctx).
-					Any("error", err).
-					Str("file", utils.FileWithLineNum()).
-					Send()
+
+				m := map[string]interface{}{
+					"error": err,
+					"file":  utils.FileWithLineNum(),
+				}
+				logx.WithContext(ctx).Error("panic", m)
 				httpx.Error(ctx, consts.ErrInternalServerError)
 				ctx.Abort()
 			}

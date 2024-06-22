@@ -1,6 +1,7 @@
 package logx
 
 import (
+	"go-gin/internal/environment"
 	"io"
 	"strings"
 	"time"
@@ -20,17 +21,22 @@ var (
 
 var (
 	AccessLoggerInstance zerolog.Logger
-	PanicLoggerInstance  zerolog.Logger
+	DBLoggerInstance     zerolog.Logger
 )
 
 type Config struct {
-	Level       string
-	Path        string
-	IsDebugMode bool
+	Level string `yaml:"level"`
+	Path  string `yaml:"path"`
 }
 
-func Init(conf Config) {
-	if conf.IsDebugMode {
+var conf Config
+
+func InitConfig(c Config) {
+	conf = c
+}
+
+func Init() {
+	if environment.IsDebugMode() {
 		color.Enable()
 	}
 	level, err := zerolog.ParseLevel(conf.Level)
@@ -53,7 +59,7 @@ func Init(conf Config) {
 	})
 
 	writers := []io.Writer{FileWriter}
-	if conf.IsDebugMode {
+	if environment.IsDebugMode() {
 		writers = append(writers, ConsoleWriter)
 	}
 
@@ -62,6 +68,5 @@ func Init(conf Config) {
 	log.Logger = log.Output(multi).Level(level).With().Logger().Hook(TracingHook{})
 
 	AccessLoggerInstance = zerolog.New(AccessFileWriter).Level(zerolog.InfoLevel).With().Timestamp().Logger().Hook(TracingHook{})
-	PanicLoggerInstance = zerolog.New(zerolog.MultiLevelWriter(multi)).Level(zerolog.ErrorLevel).With().Timestamp().Logger().Hook(TracingHook{})
 
 }

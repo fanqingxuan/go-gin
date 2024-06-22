@@ -7,10 +7,29 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-var instance *redis.Client
+var (
+	instance *redis.Client
+	conf     Config
+)
 
-func Init(options *redis.Options) {
+type Config struct {
+	Addr     string `yaml:"addr"`
+	Username string `yaml:"username"`
+	Password string `yaml:"password"` // no password set
+	DB       int    `yaml:"db"`       // use default DB
+}
 
+func InitConfig(c Config) {
+	conf = c
+}
+
+func Init() {
+	options := &redis.Options{
+		Addr:     conf.Addr,
+		Username: conf.Username,
+		Password: conf.Password,
+		DB:       conf.DB,
+	}
 	rdb := redis.NewClient(options)
 	rdb.AddHook(&LogHook{})
 	err := rdb.Ping(context.Background()).Err()
