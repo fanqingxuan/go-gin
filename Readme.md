@@ -140,6 +140,39 @@ gorm.io/gorm v1.25.10
     redisx.GetInstance().HSet(ctx, "name", "age", 43)
     ```
 - 日志
+
+    系统提供了debug、info、warn、error四种级别的日志，接口如下
+    ```go
+    type Logger interface {
+        Debug(keyword string, message any)
+        Debugf(keyword string, format string, message ...any)
+
+        Info(keyword string, message any)
+        Infof(keyword string, format string, message ...any)
+
+        Warn(keyword string, message any)
+        Warnf(keyword string, format string, message ...any)
+
+        Error(keyword string, message any)
+        Errorf(keyword string, format string, message ...any)
+    }
+    ```
+    可以通过env文件指定日志存储路径和要记录的日志级别，使用方式如下，第一个参数是用于为要记录的日志起一个有意义的关键字，便于grep日志
+    ```go
+    logx.WithContext(ctx).Warn("ShouldBind异常", err)
+    logx.WithContext(ctx).Warnf("这是日志%s", "我叫张三")
+    ```
+    最终日志文件中记录的内容如下格式，包含`trace_id`
+    ```
+    {"level":"WARN","keyword":"redis","data":"services/user_service.go:24 execute command:[hset name age 43], error=dial tcp 192.168.65.254:6379: connect: connection refused","time":"2024-06-22 23:24:10","trace_id":"5f8b1ee9-7daf-4269-806a-029ee7c3768f"}
+    ```
+    另外，常规日志文件的名字是`年-月-日.log`格式，如**2024-05-22.log**。值得注意的是warn、error级别日志会单独拿到`年-月-日-error.log`格式文件，如**2024-05-22-error.log**，这样一方面是便于很好的监控异常，另一方面可以很快的排查异常问题
+    
+    >此外，系统还提供记录请求access日志，会记录到env配置的路径下的access文件夹,文件以`年-月-日.log`格式命名，日志内容主要包含请求路径、get参数、请求Method、响应码、耗时、User-Agent几个重要参数,格式如下
+    ```
+    {"level":"INFO","path":"/user/list","method":"GET","ip":"127.0.0.1","cost":"227.238215ms","status":200,"proto":"HTTP/1.1","user_agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36","time":"2024-06-22 23:28:20","trace_id":"f606d909-2f4c-4455-b4b9-5eea0684c49a"}
+    ```
+
 - 定时任务
 
     定时任务的入口文件为`cmd/cron/main.go`,具体业务代码在`jobs`目录编写。定时任务业务代码可以像api模式一样使用`log`、`db`
