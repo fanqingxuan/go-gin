@@ -22,6 +22,7 @@ func (LogHook) ProcessHook(next redis.ProcessHook) redis.ProcessHook {
 		err := next(ctx, cmd)
 		if err != nil {
 			logx.WithContext(ctx).Warnf("redis", "%s execute command:%+v, error=%s", utils.FileWithLineNum(), cmd.Args(), err)
+			return err
 		}
 		return nil
 	}
