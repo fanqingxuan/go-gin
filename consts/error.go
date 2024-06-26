@@ -5,10 +5,6 @@ import (
 	"net/http"
 )
 
-const (
-	ErrCodeUserNotFound = 2001
-)
-
 var (
 	// http错误
 	ErrMethodNotAllowed    = errorx.NewServerError(http.StatusMethodNotAllowed)
@@ -26,5 +22,7 @@ var (
 	ErrDBQueryRecordFailed  = errorx.New(11004, "查询记录失败")
 
 	// 以下定义业务上的错误
-	ErrUserNotFound = errorx.New(ErrCodeUserNotFound, "用户不存在")
+	ErrUserNotFound       = errorx.New(20001, "用户不存在")
+	ErrUserNameOrPwdFaild = errorx.New(20002, "用户名或者密码错误")
+	ErrUserMustLogin      = errorx.New(20003, "请先登录")
 )

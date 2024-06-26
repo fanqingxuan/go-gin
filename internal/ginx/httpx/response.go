@@ -27,6 +27,10 @@ func Ok(ctx *gin.Context, data any) {
 	OkWithMessage(ctx, data, DefaultSuccessMessageValue)
 }
 
+func OkResponse(ctx *gin.Context) {
+	OkWithMessage(ctx, nil, DefaultSuccessMessageValue)
+}
+
 func OkWithMessage(ctx *gin.Context, data any, msg string) {
 	result := Result{
 		Code:    DefaultSuccessCodeValue,

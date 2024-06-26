@@ -3,6 +3,7 @@ package controllers
 import (
 	"go-gin/consts"
 	"go-gin/internal/ginx/httpx"
+	"go-gin/middlewares"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,9 +17,18 @@ func Init(route *gin.Engine) {
 		httpx.Error(ctx, consts.ErrNoRoute)
 	})
 
-	user_router := route.Group("/user")
+	r := route.Group("/")
+	r.Use(middlewares.TokenCheck())
+
+	// 用户信息
+	user_router := r.Group("/user")
 	user_router.GET("/", UserController.Index)
 	user_router.GET("/list", UserController.List)
 	user_router.GET("/adduser", UserController.AddUser)
+
+	// 登录注册
+	login_router := r.Group("/")
+	route.GET("/login", LoginController.Login)
+	login_router.GET("/logout", LoginController.LoginOut)
 
 }

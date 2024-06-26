@@ -1,0 +1,4 @@
+{"level":"DEBUG","keyword":"sql","data":"controllers/login_controller.go:23 [7.870ms] [rows:0] SELECT * FROM `user` WHERE username='测试1'","time":"2024-06-26 22:31:41","trace_id":"a1fb698e-8322-4dee-a669-76761f98f396"}
+{"level":"DEBUG","keyword":"sql","data":"controllers/login_controller.go:23 [4.414ms] [rows:0] SELECT * FROM `user` WHERE username='测试1'","time":"2024-06-26 22:31:48","trace_id":"77d94505-0a5e-453f-97d7-ba19737cce64"}
+{"level":"DEBUG","keyword":"sql","data":"controllers/login_controller.go:23 [3.547ms] [rows:0] SELECT * FROM `user` WHERE username='测试1'","time":"2024-06-26 22:32:30","trace_id":"e4420468-a92d-480c-a303-c04cb622e2c8"}
+{"level":"DEBUG","keyword":"sql","data":"controllers/login_controller.go:24 [3.653ms] [rows:0] SELECT * FROM `user` WHERE username='测试1'","time":"2024-06-26 22:33:37","trace_id":"d6e32f28-4f5b-4db2-a854-f32871aa52bc"}
