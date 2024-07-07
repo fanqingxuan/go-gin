@@ -20,16 +20,16 @@ func main() {
 	config.Init(*configFile)
 	config.InitGlobalVars()
 
-	environment.SetEnvMode(config.Instance.App.Mode)
-	environment.SetTimeZone(config.Instance.App.TimeZone)
+	environment.SetEnvMode(config.GetAppConf().Mode)
+	environment.SetTimeZone(config.GetAppConf().TimeZone)
 
-	logx.InitConfig(config.Instance.Log)
+	logx.InitConfig(config.GetLogConf())
 	logx.Init()
 
-	db.InitConfig(config.Instance.DB)
+	db.InitConfig(config.GetDbConf())
 	db.Init()
 
-	redisx.InitConfig(config.Instance.Redis)
+	redisx.InitConfig(config.GetRedisConf())
 	redisx.Init()
 
 	c := cron.New()

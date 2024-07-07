@@ -25,12 +25,12 @@ type Config struct {
 	Log   logx.Config   `yaml:"log"`
 }
 
-var Instance *Config
+var instance *Config
 var once sync.Once
 
 func Init(filename string) {
 	once.Do(func() {
-		err := filex.MustLoad(filename, &Instance)
+		err := filex.MustLoad(filename, &instance)
 		if err != nil {
 			panic(err)
 		}
@@ -42,4 +42,20 @@ func InitGlobalVars() {
 	httpx.DefaultSuccessMessageValue = "成功"
 
 	traceid.TraceIdFieldName = "requestId"
+}
+
+func GetAppConf() App {
+	return instance.App
+}
+
+func GetRedisConf() redisx.Config {
+	return instance.Redis
+}
+
+func GetLogConf() logx.Config {
+	return instance.Log
+}
+
+func GetDbConf() db.Config {
+	return instance.DB
 }
