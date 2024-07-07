@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"errors"
-	"fmt"
 	"go-gin/consts"
 	"go-gin/internal/components/db"
 	"go-gin/internal/errorx"
@@ -39,7 +38,6 @@ func (c *loginController) Login(ctx *gin.Context) {
 }
 
 func (c *loginController) LoginOut(ctx *gin.Context) {
-	fmt.Println()
-	token.FlushAll(ctx, ctx.GetHeader("token"))
+	token.Flush(ctx, ctx.GetHeader("token"))
 	httpx.OkResponse(ctx)
 }

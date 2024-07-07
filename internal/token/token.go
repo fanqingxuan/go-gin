@@ -46,7 +46,7 @@ func Del(ctx context.Context, key string, field string) error {
 	return nil
 }
 
-func FlushAll(ctx context.Context, key string) error {
+func Flush(ctx context.Context, key string) error {
 	if err := redisx.GetInstance().Del(ctx, getKey(key)).Err(); err != nil {
 		return err
 	}
