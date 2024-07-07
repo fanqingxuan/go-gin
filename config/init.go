@@ -7,6 +7,7 @@ import (
 	"go-gin/internal/environment"
 	filex "go-gin/internal/file"
 	"go-gin/internal/ginx"
+	"go-gin/internal/ginx/httpx"
 )
 
 type App struct {
@@ -37,6 +38,11 @@ func Init(filename string) {
 	logx.InitConfig(instance.Log)
 	redisx.InitConfig(instance.Redis)
 	db.InitConfig(instance.DB)
+}
+
+func InitGlobalVars() {
+	httpx.DefaultSuccessCodeValue = 0
+	httpx.DefaultSuccessMessageValue = "成功"
 }
 
 func GetAppConf() App {

@@ -8,7 +8,6 @@ import (
 	"go-gin/internal/components/logx"
 	"go-gin/internal/components/redisx"
 	"go-gin/internal/ginx"
-	"go-gin/internal/ginx/httpx"
 	_ "go-gin/internal/utils"
 	"go-gin/middlewares"
 
@@ -22,12 +21,11 @@ func main() {
 	flag.Parse()
 
 	config.Init(*configFile)
+	config.InitGlobalVars()
+
 	logx.Init()
 	db.Init()
 	redisx.Init()
-
-	httpx.DefaultSuccessCodeValue = 0
-	httpx.DefaultSuccessMessageValue = "成功"
 
 	engine := ginx.Init()
 	middlewares.Init(engine)

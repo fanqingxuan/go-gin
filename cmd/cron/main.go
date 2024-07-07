@@ -7,7 +7,6 @@ import (
 	"go-gin/internal/components/logx"
 	"go-gin/internal/components/redisx"
 	"go-gin/internal/cron"
-	"go-gin/internal/ginx/httpx"
 	"go-gin/jobs"
 )
 
@@ -18,11 +17,11 @@ func main() {
 	flag.Parse()
 
 	config.Init(*configFile)
+	config.InitGlobalVars()
+
 	logx.Init()
 	db.Init()
 	redisx.Init()
-
-	httpx.DefaultSuccessCodeValue = 0
 
 	jobs.Init(c)
 
