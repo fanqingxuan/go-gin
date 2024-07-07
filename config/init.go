@@ -6,8 +6,9 @@ import (
 	"go-gin/internal/components/redisx"
 	"go-gin/internal/environment"
 	filex "go-gin/internal/file"
-	"go-gin/internal/ginx"
 	"go-gin/internal/ginx/httpx"
+	"go-gin/internal/traceid"
+	"sync"
 )
 
 type App struct {
@@ -24,27 +25,21 @@ type Config struct {
 	Log   logx.Config   `yaml:"log"`
 }
 
-var instance Config
+var Instance *Config
+var once sync.Once
 
 func Init(filename string) {
-	err := filex.MustLoad(filename, &instance)
-	if err != nil {
-		panic(err)
-	}
-	environment.SetEnvMode(instance.App.Mode)
-	environment.SetTimeZone(instance.App.TimeZone)
-	ginx.InitConfig(ginx.Config{Port: instance.App.Port})
-
-	logx.InitConfig(instance.Log)
-	redisx.InitConfig(instance.Redis)
-	db.InitConfig(instance.DB)
+	once.Do(func() {
+		err := filex.MustLoad(filename, &Instance)
+		if err != nil {
+			panic(err)
+		}
+	})
 }
 
 func InitGlobalVars() {
 	httpx.DefaultSuccessCodeValue = 0
 	httpx.DefaultSuccessMessageValue = "成功"
-}
 
-func GetAppConf() App {
-	return instance.App
+	traceid.TraceIdFieldName = "requestId"
 }
