@@ -18,11 +18,11 @@ func Init(route *gin.Engine) {
 	})
 
 	r := route.Group("/")
+	r.GET("/", UserController.Index)
 	r.Use(middlewares.TokenCheck())
 
 	// 用户信息
 	user_router := r.Group("/user")
-	user_router.GET("/", UserController.Index)
 	user_router.GET("/list", UserController.List)
 	user_router.GET("/adduser", UserController.AddUser)
 

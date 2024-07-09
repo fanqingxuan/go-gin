@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"go-gin/events"
 	"go-gin/internal/components/logx"
 	"go-gin/internal/ginx/httpx"
 	"go-gin/models"
@@ -20,6 +21,7 @@ var UserController = &userController{
 }
 
 func (c *userController) Index(ctx *gin.Context) {
+	events.CreateSampleEvent().Handle(ctx)
 	httpx.Ok(ctx, "hello world")
 }
 
