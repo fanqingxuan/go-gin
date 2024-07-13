@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"fmt"
 	"go-gin/consts"
 	"go-gin/internal/components/logx"
 	"go-gin/internal/ginx/httpx"
@@ -13,9 +14,9 @@ func recoverLog() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		defer func() {
 			if err := recover(); err != nil {
-
+				fmt.Println(err)
 				m := map[string]interface{}{
-					"error": err,
+					"error": fmt.Sprintf("%v", err),
 					"file":  utils.FileWithLineNum(),
 				}
 				logx.WithContext(ctx).Error("panic", m)
