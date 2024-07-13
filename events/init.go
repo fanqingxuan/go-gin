@@ -1,11 +1,10 @@
 package events
 
-import "context"
+import (
+	"go-gin/internal/event"
+	"go-gin/listeners"
+)
 
-type Event interface {
-	Handle(ctx context.Context) error
-}
-
-func Fire(ctx context.Context, e Event) error {
-	return e.Handle(ctx)
+func Init() {
+	event.AddListener(CreateSampleEvent(""), &listeners.SampleAListener{}, &listeners.SampleBListener{})
 }

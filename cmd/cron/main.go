@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"go-gin/config"
+	"go-gin/events"
 	"go-gin/internal/components/db"
 	"go-gin/internal/components/logx"
 	"go-gin/internal/components/redisx"
@@ -31,6 +32,8 @@ func main() {
 
 	redisx.InitConfig(config.GetRedisConf())
 	redisx.Init()
+
+	events.Init()
 
 	c := cron.New()
 	jobs.Init(c)

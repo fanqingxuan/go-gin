@@ -4,6 +4,7 @@ import (
 	"flag"
 	"go-gin/config"
 	"go-gin/controllers"
+	"go-gin/events"
 	"go-gin/internal/components/db"
 	"go-gin/internal/components/logx"
 	"go-gin/internal/components/redisx"
@@ -35,6 +36,8 @@ func main() {
 
 	redisx.InitConfig(config.GetRedisConf())
 	redisx.Init()
+
+	events.Init()
 
 	ginx.InitConfig(ginx.Config{Port: config.GetAppConf().Port})
 	engine := ginx.Init()

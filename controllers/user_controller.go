@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go-gin/events"
 	"go-gin/internal/components/logx"
+	"go-gin/internal/event"
 	"go-gin/internal/ginx/httpx"
 	"go-gin/models"
 	"go-gin/services"
@@ -21,7 +22,8 @@ var UserController = &userController{
 }
 
 func (c *userController) Index(ctx *gin.Context) {
-	events.CreateSampleEvent().Handle(ctx)
+	event.Fire(ctx, events.CreateSampleEvent("hello 测试"))
+	// events.CreateSampleEvent("测试").Dispatch(ctx)
 	httpx.Ok(ctx, "hello world")
 }
 
