@@ -61,7 +61,7 @@ func Init() {
 	AccessLoggerInstance = zerolog.New(accessFileWriter).Level(zerolog.InfoLevel).With().Timestamp().Logger().Hook(TracingHook{})
 
 	restyFileWriter := zerolog.SyncWriter(&FileLevelWriter{
-		Dirname:     conf.Path + "resty/",
+		Dirname:     conf.Path + "httpc/",
 		FilePattern: time.DateOnly,
 	})
 	RestyLoggerInstance = zerolog.New(restyFileWriter).Level(zerolog.InfoLevel).With().Timestamp().Logger().Hook(TracingHook{})

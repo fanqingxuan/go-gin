@@ -3,7 +3,7 @@ package controllers
 import (
 	"go-gin/consts"
 	"go-gin/internal/ginx/httpx"
-	"go-gin/internal/request"
+	"go-gin/internal/httpc"
 
 	"github.com/gin-gonic/gin"
 )
@@ -23,8 +23,8 @@ type User struct {
 func (c *apiController) Index(ctx *gin.Context) {
 
 	var u User
-	_, err := request.POST(ctx, "http://localhosft:8080/api/list").
-		SetFormData(request.M{"username": "aaaa", "age": "55555"}).
+	_, err := httpc.POST(ctx, "http://localhosft:8080/api/list").
+		SetFormData(httpc.M{"username": "aaaa", "age": "55555"}).
 		ParseResult(&u).
 		Send()
 	if err != nil {

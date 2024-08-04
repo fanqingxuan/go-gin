@@ -1,4 +1,4 @@
-package request
+package httpc
 
 import (
 	"time"
