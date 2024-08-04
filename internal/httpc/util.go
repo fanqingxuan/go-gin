@@ -25,7 +25,3 @@ func GET(ctx context.Context, url string) *Request {
 func POST(ctx context.Context, url string) *Request {
 	return New().POST(url).SetContext(ctx)
 }
-
-func PostBody(ctx context.Context, url string) *Request {
-	return New().POST(url).SetContext(ctx)
-}
