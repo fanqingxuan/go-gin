@@ -20,16 +20,6 @@ func (c *Client) SetTimeout(timeout time.Duration) *Client {
 	return c
 }
 
-func (c *Client) AddHook(h Hook) *Client {
-	c.base.OnBeforeRequest(h.Before)
-	c.base.OnAfterResponse(h.After)
-	return c
-}
-func (c *Client) AddErrorHook(h ErrorHook) *Client {
-	c.base.OnError(h.Handle)
-	return c
-}
-
 func (c *Client) NewRequest() *Request {
 	return &Request{
 		base: c.base.NewRequest(),

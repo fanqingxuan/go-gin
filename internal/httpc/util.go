@@ -14,8 +14,12 @@ func NewClient() *Client {
 		base: resty.New(),
 	}
 	client.SetTimeout(3 * time.Minute)
-	client.AddErrorHook(&LogHook{})
-	client.AddHook(&LogHook{})
+
+	client.base.OnBeforeRequest(LogBeforeRequest)
+	client.base.OnError(LogErrorHook)
+	client.base.OnSuccess(LogSuccessHook)
+	client.base.OnPanic(LogErrorHook)
+	client.base.OnInvalid(LogErrorHook)
 	return client
 }
 

@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"go-gin/consts"
 	"go-gin/internal/ginx/httpx"
 	"go-gin/internal/httpc"
@@ -14,23 +15,28 @@ type apiController struct {
 var ApiController = &apiController{}
 
 type User struct {
-	Code int
-	Data struct {
-		Dd string `json:"username"`
-	}
+	Username string `json:"username"`
+	Age      []int  `json:"age"`
+}
+
+type Result struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+	Data    User   `json:"data"`
 }
 
 func (c *apiController) Index(ctx *gin.Context) {
 
-	var u User
-	_, err := httpc.POST(ctx, "http://localhost:8080/api/lista").
+	var r Result
+	_, err := httpc.POST(ctx, "http://localhost:8080/api/list").
 		SetFormData(httpc.M{"username": "aaaa", "age": "55555"}).
-		ParseResult(&u).
+		ParseResult(&r).
 		Send()
 	if err != nil {
 		httpx.Error(ctx, consts.ErrThirdPartyAPIRequestFailed)
 		return
 	}
+	fmt.Println(r)
 	httpx.Ok(ctx, "ok")
 }
 
