@@ -3,25 +3,32 @@ package httpc
 import (
 	"context"
 	"time"
+
+	"github.com/go-resty/resty/v2"
 )
 
 type M map[string]string
 
-func New() *Request {
-	client := NewClient()
-
+func NewClient() *Client {
+	client := &Client{
+		base: resty.New(),
+	}
 	client.SetTimeout(3 * time.Minute)
-
 	client.AddErrorHook(&LogHook{})
 	client.AddHook(&LogHook{})
-
-	return client.NewRequest()
+	return client
 }
 
 func GET(ctx context.Context, url string) *Request {
-	return New().GET(url).SetContext(ctx)
+	return NewClient().
+		NewRequest().
+		GET(url).
+		SetContext(ctx)
 }
 
 func POST(ctx context.Context, url string) *Request {
-	return New().POST(url).SetContext(ctx)
+	return NewClient().
+		NewRequest().
+		POST(url).
+		SetContext(ctx)
 }

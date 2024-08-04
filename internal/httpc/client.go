@@ -10,10 +10,9 @@ type Client struct {
 	base *resty.Client
 }
 
-func NewClient() *Client {
-	return &Client{
-		base: resty.New(),
-	}
+func (c *Client) SetBaseURL(url string) *Client {
+	c.base.SetBaseURL(url)
+	return c
 }
 
 func (c *Client) SetTimeout(timeout time.Duration) *Client {
