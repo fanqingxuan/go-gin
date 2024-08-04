@@ -21,6 +21,8 @@ var (
 	ErrDBModifyRecordFailed = errorx.New(11003, "修改记录失败")
 	ErrDBQueryRecordFailed  = errorx.New(11004, "查询记录失败")
 
+	ErrThirdPartyAPIRequestFailed = errorx.New(11005, "第三方接口请求失败")
+
 	// 以下定义业务上的错误
 	ErrUserNotFound       = errorx.New(20001, "用户不存在")
 	ErrUserNameOrPwdFaild = errorx.New(20002, "用户名或者密码错误")

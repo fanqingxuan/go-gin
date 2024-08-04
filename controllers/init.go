@@ -16,19 +16,36 @@ func Init(route *gin.Engine) {
 	route.NoRoute(func(ctx *gin.Context) {
 		httpx.Error(ctx, consts.ErrNoRoute)
 	})
+	notNeedAuthRouteList(route)
+	needAuthRouteList(route)
+}
 
-	r := route.Group("/")
-	r.GET("/", UserController.Index)
+// 需要登录的路由
+func needAuthRouteList(route *gin.Engine) {
+	r := route.Group("")
 	r.Use(middlewares.TokenCheck())
-
 	// 用户信息
 	user_router := r.Group("/user")
 	user_router.GET("/list", UserController.List)
 	user_router.GET("/adduser", UserController.AddUser)
 
-	// 登录注册
+	// 退出登录
 	login_router := r.Group("/")
-	route.GET("/login", LoginController.Login)
 	login_router.GET("/logout", LoginController.LoginOut)
 
+}
+
+// 不需要登录的路由
+func notNeedAuthRouteList(route *gin.Engine) {
+	route.GET("/login", LoginController.Login)
+
+	r := route.Group("/")
+	r.GET("/", UserController.Index)
+
+	// 登录注册
+
+	// api测试
+	api_router := r.Group("/api")
+	api_router.GET("/", ApiController.Index)
+	api_router.POST("/list", ApiController.List)
 }

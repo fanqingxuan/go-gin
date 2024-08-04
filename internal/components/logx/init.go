@@ -12,16 +12,9 @@ import (
 )
 
 var (
-	ConsoleWriter = &ConsoleLevelWriter{}
-
-	FileWriter io.Writer
-
-	AccessFileWriter io.Writer
-)
-
-var (
 	AccessLoggerInstance zerolog.Logger
 	DBLoggerInstance     zerolog.Logger
+	RestyLoggerInstance  zerolog.Logger
 )
 
 type Config struct {
@@ -48,25 +41,28 @@ func Init() {
 		return strings.ToUpper(l.String())
 	}
 
-	FileWriter = zerolog.SyncWriter(&FileLevelWriter{
+	fileWriter := zerolog.SyncWriter(&FileLevelWriter{
 		Dirname:     conf.Path,
 		FilePattern: time.DateOnly,
 	})
 
-	AccessFileWriter = zerolog.SyncWriter(&FileLevelWriter{
-		Dirname:     conf.Path + "access/",
-		FilePattern: time.DateOnly,
-	})
-
-	writers := []io.Writer{FileWriter}
+	writers := []io.Writer{fileWriter}
 	if environment.IsDebugMode() {
-		writers = append(writers, ConsoleWriter)
+		writers = append(writers, &ConsoleLevelWriter{})
 	}
 
 	multi := zerolog.MultiLevelWriter(writers...)
-
 	log.Logger = log.Output(multi).Level(level).With().Logger().Hook(TracingHook{})
 
-	AccessLoggerInstance = zerolog.New(AccessFileWriter).Level(zerolog.InfoLevel).With().Timestamp().Logger().Hook(TracingHook{})
+	accessFileWriter := zerolog.SyncWriter(&FileLevelWriter{
+		Dirname:     conf.Path + "access/",
+		FilePattern: time.DateOnly,
+	})
+	AccessLoggerInstance = zerolog.New(accessFileWriter).Level(zerolog.InfoLevel).With().Timestamp().Logger().Hook(TracingHook{})
 
+	restyFileWriter := zerolog.SyncWriter(&FileLevelWriter{
+		Dirname:     conf.Path + "resty/",
+		FilePattern: time.DateOnly,
+	})
+	RestyLoggerInstance = zerolog.New(restyFileWriter).Level(zerolog.InfoLevel).With().Timestamp().Logger().Hook(TracingHook{})
 }
