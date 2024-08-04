@@ -10,11 +10,6 @@ type Request struct {
 	base *resty.Request
 }
 
-func (r *Request) SetContentType(contentType string) *Request {
-	r.base.ForceContentType(contentType)
-	return r
-}
-
 func (r *Request) SetHeader(header, value string) *Request {
 	r.base.SetHeader(header, value)
 	return r

@@ -39,6 +39,7 @@ func (c *apiController) IndexA(ctx *gin.Context) {
 	var u User
 	err := httpc.POST(ctx, "http://localhost:8080/api/list").
 		SetFormData(httpc.M{"username": "aaaa", "age": "55555"}).
+		SetHeader("hello", "测试").
 		SendAndParseResult(&u)
 	if err != nil {
 		httpx.Error(ctx, consts.ErrThirdPartyAPIRequestFailed)
