@@ -16,14 +16,14 @@ var ApiController = &apiController{}
 type User struct {
 	Code int
 	Data struct {
-		Username string `json:"username"`
+		Dd string `json:"username"`
 	}
 }
 
 func (c *apiController) Index(ctx *gin.Context) {
 
 	var u User
-	_, err := httpc.POST(ctx, "http://localhosft:8080/api/list").
+	_, err := httpc.POST(ctx, "http://localhost:8080/api/lista").
 		SetFormData(httpc.M{"username": "aaaa", "age": "55555"}).
 		ParseResult(&u).
 		Send()
@@ -32,6 +32,19 @@ func (c *apiController) Index(ctx *gin.Context) {
 		return
 	}
 	httpx.Ok(ctx, "ok")
+}
+
+func (c *apiController) IndexA(ctx *gin.Context) {
+
+	var u User
+	err := httpc.POST(ctx, "http://localhost:8080/api/list").
+		SetFormData(httpc.M{"username": "aaaa", "age": "55555"}).
+		SendAndParseResult(&u)
+	if err != nil {
+		httpx.Error(ctx, consts.ErrThirdPartyAPIRequestFailed)
+		return
+	}
+	httpx.Ok(ctx, u)
 }
 
 func (c *apiController) List(ctx *gin.Context) {

@@ -80,3 +80,11 @@ func (r *Request) POST(url string) *Request {
 func (r *Request) Send() (*resty.Response, error) {
 	return r.base.Send()
 }
+
+func (r *Request) SendAndParseResult(res interface{}) error {
+	_, err := r.ParseResult(res).Send()
+	if err != nil {
+		return err
+	}
+	return nil
+}
