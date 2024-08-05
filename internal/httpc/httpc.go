@@ -77,6 +77,13 @@ func (r *Request) Send() (*resty.Response, error) {
 }
 
 func (r *Request) SendAndParseResult(res interface{}) error {
+	if svcResponse, ok := res.(IResponse); ok {
+		resp, err := r.Send()
+		if err != nil {
+			return err
+		}
+		return svcResponse.ParseResponse(res, resp)
+	}
 	_, err := r.ParseResult(res).Send()
 	if err != nil {
 		return err

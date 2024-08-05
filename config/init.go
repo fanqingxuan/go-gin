@@ -38,7 +38,7 @@ func Init(filename string) {
 }
 
 func InitGlobalVars() {
-	httpx.DefaultSuccessCodeValue = 0
+	// httpx.DefaultSuccessCodeValue = 0
 	httpx.DefaultSuccessMessageValue = "成功"
 
 	traceid.TraceIdFieldName = "requestId"

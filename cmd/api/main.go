@@ -12,6 +12,7 @@ import (
 	"go-gin/internal/ginx"
 	_ "go-gin/internal/utils"
 	"go-gin/middlewares"
+	"go-gin/rest/userc"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -38,6 +39,9 @@ func main() {
 	redisx.Init()
 
 	events.Init()
+
+	// 初始化第三方请求服务
+	userc.InitUserSvc("http://localhost:8080/")
 
 	ginx.InitConfig(ginx.Config{Port: config.GetAppConf().Port})
 	engine := ginx.Init()

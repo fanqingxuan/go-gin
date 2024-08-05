@@ -9,9 +9,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var CodeFieldName = "code"
-var ResultFieldName = "data"
-var MessageFieldName = "message"
+var (
+	CodeFieldName    = "code"
+	ResultFieldName  = "data"
+	MessageFieldName = "message"
+)
 
 var DefaultSuccessCodeValue = http.StatusOK
 var DefaultSuccessMessageValue = "操作成功"
