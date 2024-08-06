@@ -2,6 +2,8 @@ package httpc
 
 import (
 	"context"
+	"fmt"
+	"go-gin/internal/errorx"
 
 	"github.com/go-resty/resty/v2"
 )
@@ -50,7 +52,7 @@ func (r *Request) SetBody(body interface{}) *Request {
 	return r
 }
 
-func (r *Request) ParseResult(res interface{}) *Request {
+func (r *Request) SetResult(res interface{}) *Request {
 	r.base.SetResult(res)
 	return r
 }
@@ -76,15 +78,34 @@ func (r *Request) Send() (*resty.Response, error) {
 	return r.base.Send()
 }
 
-func (r *Request) SendAndParseResult(res interface{}) error {
-	if svcResponse, ok := res.(IResponse); ok {
-		resp, err := r.Send()
-		if err != nil {
-			return err
-		}
-		return svcResponse.ParseResponse(res, resp)
+func (r *Request) Exec() error {
+	resp, err := r.base.Send()
+	if err != nil {
+		return errorx.NewWithError(errorx.ErrCodeThirdAPIConnectFailed, err)
 	}
-	_, err := r.ParseResult(res).Send()
+	if resp.String() == "" {
+		return errorx.New(errorx.ErrCodeThirdAPIContentNoContentFailed, "第三方接口返回数据为空")
+	}
+	if r, ok := r.base.Result.(IResponse); ok {
+		if err := r.Parse([]byte(resp.String())); err != nil {
+			return errorx.NewWithError(errorx.ErrCodeThirdAPIContentParseFailed, fmt.Errorf("第三方接口返回,解析响应内容失败,%w", err))
+		}
+
+		if !r.Valid() {
+			return errorx.New(errorx.ErrCodeThirdAPICallFormatFailed, "第三方接口返回数据格式错误")
+		}
+		if !r.IsSuccess() {
+			msg := r.Msg()
+			if msg == "" {
+				msg = `第三方接口返回失败,但无返回提示消息`
+			}
+			return errorx.New(errorx.ErrCodeThirdAPIBusinessFailed, msg)
+		}
+		if err := r.ParseData(); err != nil {
+			return errorx.NewWithError(errorx.ErrCodeThirdAPIDataParseFailed, fmt.Errorf("第三方接口返回数,解析数据失败,%w", err))
+		}
+		return nil
+	}
 	if err != nil {
 		return err
 	}

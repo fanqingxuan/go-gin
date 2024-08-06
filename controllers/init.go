@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"go-gin/consts"
+	"go-gin/internal/errorx"
 	"go-gin/internal/ginx/httpx"
 	"go-gin/middlewares"
 
@@ -11,10 +11,10 @@ import (
 func Init(route *gin.Engine) {
 
 	route.NoMethod(func(ctx *gin.Context) {
-		httpx.Error(ctx, consts.ErrMethodNotAllowed)
+		httpx.Error(ctx, errorx.ErrMethodNotAllowed)
 	})
 	route.NoRoute(func(ctx *gin.Context) {
-		httpx.Error(ctx, consts.ErrNoRoute)
+		httpx.Error(ctx, errorx.ErrNoRoute)
 	})
 	notNeedAuthRouteList(route)
 	needAuthRouteList(route)
@@ -49,5 +49,5 @@ func notNeedAuthRouteList(route *gin.Engine) {
 	api_router.GET("/", ApiController.Index)
 	api_router.GET("/indexa", ApiController.IndexA)
 	api_router.GET("/indexb", ApiController.IndexB)
-	api_router.POST("/list", ApiController.List)
+	api_router.Any("/list", ApiController.List)
 }

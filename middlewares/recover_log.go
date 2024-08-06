@@ -2,8 +2,8 @@ package middlewares
 
 import (
 	"fmt"
-	"go-gin/consts"
 	"go-gin/internal/components/logx"
+	"go-gin/internal/errorx"
 	"go-gin/internal/ginx/httpx"
 	"go-gin/internal/utils"
 
@@ -20,7 +20,7 @@ func recoverLog() gin.HandlerFunc {
 					"file":  utils.FileWithLineNum(),
 				}
 				logx.WithContext(ctx).Error("panic", m)
-				httpx.Error(ctx, consts.ErrInternalServerError)
+				httpx.Error(ctx, errorx.ErrInternalServerError)
 				ctx.Abort()
 			}
 		}()

@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"fmt"
-	"go-gin/consts"
 	"go-gin/internal/ginx/httpx"
 	"go-gin/internal/httpc"
 	"go-gin/rest/userc"
@@ -35,7 +34,7 @@ func (c *apiController) Index(ctx *gin.Context) {
 		SetFormData(httpc.M{"username": "aaaa", "age": "55555"}).
 		Send()
 	if err != nil {
-		httpx.Error(ctx, consts.ErrThirdPartyAPIRequestFailed)
+		httpx.Error(ctx, err)
 		return
 	}
 	fmt.Println(resp)
@@ -48,9 +47,9 @@ func (c *apiController) IndexA(ctx *gin.Context) {
 	err := httpc.POST(ctx, "http://localhost:8080/api/list").
 		SetFormData(httpc.M{"username": "aaaa", "age": "55555"}).
 		SetHeader("hello", "测试").
-		SendAndParseResult(&r)
+		SetResult(&r).Exec()
 	if err != nil {
-		httpx.Error(ctx, consts.ErrThirdPartyAPIRequestFailed)
+		httpx.Error(ctx, err)
 		return
 	}
 	httpx.Ok(ctx, r)
@@ -63,12 +62,12 @@ func (c *apiController) IndexB(ctx *gin.Context) {
 		httpx.Error(ctx, err)
 		return
 	}
+	fmt.Println(resp)
+	respB, _ := userc.UserSvc.Hello(ctx, &userc.HelloReq{UserId: "测试了"})
+	fmt.Println(respB)
 	httpx.Ok(ctx, resp)
 }
 
 func (c *apiController) List(ctx *gin.Context) {
-	httpx.Ok(ctx, gin.H{
-		"username": ctx.PostForm("username"),
-		"age":      4,
-	})
+	ctx.String(200, "")
 }

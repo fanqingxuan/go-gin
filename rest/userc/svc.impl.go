@@ -2,7 +2,6 @@ package userc
 
 import (
 	"context"
-	"fmt"
 	"go-gin/internal/httpc"
 )
 
@@ -19,13 +18,15 @@ func NewUserSvc(client *httpc.Client) *userSvc {
 }
 
 func (us *userSvc) Hello(ctx context.Context, req *HelloReq) (resp *HelloResp, err error) {
+	resp = &HelloResp{}
+	d := APIResponse{Data: resp}
 	err = us.client.
 		NewRequest().
 		SetContext(ctx).
 		POST("/api/list").
 		SetFormData(httpc.M{"username": "hello," + req.UserId, "age": "55555"}).
-		SendAndParseResult(WrapUserStruct(&resp))
-	fmt.Println(resp.Uname)
+		SetResult(&d).
+		Exec()
 	if err != nil {
 		return nil, err
 	}
