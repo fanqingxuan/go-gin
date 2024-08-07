@@ -5,6 +5,10 @@ import (
 	"go-gin/internal/httpc"
 )
 
+const (
+	HELLO_URL = "/api/list" // hello的接口路径
+)
+
 type UserSvc struct {
 	httpc.BaseSvc
 }
@@ -21,7 +25,7 @@ func (us *UserSvc) Hello(ctx context.Context, req *HelloReq) (resp *HelloResp, e
 	err = us.Client().
 		NewRequest().
 		SetContext(ctx).
-		POST("/api/list").
+		POST(HELLO_URL).
 		SetFormData(params).
 		SetResult(&result).
 		Exec()
