@@ -4,6 +4,6 @@ var (
 	Svc IUserSvc = (*UserSvc)(nil)
 )
 
-func InitUserSvc(url string) {
+func Init(url string) {
 	Svc = NewUserSvc(url)
 }

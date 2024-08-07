@@ -1,9 +1,12 @@
 package controllers
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"fmt"
 	"go-gin/internal/ginx/httpx"
 	"go-gin/internal/httpc"
+	"go-gin/rest/login"
 	"go-gin/rest/user"
 
 	"github.com/gin-gonic/gin"
@@ -30,6 +33,18 @@ func (c *apiController) Index(ctx *gin.Context) {
 func (c *apiController) IndexA(ctx *gin.Context) {
 
 	resp, err := user.Svc.Hello(ctx, &user.HelloReq{UserId: "userId111"})
+	if err != nil {
+		httpx.Error(ctx, err)
+		return
+	}
+	httpx.Ok(ctx, resp)
+}
+
+func (c *apiController) IndexB(ctx *gin.Context) {
+
+	hash := md5.Sum([]byte("BRUCEMUWU2023"))
+	pwd := hex.EncodeToString(hash[:])
+	resp, err := login.Svc.Login(ctx, &login.LoginReq{Username: "1", Pwd: pwd})
 	if err != nil {
 		httpx.Error(ctx, err)
 		return
