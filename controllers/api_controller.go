@@ -29,13 +29,12 @@ func (c *apiController) Index(ctx *gin.Context) {
 
 func (c *apiController) IndexA(ctx *gin.Context) {
 
-	resp, err := user.Svc.Hello(ctx, &user.HelloReq{UserId: "45"})
+	resp, err := user.Svc.Hello(ctx, &user.HelloReq{UserId: "userId111"})
 	if err != nil {
 		httpx.Error(ctx, err)
 		return
 	}
-	respB, _ := user.Svc.Hello(ctx, &user.HelloReq{UserId: "userId111"})
-	httpx.Ok(ctx, respB)
+	httpx.Ok(ctx, resp)
 }
 
 func (c *apiController) List(ctx *gin.Context) {
