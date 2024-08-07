@@ -1,4 +1,4 @@
-package userc
+package user
 
 import "context"
 
@@ -11,5 +11,6 @@ type HelloReq struct {
 }
 
 type HelloResp struct {
+	Uid   string `json:"userId"`
 	Uname string `json:"username"`
 }

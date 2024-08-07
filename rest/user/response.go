@@ -1,4 +1,4 @@
-package userc
+package user
 
 import (
 	"encoding/json"
