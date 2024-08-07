@@ -7,6 +7,7 @@ import (
 	"go-gin/internal/ginx/httpx"
 	"go-gin/internal/httpc"
 	"go-gin/rest/login"
+	"go-gin/rest/mylogin"
 	"go-gin/rest/user"
 
 	"github.com/gin-gonic/gin"
@@ -45,6 +46,18 @@ func (c *apiController) IndexB(ctx *gin.Context) {
 	hash := md5.Sum([]byte("BRUCEMUWU2023"))
 	pwd := hex.EncodeToString(hash[:])
 	resp, err := login.Svc.Login(ctx, &login.LoginReq{Username: "1", Pwd: pwd})
+	if err != nil {
+		httpx.Error(ctx, err)
+		return
+	}
+	httpx.Ok(ctx, resp)
+}
+
+func (c *apiController) IndexC(ctx *gin.Context) {
+
+	hash := md5.Sum([]byte("BRUCEMUWU2023"))
+	pwd := hex.EncodeToString(hash[:])
+	resp, err := mylogin.Svc.Login(ctx, &mylogin.LoginReq{Username: "1", Pwd: pwd})
 	if err != nil {
 		httpx.Error(ctx, err)
 		return

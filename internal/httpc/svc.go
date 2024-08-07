@@ -1,11 +1,20 @@
 package httpc
 
-type IResponse interface {
+type IBaseResponse interface {
 	Parse([]byte) error
 	Valid() bool
 	IsSuccess() bool
 	Msg() string
+}
+
+type IResponse interface {
+	IBaseResponse
 	ParseData() error
+}
+
+type IRepsonseNonStardard interface {
+	IBaseResponse
+	ParseData([]byte) error
 }
 
 type BaseSvc struct {

@@ -1,4 +1,4 @@
-package login
+package mylogin
 
 import (
 	"encoding/json"
@@ -9,14 +9,14 @@ var (
 	ApiResponseSuccessCode = true
 )
 
-// 解析返回格式固定的结构，返回结构包含success msg param字段
+// 解析返回格式不固定，但是success msg两个标准字段，其它业务字段格式不固定
 type APIResponse struct {
-	Code    *bool       `json:"success"`
-	Message *string     `json:"msg"`
-	Data    interface{} `json:"param"`
+	Code    *bool   `json:"success"`
+	Message *string `json:"msg"`
+	Data    interface{}
 }
 
-var _ httpc.IResponse = (*APIResponse)(nil)
+var _ httpc.IRepsonseNonStardard = (*APIResponse)(nil)
 
 // 解析响应结构
 func (r *APIResponse) Parse(b []byte) error {
@@ -46,15 +46,9 @@ func (r *APIResponse) Msg() string {
 }
 
 // 解析数据体
-func (r *APIResponse) ParseData() error {
-
-	// 将 data 字段转换为 JSON 字符串
-	dataStr, err := json.Marshal(r.Data)
-	if err != nil {
-		return err
-	}
+func (r *APIResponse) ParseData(b []byte) error {
 	// 尝试将 data 字段解析为给定的结构体类型
-	err = json.Unmarshal(dataStr, r.Data)
+	err := json.Unmarshal(b, r.Data)
 	if err != nil {
 		return err
 	}

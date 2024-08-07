@@ -49,5 +49,7 @@ func notNeedAuthRouteList(route *gin.Engine) {
 	api_router.GET("/", ApiController.Index)
 	api_router.GET("/indexa", ApiController.IndexA)
 	api_router.GET("/loginapi", ApiController.IndexB)
+	api_router.GET("/mylogin", ApiController.IndexC)
+
 	api_router.Any("/list", ApiController.List)
 }

@@ -86,25 +86,31 @@ func (r *Request) Exec() error {
 	if resp.String() == "" {
 		return errorx.New(errorx.ErrCodeThirdAPIContentNoContentFailed, "第三方接口返回数据为空")
 	}
-	if r, ok := r.base.Result.(IResponse); ok {
-		if err := r.Parse([]byte(resp.String())); err != nil {
+	if ret, ok := r.base.Result.(IBaseResponse); ok {
+		if err := ret.Parse([]byte(resp.String())); err != nil {
 			return errorx.NewWithError(errorx.ErrCodeThirdAPIContentParseFailed, fmt.Errorf("第三方接口返回,解析响应内容失败,%w", err))
 		}
 
-		if !r.Valid() {
+		if !ret.Valid() {
 			return errorx.New(errorx.ErrCodeThirdAPICallFormatFailed, "第三方接口返回数据格式错误")
 		}
-		if !r.IsSuccess() {
-			msg := r.Msg()
+		if !ret.IsSuccess() {
+			msg := ret.Msg()
 			if msg == "" {
 				msg = `第三方接口返回失败,但无返回提示消息`
 			}
 			return errorx.New(errorx.ErrCodeThirdAPIBusinessFailed, msg)
 		}
-		if err := r.ParseData(); err != nil {
-			return errorx.NewWithError(errorx.ErrCodeThirdAPIDataParseFailed, fmt.Errorf("第三方接口返回数,解析数据失败,%w", err))
+		switch res := r.base.Result.(type) {
+		case IRepsonseNonStardard:
+			if err := res.ParseData([]byte(resp.String())); err != nil {
+				return errorx.NewWithError(errorx.ErrCodeThirdAPIDataParseFailed, fmt.Errorf("第三方接口返回数,解析数据失败,%w", err))
+			}
+		case IResponse:
+			if err := res.ParseData(); err != nil {
+				return errorx.NewWithError(errorx.ErrCodeThirdAPIDataParseFailed, fmt.Errorf("第三方接口返回数,解析数据失败,%w", err))
+			}
 		}
-		return nil
 	}
 	if err != nil {
 		return err
