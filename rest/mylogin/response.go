@@ -1,8 +1,8 @@
 package mylogin
 
 import (
-	"encoding/json"
 	"go-gin/internal/httpc"
+	"go-gin/utils/jsonx"
 )
 
 var (
@@ -20,7 +20,7 @@ var _ httpc.IRepsonseNonStardard = (*APIResponse)(nil)
 
 // 解析响应结构
 func (r *APIResponse) Parse(b []byte) error {
-	err := json.Unmarshal(b, &r)
+	err := jsonx.Unmarshal(b, &r)
 	if err != nil {
 		return err
 	}
@@ -48,7 +48,7 @@ func (r *APIResponse) Msg() string {
 // 解析数据体
 func (r *APIResponse) ParseData(b []byte) error {
 	// 尝试将 data 字段解析为给定的结构体类型
-	err := json.Unmarshal(b, r.Data)
+	err := jsonx.Unmarshal(b, r.Data)
 	if err != nil {
 		return err
 	}

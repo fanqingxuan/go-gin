@@ -1,8 +1,8 @@
 package login
 
 import (
-	"encoding/json"
 	"go-gin/internal/httpc"
+	"go-gin/utils/jsonx"
 )
 
 var (
@@ -20,7 +20,7 @@ var _ httpc.IResponse = (*APIResponse)(nil)
 
 // 解析响应结构
 func (r *APIResponse) Parse(b []byte) error {
-	err := json.Unmarshal(b, &r)
+	err := jsonx.Unmarshal(b, &r)
 	if err != nil {
 		return err
 	}
@@ -49,12 +49,12 @@ func (r *APIResponse) Msg() string {
 func (r *APIResponse) ParseData() error {
 
 	// 将 data 字段转换为 JSON 字符串
-	dataStr, err := json.Marshal(r.Data)
+	dataStr, err := jsonx.Marshal(r.Data)
 	if err != nil {
 		return err
 	}
 	// 尝试将 data 字段解析为给定的结构体类型
-	err = json.Unmarshal(dataStr, r.Data)
+	err = jsonx.Unmarshal(dataStr, r.Data)
 	if err != nil {
 		return err
 	}
