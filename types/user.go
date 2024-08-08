@@ -1,8 +1,16 @@
 package types
 
 import (
+	"go-gin/models"
 	"time"
 )
+
+type ListReq struct {
+}
+
+type ListReply struct {
+	Users []models.User `json:"users"`
+}
 
 type AddUserReq struct {
 	Name   string    `form:"name" binding:"required"`

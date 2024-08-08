@@ -1,12 +1,10 @@
 package controllers
 
 import (
-	"fmt"
 	"go-gin/events"
 	"go-gin/internal/components/logx"
 	"go-gin/internal/event"
 	"go-gin/internal/ginx/httpx"
-	"go-gin/models"
 	"go-gin/services"
 	"go-gin/types"
 
@@ -14,11 +12,11 @@ import (
 )
 
 type userController struct {
-	userService *services.UserService
+	service *services.UserService
 }
 
 var UserController = &userController{
-	userService: services.NewUserService(),
+	service: services.NewUserService(),
 }
 
 func (c *userController) Index(ctx *gin.Context) {
@@ -28,8 +26,9 @@ func (c *userController) Index(ctx *gin.Context) {
 }
 
 func (c *userController) List(ctx *gin.Context) {
-	u, err := c.userService.GetAllUsers(ctx)
-	httpx.Handle(ctx, u, err)
+	var req types.ListReq
+	resp, err := c.service.GetAllUsers(ctx, req)
+	httpx.Handle(ctx, resp, err)
 }
 
 func (c *userController) AddUser(ctx *gin.Context) {
@@ -39,17 +38,12 @@ func (c *userController) AddUser(ctx *gin.Context) {
 		httpx.Error(ctx, err)
 		return
 	}
-	user := &models.User{
-		Name: req.Name,
-		Age:  &req.Age,
-	}
-	err := c.userService.AddUser(ctx, user)
+
+	resp, err := c.service.AddUser(ctx, req)
 	if err != nil {
 		httpx.Error(ctx, err)
 		return
 	}
-	resp := types.AddUserReply{
-		Message: fmt.Sprintf("add user succcess %s=%d", user.Name, user.Id),
-	}
+
 	httpx.Ok(ctx, resp)
 }
