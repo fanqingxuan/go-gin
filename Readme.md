@@ -358,7 +358,7 @@ github.com/go-resty/resty/v2 v2.13.1
         - `svc.impl.go` 对svc.go中接口的实现
         定义要上面几个文件之后，便可以在自己的业务文件中发起请求了
             ```go
-            hash := md5.Sum([]byte("BRUCEMUWU2023"))
+            hash := md5.Sum([]byte("abcd"))
             pwd := hex.EncodeToString(hash[:])
             resp, err := login.Svc.Login(ctx, &login.LoginReq{Username: "1", Pwd: pwd})
             if err != nil {
