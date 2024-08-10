@@ -14,7 +14,7 @@ func LogBeforeRequest(c *resty.Client, r *resty.Request) error {
 		Str("method", r.Method).
 		Any("header", r.Header).
 		Str("query", r.QueryParam.Encode()).
-		Any("post", r.FormData).
+		Any("post", r.FormData.Encode()).
 		Any("body", r.Body).
 		Send()
 	return nil

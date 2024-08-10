@@ -47,6 +47,10 @@ func (r *Request) SetFormData(data map[string]string) *Request {
 	return r
 }
 
+func (r *Request) Add(key, value string) *Request {
+	r.base.FormData.Add(key, value)
+	return r
+}
 func (r *Request) SetBody(body interface{}) *Request {
 	r.base.SetBody(body)
 	return r

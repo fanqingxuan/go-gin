@@ -27,6 +27,7 @@ func (us *UserSvc) Hello(ctx context.Context, req *HelloReq) (resp *HelloResp, e
 		SetContext(ctx).
 		POST(HELLO_URL).
 		SetFormData(params).
+		Add("userId", "456").
 		SetResult(&result).
 		Exec()
 	return
