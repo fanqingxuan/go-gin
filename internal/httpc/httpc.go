@@ -119,8 +119,5 @@ func (r *Request) Exec() error {
 			}
 		}
 	}
-	if err != nil {
-		return err
-	}
 	return nil
 }
