@@ -13,7 +13,7 @@ type ListReply struct {
 }
 
 type AddUserReq struct {
-	Name   string    `form:"name" binding:"required"`
+	Name   string    `form:"name" binding:"required" label:"姓名"`
 	Age    int       `form:"age" binding:"required" label:"年龄"`
 	Status bool      `form:"status"`
 	Ctime  time.Time `form:"ctime"`
