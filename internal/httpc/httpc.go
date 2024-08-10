@@ -111,11 +111,11 @@ func (r *Request) Exec() error {
 		switch res := r.base.Result.(type) {
 		case IRepsonseNonStardard:
 			if err := res.ParseData([]byte(resp.String())); err != nil {
-				return errorx.NewWithError(errorx.ErrCodeThirdAPIDataParseFailed, fmt.Errorf("第三方接口返回数,解析数据失败,%w", err))
+				return errorx.NewWithError(errorx.ErrCodeThirdAPIDataParseFailed, fmt.Errorf("第三方接口已返回数据,解析数据失败,%w", err))
 			}
 		case IResponse:
 			if err := res.ParseData(); err != nil {
-				return errorx.NewWithError(errorx.ErrCodeThirdAPIDataParseFailed, fmt.Errorf("第三方接口返回数,解析数据失败,%w", err))
+				return errorx.NewWithError(errorx.ErrCodeThirdAPIDataParseFailed, fmt.Errorf("第三方接口已返回数据,解析数据失败,%w", err))
 			}
 		}
 	}
