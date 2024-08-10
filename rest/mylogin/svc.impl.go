@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	Login_URL = "//logistics/apps/php/login.php?do=login" // 登录接口
+	Login_URL = "/logistics/apps/php/login.php?do=login#hello=json" // 登录接口
 )
 
 type LoginSvc struct {

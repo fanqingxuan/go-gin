@@ -18,11 +18,17 @@ type App struct {
 	TimeZone string           `yaml:"timezone"`
 }
 
+type SvcConfig struct {
+	UserSvcUrl  string `yaml:"user_url"`
+	LoginSvcUrl string `yaml:"login_url"`
+}
+
 type Config struct {
 	App   App           `yaml:"app"`
 	Redis redisx.Config `yaml:"redis"`
 	DB    db.Config     `yaml:"db"`
 	Log   logx.Config   `yaml:"log"`
+	Svc   SvcConfig     `yaml:"svc"`
 }
 
 var instance *Config
@@ -58,4 +64,8 @@ func GetLogConf() logx.Config {
 
 func GetDbConf() db.Config {
 	return instance.DB
+}
+
+func GetSvcConfig() SvcConfig {
+	return instance.Svc
 }

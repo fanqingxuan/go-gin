@@ -10,7 +10,7 @@ import (
 func LogBeforeRequest(c *resty.Client, r *resty.Request) error {
 	logx.RestyLoggerInstance.Info().Ctx(r.Context()).
 		Str("keywords", "request").
-		Str("url", r.URL).
+		Str("url", c.BaseURL+r.URL).
 		Str("method", r.Method).
 		Any("header", r.Header).
 		Str("query", r.QueryParam.Encode()).

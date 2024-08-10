@@ -43,9 +43,9 @@ func main() {
 	events.Init()
 
 	// 初始化第三方请求服务
-	user.Init("http://localhost:8080")
-	login.Init("https://scm.muwbq.com")
-	mylogin.Init("https://scm.muwbq.com")
+	user.Init(config.GetSvcConfig().UserSvcUrl)
+	login.Init(config.GetSvcConfig().LoginSvcUrl)
+	mylogin.Init(config.GetSvcConfig().LoginSvcUrl)
 
 	ginx.InitConfig(ginx.Config{Port: config.GetAppConf().Port})
 	engine := ginx.Init()
