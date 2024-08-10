@@ -13,7 +13,7 @@
 - 引入`github.com/robfig/cron`实现定时任务，定时任务也引入了traceid
 - 使用轻量的日志库`github.com/rs/zerolog`进行记录日志
 - 引入`gopkg.in/yaml.v3`解析yaml配置文件到golang变量
-  
+- 引入`github.com/go-resty/resty/v2`发起http请求，方便的请求第三方接口
 ### 依赖库如下
 ```shell
 github.com/gin-gonic/gin v1.9.1
@@ -30,6 +30,7 @@ golang.org/x/text v0.14.0
 gopkg.in/yaml.v3 v3.0.1
 gorm.io/driver/mysql v1.5.7
 gorm.io/gorm v1.25.10
+github.com/go-resty/resty/v2 v2.13.1
 ```
 
 ### 目录结构
@@ -334,7 +335,37 @@ gorm.io/gorm v1.25.10
             "trace_id": "dc119c64-d4b9-4af1-9e02-d15fc4ba2e42"
         }
         ```
-
+- 请求第三方接口
+接入了`go-resty`库，并做了简单封装，便于开箱即用
+    
+    - 原生方式
+        ```
+        resp, err := httpc.POST(ctx, "http://localhost:8080/api/list").
+            SetFormData(httpc.M{"username": "aaaa", "age": "55555"}).
+            Send()
+        ```
+        如上,主要对go-resty进行了简单封装，封装成了`httpc`库,并提供了`POST`,`GET`常用两种请求方式
+    - 服务方式
+    
+        如果第三方接口交互较多，可以作为服务进行对接，首先在`main.go`文件配置第三方服务地址,例如
+        ```go
+        user.Init("http://localhost:8080")
+        ```
+        然后在`rest`目录定义服务相关文件主要包括
+        - `init.go`启动文件
+        - `response.go`接口返回格式以及解析响应结果
+        - `svc.go` 定义服务接口、参数以及响应结构，进行明确要求，便于代码的可维护性
+        - `svc.impl.go` 对svc.go中接口的实现
+        定义要上面几个文件之后，便可以在自己的业务文件中发起请求了
+            ```go
+            hash := md5.Sum([]byte("BRUCEMUWU2023"))
+            pwd := hex.EncodeToString(hash[:])
+            resp, err := login.Svc.Login(ctx, &login.LoginReq{Username: "1", Pwd: pwd})
+            if err != nil {
+                httpx.Error(ctx, err)
+                return
+            }
+            ```
 ### 快速启动
 
 ```shell
