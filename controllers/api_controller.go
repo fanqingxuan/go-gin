@@ -55,7 +55,7 @@ func (c *apiController) IndexB(ctx *gin.Context) {
 
 func (c *apiController) IndexC(ctx *gin.Context) {
 
-	hash := md5.Sum([]byte("BRUCEMUWU2023"))
+	hash := md5.Sum([]byte("BRUCEMUWU2"))
 	pwd := hex.EncodeToString(hash[:])
 	resp, err := mylogin.Svc.Login(ctx, &mylogin.LoginReq{Username: "1", Pwd: pwd})
 	if err != nil {
