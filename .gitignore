@@ -6,3 +6,4 @@
 /storage/logs/*
 fresh.conf
 /logs
+.env
