@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 	"go-gin/internal/httpc"
+	"go-gin/utils/jsonx"
 )
 
 const (
@@ -20,14 +21,21 @@ func NewUserSvc(url string) IUserSvc {
 }
 
 func (us *UserSvc) Hello(ctx context.Context, req *HelloReq) (resp *HelloResp, err error) {
-	params := httpc.M{"userId": req.UserId}
 	result := APIResponse{Data: &resp}
+	ids, _ := jsonx.MarshalToString([]int{1, 2, 3})
+
+	userInfo, _ := jsonx.MarshalToString(httpc.M{
+		"id":   "3",
+		"name": "张三",
+	})
+	params := httpc.M{"userId": req.UserId, "ids": ids, "info": userInfo}
+
 	err = us.Client().
 		NewRequest().
 		SetContext(ctx).
 		POST(HELLO_URL).
 		SetFormData(params).
-		Add("userId", "456").
+		AddFormData("userA", []string{"11", "22"}).
 		SetResult(&result).
 		Exec()
 	return
