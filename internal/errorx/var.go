@@ -3,8 +3,9 @@ package errorx
 import "net/http"
 
 const (
-	ErrCodeDefaultCommon  = 10000 // 默认通用错误码
-	ErrCodeValidateFailed = 10001 // 验证失败
+	ErrCodeDefaultCommon   = 10000 // 默认通用错误码
+	ErrCodeValidateFailed  = 10001 // 验证失败
+	ErrCodeDBOperateFailed = 10002 // 数据库操作错误
 )
 
 const (
@@ -22,12 +23,4 @@ var (
 	ErrMethodNotAllowed    = NewServerError(http.StatusMethodNotAllowed)
 	ErrNoRoute             = NewServerError(http.StatusNotFound)
 	ErrInternalServerError = NewServerError(http.StatusInternalServerError)
-)
-
-var (
-	ErrDBConnectFailed      = New(11000, "数据库连接异常")
-	ErrDBCreateRecordFailed = New(11001, "创建记录失败")
-	ErrDBDeleteRecordFailed = New(11002, "删除记录失败")
-	ErrDBModifyRecordFailed = New(11003, "修改记录失败")
-	ErrDBQueryRecordFailed  = New(11004, "查询记录失败")
 )
