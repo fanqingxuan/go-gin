@@ -8,7 +8,6 @@ import (
 	"go-gin/internal/components/db"
 	"go-gin/internal/components/logx"
 	"go-gin/internal/components/redisx"
-	"go-gin/internal/environment"
 	"go-gin/internal/ginx"
 	_ "go-gin/internal/utils"
 	"go-gin/middlewares"
@@ -27,9 +26,7 @@ func main() {
 
 	config.Init(*configFile)
 	config.InitGlobalVars()
-
-	environment.SetEnvMode(config.GetAppConf().Mode)
-	environment.SetTimeZone(config.GetAppConf().TimeZone)
+	config.InitEnvironment()
 
 	logx.InitConfig(config.GetLogConf())
 	logx.Init()

@@ -50,6 +50,11 @@ func InitGlobalVars() {
 	traceid.TraceIdFieldName = "requestId"
 }
 
+func InitEnvironment() {
+	environment.SetEnvMode(instance.App.Mode)
+	environment.SetTimeZone(instance.App.TimeZone)
+}
+
 func GetAppConf() App {
 	return instance.App
 }
