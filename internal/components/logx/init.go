@@ -25,6 +25,9 @@ type Config struct {
 var conf Config
 
 func InitConfig(c Config) {
+	if !strings.HasSuffix(c.Path, "/") {
+		c.Path = c.Path + "/"
+	}
 	conf = c
 }
 
