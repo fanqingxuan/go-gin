@@ -9,6 +9,7 @@ import (
 	"go-gin/types"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-module/carbon/v2"
 )
 
 type userController struct {
@@ -19,10 +20,19 @@ var UserController = &userController{
 	service: services.NewUserService(),
 }
 
+type User struct {
+	Name       string        `json:"name"`
+	CreateTime carbon.Carbon `json:"create_time"`
+}
+
 func (c *userController) Index(ctx *gin.Context) {
 	event.Fire(ctx, events.CreateSampleEvent("hello 测试"))
 	// events.CreateSampleEvent("测试").Dispatch(ctx)
-	httpx.Ok(ctx, "hello world")
+	u := User{
+		Name:       "hello",
+		CreateTime: carbon.Parse("now").AddCentury(),
+	}
+	httpx.Ok(ctx, u)
 }
 
 func (c *userController) List(ctx *gin.Context) {

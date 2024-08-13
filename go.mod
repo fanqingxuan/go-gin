@@ -32,6 +32,7 @@ require (
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
+	github.com/golang-module/carbon/v2 v2.3.12 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/gookit/goutil v0.6.16 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
