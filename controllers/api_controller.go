@@ -3,7 +3,6 @@ package controllers
 import (
 	"crypto/md5"
 	"encoding/hex"
-	"fmt"
 	"go-gin/internal/ginx/httpx"
 	"go-gin/internal/httpc"
 	"go-gin/rest/login"
@@ -20,14 +19,13 @@ var ApiController = &apiController{}
 
 func (c *apiController) Index(ctx *gin.Context) {
 
-	resp, err := httpc.POST(ctx, "http://localhost:8080/api/list").
+	_, err := httpc.POST(ctx, "http://localhost:8080/api/list").
 		SetFormData(httpc.M{"username": "aaaa", "age": "55555"}).
 		Send()
 	if err != nil {
 		httpx.Error(ctx, err)
 		return
 	}
-	fmt.Println(resp)
 	httpx.Ok(ctx, "ok")
 }
 

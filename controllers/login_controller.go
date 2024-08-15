@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"go-gin/consts"
 	"go-gin/internal/components/db"
 	"go-gin/internal/errorx"
@@ -20,7 +19,6 @@ var LoginController = &loginController{}
 func (c *loginController) Login(ctx *gin.Context) {
 	var user models.User
 	if err := db.WithContext(ctx).First(&user, "username=?", "测试1").Error; err != nil {
-		fmt.Println(err)
 		if errorx.IsRecordNotFound(err) {
 			httpx.Error(ctx, consts.ErrUserNameOrPwdFaild)
 		} else {
@@ -29,7 +27,6 @@ func (c *loginController) Login(ctx *gin.Context) {
 		return
 	}
 	t := token.GetTokenId()
-
 	if err := token.Set(ctx, t, "name", "测试"); err != nil {
 		httpx.Error(ctx, errorx.NewDefault("存储用户信息异常"))
 		return

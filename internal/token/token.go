@@ -21,7 +21,6 @@ func GetTokenId() string {
 }
 
 func Set(ctx context.Context, key string, field string, value string) error {
-	fmt.Println(redisx.GetInstance().HSet(ctx, getKey(key), field, value).Err())
 	if err := redisx.GetInstance().HSet(ctx, getKey(key), field, value).Err(); err != nil {
 		return err
 	}
