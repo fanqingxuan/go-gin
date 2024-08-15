@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"errors"
+	"fmt"
 	"go-gin/consts"
 	"go-gin/internal/components/db"
 	"go-gin/internal/errorx"
@@ -10,7 +10,6 @@ import (
 	"go-gin/models"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
 type loginController struct {
@@ -20,8 +19,9 @@ var LoginController = &loginController{}
 
 func (c *loginController) Login(ctx *gin.Context) {
 	var user models.User
-	if err := db.WithContext(ctx).Find(&user, "username=?", "测试1").Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+	if err := db.WithContext(ctx).First(&user, "username=?", "测试1").Error; err != nil {
+		fmt.Println(err)
+		if errorx.IsRecordNotFound(err) {
 			httpx.Error(ctx, consts.ErrUserNameOrPwdFaild)
 		} else {
 			httpx.Error(ctx, err)
