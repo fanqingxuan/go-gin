@@ -27,15 +27,3 @@ func Init(filename string) {
 		}
 	})
 }
-
-func GetRedisConf() redisx.Config {
-	return instance.Redis
-}
-
-func GetLogConf() logx.Config {
-	return instance.Log
-}
-
-func GetDbConf() db.Config {
-	return instance.DB
-}

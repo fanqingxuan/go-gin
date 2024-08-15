@@ -9,7 +9,3 @@ type App struct {
 	TimeZone   string           `yaml:"timezone"`
 	TimeFormat string           `yaml:"timeformat"`
 }
-
-func GetAppConf() App {
-	return instance.App
-}
