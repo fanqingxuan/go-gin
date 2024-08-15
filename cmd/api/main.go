@@ -11,9 +11,6 @@ import (
 	"go-gin/internal/ginx"
 	_ "go-gin/internal/utils"
 	"go-gin/middlewares"
-	"go-gin/rest/login"
-	"go-gin/rest/mylogin"
-	"go-gin/rest/user"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -40,7 +37,7 @@ func main() {
 	events.Init()
 
 	// 初始化第三方服务地址
-	InitSvc()
+	config.InitSvc()
 
 	ginx.InitConfig(ginx.Config{Port: config.GetAppConf().Port})
 	engine := ginx.Init()
@@ -48,12 +45,4 @@ func main() {
 	controllers.Init(engine)
 	ginx.Start(engine)
 
-}
-
-func InitSvc() {
-	svcConfig := config.GetSvcConfig()
-	// 初始化第三方请求服务
-	user.Init(svcConfig.UserSvcUrl)
-	login.Init(svcConfig.LoginSvcUrl)
-	mylogin.Init(svcConfig.LoginSvcUrl)
 }

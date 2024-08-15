@@ -32,6 +32,9 @@ func main() {
 
 	events.Init()
 
+	// 初始化第三方服务地址
+	config.InitSvc()
+
 	c := cron.New()
 	jobs.Init(c)
 	c.Run()

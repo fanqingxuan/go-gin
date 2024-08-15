@@ -6,8 +6,6 @@ import (
 	"go-gin/internal/components/redisx"
 	"go-gin/internal/environment"
 	filex "go-gin/internal/file"
-	"go-gin/internal/ginx/httpx"
-	"go-gin/internal/traceid"
 	"sync"
 
 	"github.com/golang-module/carbon/v2"
@@ -19,11 +17,6 @@ type App struct {
 	Mode       environment.Mode `yaml:"mode"`
 	TimeZone   string           `yaml:"timezone"`
 	TimeFormat string           `yaml:"timeformat"`
-}
-
-type SvcConfig struct {
-	UserSvcUrl  string `yaml:"user_url"`
-	LoginSvcUrl string `yaml:"login_url"`
 }
 
 type Config struct {
@@ -44,13 +37,6 @@ func Init(filename string) {
 			panic(err)
 		}
 	})
-}
-
-func InitGlobalVars() {
-	// httpx.DefaultSuccessCodeValue = 0
-	httpx.DefaultSuccessMessageValue = "成功"
-
-	traceid.TraceIdFieldName = "requestId"
 }
 
 func InitEnvironment() {
@@ -77,8 +63,4 @@ func GetLogConf() logx.Config {
 
 func GetDbConf() db.Config {
 	return instance.DB
-}
-
-func GetSvcConfig() SvcConfig {
-	return instance.Svc
 }
