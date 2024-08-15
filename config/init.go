@@ -4,20 +4,9 @@ import (
 	"go-gin/internal/components/db"
 	"go-gin/internal/components/logx"
 	"go-gin/internal/components/redisx"
-	"go-gin/internal/environment"
 	filex "go-gin/internal/file"
 	"sync"
-
-	"github.com/golang-module/carbon/v2"
 )
-
-type App struct {
-	Name       string           `yaml:"name"`
-	Port       string           `yaml:"port"`
-	Mode       environment.Mode `yaml:"mode"`
-	TimeZone   string           `yaml:"timezone"`
-	TimeFormat string           `yaml:"timeformat"`
-}
 
 type Config struct {
 	App   App           `yaml:"app"`
@@ -37,20 +26,6 @@ func Init(filename string) {
 			panic(err)
 		}
 	})
-}
-
-func InitEnvironment() {
-
-	carbon.SetDefault(carbon.Default{
-		Layout:   instance.App.TimeFormat,
-		Timezone: instance.App.TimeZone,
-	})
-	environment.SetEnvMode(instance.App.Mode)
-	environment.SetTimeZone(instance.App.TimeZone)
-}
-
-func GetAppConf() App {
-	return instance.App
 }
 
 func GetRedisConf() redisx.Config {
