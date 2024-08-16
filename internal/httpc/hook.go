@@ -3,6 +3,7 @@ package httpc
 import (
 	"context"
 	"go-gin/internal/components/logx"
+	"net/http"
 
 	"github.com/go-resty/resty/v2"
 )
@@ -35,15 +36,17 @@ func LogSuccessHook(c *resty.Client, r *resty.Response) {
 }
 
 func LogResponse(ctx context.Context, r *resty.Response) {
-	logx.RestyLoggerInstance.
+	e := logx.RestyLoggerInstance.
 		Info().
 		Ctx(ctx).
 		Str("keywords", "response").
-		Int("code", r.StatusCode()).
-		Str("status", r.Status()).
-		Any("proto", r.Proto()).
-		Any("header", r.Header()).
-		Any("error", r.Error()).
-		Str("body", r.String()).
-		Send()
+		Str("body", r.String())
+
+	if r.StatusCode() != http.StatusOK {
+		e = e.Int("status", r.StatusCode())
+	}
+	if r.Error() != nil {
+		e = e.Any("error", r.Error())
+	}
+	e.Send()
 }

@@ -3,6 +3,7 @@ package controllers
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"fmt"
 	"go-gin/internal/ginx/httpx"
 	"go-gin/internal/httpc"
 	"go-gin/rest/login"
@@ -32,6 +33,11 @@ func (c *apiController) Index(ctx *gin.Context) {
 func (c *apiController) IndexA(ctx *gin.Context) {
 
 	resp, err := user.Svc.Hello(ctx, &user.HelloReq{UserId: "userId111"})
+
+	fmt.Println(resp)
+
+	r, err := login.Svc.Login(ctx, &login.LoginReq{Username: "admin", Pwd: "123456"})
+	fmt.Println(r)
 	if err != nil {
 		httpx.Error(ctx, err)
 		return
