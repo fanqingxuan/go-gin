@@ -9,6 +9,7 @@ import (
 	"go-gin/internal/components/logx"
 	"go-gin/internal/components/redisx"
 	"go-gin/internal/ginx"
+	"go-gin/internal/task"
 	_ "go-gin/internal/utils"
 	"go-gin/middlewares"
 
@@ -33,7 +34,8 @@ func main() {
 
 	redisx.InitConfig(config.GetRedisConf())
 	redisx.Init()
-
+	task.Init(config.GetRedisConf())
+	defer task.Close()
 	events.Init()
 
 	// 初始化第三方服务地址

@@ -14,6 +14,7 @@
 - 使用轻量的日志库`github.com/rs/zerolog`进行记录日志
 - 引入`gopkg.in/yaml.v3`解析yaml配置文件到golang变量
 - 引入`github.com/go-resty/resty/v2`发起http请求，方便的请求第三方接口
+- 引入`github.com/hibiken/asynq`实现异步队列
 ### 依赖库如下
 ```shell
 github.com/gin-gonic/gin v1.9.1
@@ -49,6 +50,7 @@ github.com/go-resty/resty/v2 v2.13.1
 - events/ 事件目录
 - listeners/ 事件监听器
 - rest/ 请求第三方服务的目录
+- task/ 任务队列目录
 
 ### 功能代码
 - 控制器
@@ -368,6 +370,22 @@ github.com/go-resty/resty/v2 v2.13.1
                 return
             }
             ```
+
+- 队列
+
+    队列使用的是比较热门的库`github.com/hibiken/asynq`,本项目稍微进行了一点点儿封装，简化使用，更加结构化，便于代码的维护,弱化了client和server端指定taskname
+    - 队列server目录为`cmd/task`
+    - 队列代码维护在`tasks/`目录
+    - 将数据写入队列的方式，封装了3个方法
+        ```go
+        task.Dispatch() //可以添加延迟时间
+        task.DispatchWithRetry ()// key添加延迟时间和失败后的重试次数
+        task.DispatchNow() // 立即执行
+        ```
+    - server端handler处理,首先需要将没一个task的handler维护到server端,在`tasks/init.go`文件进行添加
+        ```go
+        task.Handle(NewSampleTaskHandler()) // Handle是封装的一个方法
+        ```
 ### 快速启动
 
 ```shell

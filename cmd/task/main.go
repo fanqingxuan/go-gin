@@ -2,13 +2,13 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"go-gin/config"
-	"go-gin/crons"
-	"go-gin/events"
 	"go-gin/internal/components/db"
 	"go-gin/internal/components/logx"
 	"go-gin/internal/components/redisx"
-	"go-gin/internal/cron"
+	"go-gin/internal/task"
+	"go-gin/tasks"
 )
 
 var configFile = flag.String("f", "./.env", "the config file")
@@ -28,14 +28,9 @@ func main() {
 
 	redisx.InitConfig(config.GetRedisConf())
 	redisx.Init()
-
-	events.Init()
-
-	// 初始化第三方服务地址
-	config.InitSvc()
-
-	c := cron.New()
-	crons.Init(c)
-	c.Run()
-
+	task.InitServer(config.GetRedisConf())
+	tasks.Init()
+	if err := task.Start(); err != nil {
+		fmt.Printf("could not run server: %v", err)
+	}
 }

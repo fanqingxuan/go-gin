@@ -1,8 +1,12 @@
 package controllers
 
 import (
+	"fmt"
 	"go-gin/internal/errorx"
 	"go-gin/internal/ginx/httpx"
+	"go-gin/internal/task"
+	"go-gin/tasks"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -40,6 +44,13 @@ func notNeedAuthRouteList(route *gin.Engine) {
 
 	r := route.Group("/")
 	r.GET("/", UserController.Index)
+	r.GET("/task", func(ctx *gin.Context) {
+		err := task.Dispatch(tasks.NewSampleTask("测试1234"), 3*time.Second)
+		fmt.Println(err)
+		err = task.Dispatch(tasks.NewSampleBTask("测试1234"), time.Second)
+		fmt.Println(err)
+		ctx.String(200, "hello world")
+	})
 
 	// 登录注册
 
