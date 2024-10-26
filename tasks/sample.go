@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"go-gin/internal/task"
-
-	"github.com/hibiken/asynq"
 )
 
 const TypeSampleTask = "sample"
@@ -15,12 +13,9 @@ func NewSampleTask(p string) *task.Task {
 }
 
 func NewSampleTaskHandler() *task.TaskHandler {
-	return task.NewTaskHandler(TypeSampleTask, HandleSampleTask)
-}
-
-func HandleSampleTask(ctx context.Context, t *asynq.Task) error {
-	fmt.Println(t.Type())
-	fmt.Println(string(t.Payload()))
-	// Image resizing code ...
-	return nil
+	return task.NewTaskHandler(TypeSampleTask, func(ctx context.Context, data []byte) error {
+		fmt.Println(string(data))
+		// Image resizing code ...
+		return nil
+	})
 }

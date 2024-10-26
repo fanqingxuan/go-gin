@@ -8,37 +8,23 @@ import (
 )
 
 func DispatchNow(t *Task) error {
-	p, err := json.Marshal(t.payload)
-	if err != nil {
-		return err
-	}
-	_, err = client.Enqueue(asynq.NewTask(t.typename, p))
-	if err != nil {
-		return err
-	}
-	return nil
+	return do(t)
 }
 
 func Dispatch(t *Task, d time.Duration) error {
-	p, err := json.Marshal(t.payload)
-	if err != nil {
-		return err
-	}
-	task := asynq.NewTask(t.typename, p)
-	_, err = client.Enqueue(task, asynq.ProcessIn(d))
-	if err != nil {
-		return err
-	}
-	return nil
+	return do(t, asynq.ProcessIn(d))
 }
 
 func DispatchWithRetry(t *Task, d time.Duration, n int) error {
+	return do(t, asynq.ProcessIn(d), asynq.MaxRetry(n))
+}
+
+func do(t *Task, opts ...asynq.Option) error {
 	p, err := json.Marshal(t.payload)
 	if err != nil {
 		return err
 	}
-	task := asynq.NewTask(t.typename, p)
-	_, err = client.Enqueue(task, asynq.ProcessIn(d), asynq.MaxRetry(n))
+	_, err = client.Enqueue(asynq.NewTask(t.taskName.Name(), p), opts...)
 	if err != nil {
 		return err
 	}

@@ -5,8 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"go-gin/internal/task"
-
-	"github.com/hibiken/asynq"
 )
 
 const TypeSampleBTask = "sampleB"
@@ -21,10 +19,9 @@ func NewSampleBTask(p string) *task.Task {
 
 func NewSampleBTaskHandler() *task.TaskHandler {
 	return task.NewTaskHandler(TypeSampleBTask,
-		func(ctx context.Context, t *asynq.Task) error {
-			fmt.Println(t.Type())
+		func(ctx context.Context, data []byte) error {
 			var p SampleBTaskPayload
-			if err := json.Unmarshal(t.Payload(), &p); err != nil {
+			if err := json.Unmarshal(data, &p); err != nil {
 				fmt.Println(err)
 				return err
 			}

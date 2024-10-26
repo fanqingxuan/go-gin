@@ -1,13 +1,19 @@
 package task
 
 type Task struct {
-	typename string
+	taskName TaskName
 	payload  any
 }
 
-func NewTask(typename string, payload any) *Task {
+type TaskName string
+
+func (n TaskName) Name() string {
+	return string(n)
+}
+
+func NewTask(taskName TaskName, payload any) *Task {
 	return &Task{
-		typename: typename,
+		taskName: taskName,
 		payload:  payload,
 	}
 }
