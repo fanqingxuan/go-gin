@@ -40,13 +40,14 @@ github.com/go-resty/resty/v2 v2.13.1
 - consts/ -常量目录
 - controllers/ - 控制器目录
 - internal/ -内部功能目录,里面方法不建议修改
-- jobs/ - 定时任务目录
+- crons/ - 定时任务目录
 - middlewares/ -中间件目录
 - models/ -数据表结构目录
 - services/ -业务逻辑目录
 - types/ 结构目录，用于定义请求参数、响应的数据结构
 - utils/ 工具目录，提供常用的辅助函数，一般不包含业务逻辑和状态信息
 - events/ 事件目录
+- listeners/ 事件监听器
 - rest/ 请求第三方服务的目录
 
 ### 功能代码
@@ -178,7 +179,7 @@ github.com/go-resty/resty/v2 v2.13.1
 
 - 定时任务
 
-    定时任务的入口文件为`cmd/cron/main.go`,具体业务代码在`jobs`目录编写。定时任务业务代码可以像api模式一样使用`log`、`db`
+    定时任务的入口文件为`cmd/cron/main.go`,具体业务代码在`crons`目录编写。定时任务业务代码可以像api模式一样使用`log`、`db`
 
     定义一个job首先要定义一个实现了`cron.Job`的接口的结构,`cron.Job`接口如下
     ```go
@@ -203,7 +204,7 @@ github.com/go-resty/resty/v2 v2.13.1
         return nil
     }
     ```
-    然后在`jobs/init.go`文件定义cron的任务执行频率即可，如下定义`SampleJob`每3s执行一次
+    然后在`crons/init.go`文件定义cron的任务执行频率即可，如下定义`SampleJob`每3s执行一次
     ```
     cron.AddJob("@every 3s", &SampleJob{})
     ```
