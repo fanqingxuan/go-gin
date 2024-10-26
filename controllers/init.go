@@ -48,7 +48,10 @@ func notNeedAuthRouteList(route *gin.Engine) {
 		err := task.DispatchNow(tasks.NewSampleTask("测试1234"))
 		fmt.Println(err)
 		err = task.Dispatch(tasks.NewSampleBTask("测试1234"), time.Second)
+
 		fmt.Println(err)
+		tasks.NewSampleTask("测试3333").DispatchNow()
+		tasks.NewSampleTask("测试3333").Dispatch(5 * time.Second)
 		ctx.String(200, "hello world")
 	})
 

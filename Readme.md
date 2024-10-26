@@ -378,9 +378,10 @@ github.com/go-resty/resty/v2 v2.13.1
     - 队列代码维护在`tasks/`目录
     - 将数据写入队列的方式，封装了3个方法
         ```go
-        task.Dispatch() //可以添加延迟时间
-        task.DispatchWithRetry ()// key添加延迟时间和失败后的重试次数
-        task.DispatchNow() // 立即执行
+        task.Dispatch(tasks.NewSampleTask("测试3333"),3*time.Secord) // 使用task包下的Dispatch方法,并添加延迟时间3s后执行
+        task.DispatchWithRetry(tasks.NewSampleTask("测试3333"),)// 使用task包下的Dispatch方法,并添加延迟时间和失败后的重试次数
+        task.DispatchNow(tasks.NewSampleTask("测试3333")) // 使用task包下的Dispatch方法,立即执行
+        tasks.NewSampleTask("测试3333").DispatchNow() // 使用task结构的DispatchNow方法
         ```
     - server端handler处理,首先需要将没一个task的handler维护到server端,在`tasks/init.go`文件进行添加
         ```go

@@ -25,7 +25,7 @@ func NewTaskHandler(taskName TaskName, handler func(context.Context, []byte) err
 func AddHandler(h *TaskHandler) {
 	mux.HandleFunc(h.taskName.Name(), func(ctx context.Context, t *asynq.Task) error {
 		new_ctx := context.WithValue(ctx, traceid.TraceIdFieldName, traceid.New())
-		logx.WithContext(new_ctx).Info("队列", fmt.Sprintf("开始执行,task:%s", t.Type()))
+		logx.WithContext(new_ctx).Info("队列", fmt.Sprintf("开始执行,task:%s,payload:%s", t.Type(), string(t.Payload())))
 		start := time.Now()
 
 		err := h.handler(new_ctx, t.Payload())
