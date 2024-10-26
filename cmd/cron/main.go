@@ -18,6 +18,7 @@ func main() {
 	flag.Parse()
 
 	config.Init(*configFile)
+	config.InitGlobalVars()
 	config.InitEnvironment()
 
 	logx.InitConfig(config.GetLogConf())
