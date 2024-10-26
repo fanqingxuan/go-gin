@@ -24,7 +24,7 @@ func do(t *Task, opts ...asynq.Option) error {
 	if err != nil {
 		return err
 	}
-	_, err = client.Enqueue(asynq.NewTask(t.taskName.Name(), p), opts...)
+	_, err = client.Enqueue(asynq.NewTask(t.taskName, p), opts...)
 	if err != nil {
 		return err
 	}
