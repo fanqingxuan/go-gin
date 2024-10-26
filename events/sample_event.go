@@ -4,21 +4,8 @@ import (
 	"go-gin/internal/event"
 )
 
-type SampleEvent struct {
-	name    string
-	payload any
-}
+var SampleEventName = "event.sample"
 
-func CreateSampleEvent(user string) event.Event {
-	return &SampleEvent{
-		name:    "sample.event",
-		payload: user,
-	}
-}
-
-func (e *SampleEvent) Name() string {
-	return e.name
-}
-func (e *SampleEvent) Payload() any {
-	return e.payload
+func NewSampleEvent(user string) *event.Event {
+	return event.NewEvent(SampleEventName, user)
 }

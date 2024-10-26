@@ -26,8 +26,8 @@ type User struct {
 }
 
 func (c *userController) Index(ctx *gin.Context) {
-	event.Fire(ctx, events.CreateSampleEvent("hello 测试"))
-	// events.CreateSampleEvent("测试").Dispatch(ctx)
+	event.Fire(ctx, events.NewSampleEvent("hello 测试"))
+	events.NewSampleEvent("333").Fire(ctx)
 	u := User{
 		Name:       "hello",
 		CreateTime: carbon.Parse("now").AddCentury(),
