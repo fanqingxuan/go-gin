@@ -9,4 +9,5 @@ var (
 	ErrUserNotFound       = errorx.New(20001, "用户不存在")
 	ErrUserNameOrPwdFaild = errorx.New(20002, "用户名或者密码错误")
 	ErrUserMustLogin      = errorx.New(20003, "请先登录")
+	ErrUserNeedLoginAgain = errorx.New(20004, "token已过期,请重新登录")
 )
