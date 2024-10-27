@@ -1,8 +1,8 @@
 package events
 
 import (
+	"go-gin/events/listeners"
 	"go-gin/internal/event"
-	"go-gin/listeners"
 )
 
 func Init() {

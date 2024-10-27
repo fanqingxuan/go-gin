@@ -1,12 +1,9 @@
 package controllers
 
 import (
-	"fmt"
 	"go-gin/events"
 	"go-gin/internal/errorx"
-	"go-gin/internal/event"
 	"go-gin/internal/ginx/httpx"
-	"go-gin/internal/task"
 	"go-gin/models"
 	"go-gin/tasks"
 	"time"
@@ -48,23 +45,21 @@ func notNeedAuthRouteList(route *gin.Engine) {
 	r := route.Group("/")
 	r.GET("/", UserController.Index)
 	r.GET("/task", func(ctx *gin.Context) {
-		err := task.DispatchNow(tasks.NewSampleTask("测试1234"))
-		fmt.Println(err)
-		err = task.Dispatch(tasks.NewSampleBTask("测试1234"), time.Second)
+		// err := task.DispatchNow(tasks.NewSampleTask("测试1234"))
+		// fmt.Println(err)
+		// err = task.Dispatch(tasks.NewSampleBTask("测试1234"), time.Second)
 
-		fmt.Println(err)
+		// fmt.Println(err)
 		tasks.NewSampleTask("测试3333").DispatchNow()
 		tasks.NewSampleTask("测试3333").Dispatch(5 * time.Second)
 		ctx.String(200, "hello world")
 	})
 	r.GET("/event", func(ctx *gin.Context) {
-		event.Fire(ctx, events.NewSampleEvent("hello 测试"))
+		// event.Fire(ctx, events.NewSampleEvent("hello 测试"))
 		events.NewSampleEvent("333").Fire(ctx)
 		events.NewDemoEvent(&models.User{Name: "hello"}).Fire(ctx)
 		ctx.String(200, "hello world")
 	})
-
-	// 登录注册
 
 	// api测试
 	api_router := r.Group("/api")

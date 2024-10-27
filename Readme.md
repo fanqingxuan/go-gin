@@ -48,7 +48,7 @@ github.com/go-resty/resty/v2 v2.13.1
 - types/ 结构目录，用于定义请求参数、响应的数据结构
 - utils/ 工具目录，提供常用的辅助函数，一般不包含业务逻辑和状态信息
 - events/ 事件目录
-- listeners/ 事件监听器
+    - listeners/ 事件监听器
 - rest/ 请求第三方服务的目录
 - task/ 任务队列目录
 
