@@ -54,7 +54,7 @@ func HasField(ctx context.Context, key string, field string) (bool, error) {
 	return cmd.Val(), nil
 }
 
-func Del(ctx context.Context, key string, field string) error {
+func Delete(ctx context.Context, key string, field string) error {
 	if err := redisx.GetInstance().HDel(ctx, transformKey(key), field).Err(); err != nil {
 		return err
 	}
