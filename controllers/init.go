@@ -3,6 +3,7 @@ package controllers
 import (
 	"go-gin/events"
 	"go-gin/internal/errorx"
+	"go-gin/internal/g"
 	"go-gin/internal/ginx/httpx"
 	"go-gin/middlewares"
 	"go-gin/models"
@@ -60,6 +61,11 @@ func notNeedAuthRouteList(route *gin.Engine) {
 		events.NewSampleEvent("333").Fire(ctx)
 		events.NewDemoEvent(&models.User{Name: "hello"}).Fire(ctx)
 		ctx.String(200, "hello world")
+	})
+	r.GET("/test", func(ctx *gin.Context) {
+		ctx.JSON(200,
+			g.MapStrInt{"hello": 333},
+		)
 	})
 
 	// api测试
