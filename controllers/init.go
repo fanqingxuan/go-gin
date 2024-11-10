@@ -5,6 +5,7 @@ import (
 	"go-gin/internal/errorx"
 	"go-gin/internal/g"
 	"go-gin/internal/ginx/httpx"
+	"go-gin/internal/task"
 	"go-gin/middlewares"
 	"go-gin/models"
 	"go-gin/tasks"
@@ -52,8 +53,9 @@ func notNeedAuthRouteList(route *gin.Engine) {
 		// err = task.Dispatch(tasks.NewSampleBTask("测试1234"), time.Second)
 
 		// fmt.Println(err)
-		tasks.NewSampleTask("测试3333").DispatchNow()
-		tasks.NewSampleTask("测试3333").Dispatch(5 * time.Second)
+		tasks.NewSampleTask("测试1").DispatchNow()
+		tasks.NewSampleTask("测试2").Dispatch(5 * time.Second)
+		task.NewOption().Queue(task.HIGH).TaskID("test").Dispatch(tasks.NewSampleBTask("hello"))
 		ctx.String(200, "hello world")
 	})
 	r.GET("/event", func(ctx *gin.Context) {

@@ -11,6 +11,12 @@ var (
 	mux *asynq.ServeMux
 )
 
+var (
+	HIGH   = "critical"
+	NORMAL = "default"
+	LOW    = "low"
+)
+
 func InitServer(c redisx.Config) {
 	srv = asynq.NewServer(
 		asynq.RedisClientOpt{
@@ -21,12 +27,13 @@ func InitServer(c redisx.Config) {
 		},
 		asynq.Config{
 			// Specify how many concurrent workers to use
-			Concurrency: 10,
+			Concurrency:    10,
+			StrictPriority: true,
 			// Optionally specify multiple queues with different priority.
 			Queues: map[string]int{
-				"critical": 6,
-				"default":  3,
-				"low":      1,
+				HIGH:   6,
+				NORMAL: 3,
+				LOW:    1,
 			},
 			// See the godoc for other configuration options
 		},

@@ -382,6 +382,9 @@ github.com/go-resty/resty/v2 v2.13.1
         task.DispatchWithRetry(tasks.NewSampleTask("测试3333"),)// 使用task包下的Dispatch方法,并添加延迟时间和失败后的重试次数
         task.DispatchNow(tasks.NewSampleTask("测试3333")) // 使用task包下的Dispatch方法,立即执行
         tasks.NewSampleTask("测试3333").DispatchNow() // 使用task结构的DispatchNow方法
+        
+        task.NewOption().Queue(task.HIGH).TaskID("test").Dispatch(tasks.NewSampleBTask("hello")) // 指定发送队列
+
         ```
     - server端handler处理,首先需要将没一个task的handler维护到server端,在`tasks/init.go`文件进行添加
         ```go
