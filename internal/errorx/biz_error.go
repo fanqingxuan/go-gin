@@ -13,14 +13,10 @@ func NewDefault(msg string) BizError {
 	return BizError{Code: ErrCodeDefaultCommon, Msg: msg}
 }
 
-func NewWithError(code int, err error) BizError {
-	return BizError{Code: code, Msg: err.Error()}
+func NewWithError(err error) BizError {
+	return BizError{Code: ErrCodeDefaultCommon, Msg: err.Error()}
 }
 
-func NewDBError(s string) BizError {
-	return BizError{Code: ErrCodeDBOperateFailed, Msg: s}
-}
-
-func (c BizError) Error() string {
-	return c.Msg
+func (e BizError) Error() string {
+	return e.Msg
 }

@@ -28,7 +28,7 @@ func (c *loginController) Login(ctx *gin.Context) {
 	}
 	t := token.TokenId()
 	if err := token.Set(ctx, t, "name", "测试"); err != nil {
-		httpx.Error(ctx, errorx.NewDefault("存储用户信息异常"))
+		httpx.Error(ctx, errorx.ErrDBOperateFailed)
 		return
 	}
 	httpx.Ok(ctx, t)

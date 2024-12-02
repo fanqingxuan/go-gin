@@ -3,9 +3,8 @@ package errorx
 import "net/http"
 
 const (
-	ErrCodeDefaultCommon   = 10000 // 默认通用错误码
-	ErrCodeValidateFailed  = 10001 // 验证失败
-	ErrCodeDBOperateFailed = 10002 // 数据库操作错误
+	ErrCodeDefaultCommon  = 10000 // 默认通用错误码
+	ErrCodeValidateFailed = 10001 // 验证失败
 )
 
 const (
@@ -15,8 +14,10 @@ const (
 	ErrCodeThirdAPICallFormatFailed       = 11004 // 第三方接口返回格式不正确
 	ErrCodeThirdAPIDataParseFailed        = 11005 // 第三方接口解析data失败
 	ErrCodeThirdAPIBusinessFailed         = 11006 // 第三方接口业务上的错误
-
 )
+
+var ErrRedisOperateFailed = NewRedisError(12001, "服务器内部错误")
+var ErrDBOperateFailed = NewDBError(12002, "服务器内部错误")
 
 // http错误
 var (
