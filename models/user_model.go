@@ -8,9 +8,9 @@ import (
 
 type User struct {
 	Id         int64
-	Name       string    `gorm:"column:username"`
-	Age        *int      `gorm:"column:age"`
-	CreateTime time.Time `gorm:"column:create_time"`
+	Name       string    `gorm:"column:username" json:"name"`
+	Age        *int      `gorm:"column:age" json:"age"`
+	CreateTime time.Time `gorm:"column:create_time" json:"create_time"`
 }
 
 func (u *User) TableName() string {

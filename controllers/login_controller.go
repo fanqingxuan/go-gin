@@ -1,12 +1,11 @@
 package controllers
 
 import (
-	"go-gin/consts"
-	"go-gin/internal/components/db"
-	"go-gin/internal/errorx"
+	"go-gin/internal/components/logx"
 	"go-gin/internal/ginx/httpx"
 	"go-gin/internal/token"
-	"go-gin/models"
+	"go-gin/logic"
+	"go-gin/types"
 
 	"github.com/gin-gonic/gin"
 )
@@ -17,21 +16,15 @@ type loginController struct {
 var LoginController = &loginController{}
 
 func (c *loginController) Login(ctx *gin.Context) {
-	var user models.User
-	if err := db.WithContext(ctx).First(&user, "username=?", "测试1").Error; err != nil {
-		if errorx.IsRecordNotFound(err) {
-			httpx.Error(ctx, consts.ErrUserNameOrPwdFaild)
-		} else {
-			httpx.Error(ctx, err)
-		}
+	l := logic.NewLoginLogic()
+	var req types.LoginReq
+	if err := ctx.ShouldBind(&req); err != nil {
+		logx.WithContext(ctx).Warn("ShouldBind异常", err)
+		httpx.Error(ctx, err)
 		return
 	}
-	t := token.TokenId()
-	if err := token.Set(ctx, t, "name", "测试"); err != nil {
-		httpx.Error(ctx, errorx.ErrDBOperateFailed)
-		return
-	}
-	httpx.Ok(ctx, t)
+	resp, err := l.Handle(ctx, req)
+	httpx.Handle(ctx, resp, err)
 }
 
 func (c *loginController) LoginOut(ctx *gin.Context) {

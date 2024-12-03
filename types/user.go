@@ -22,3 +22,12 @@ type AddUserReq struct {
 type AddUserReply struct {
 	Message string `json:"message"`
 }
+
+type LoginReq struct {
+	Username string `form:"username" binding:"required" label:"用户名"`
+}
+
+type LoginReply struct {
+	Token string      `json:"token"`
+	User  models.User `json:"user"`
+}
