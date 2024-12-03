@@ -6,7 +6,6 @@ import (
 	"go-gin/internal/g"
 	"go-gin/internal/ginx/httpx"
 	"go-gin/internal/task"
-	"go-gin/middlewares"
 	"go-gin/models"
 	"go-gin/tasks"
 	"time"
@@ -29,7 +28,7 @@ func Init(route *gin.Engine) {
 // 需要登录的路由
 func needAuthRouteList(route *gin.Engine) {
 	r := route.Group("")
-	r.Use(middlewares.TokenCheck())
+	// r.Use(middlewares.TokenCheck())
 	// 用户信息
 	user_router := r.Group("/user")
 	user_router.GET("/list", UserController.List)

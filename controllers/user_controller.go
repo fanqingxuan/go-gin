@@ -5,7 +5,7 @@ import (
 	"go-gin/internal/components/logx"
 	"go-gin/internal/event"
 	"go-gin/internal/ginx/httpx"
-	"go-gin/services"
+	"go-gin/logic"
 	"go-gin/types"
 
 	"github.com/gin-gonic/gin"
@@ -13,12 +13,9 @@ import (
 )
 
 type userController struct {
-	service *services.UserService
 }
 
-var UserController = &userController{
-	service: services.NewUserService(),
-}
+var UserController = &userController{}
 
 type User struct {
 	Name       string        `json:"name"`
@@ -37,7 +34,8 @@ func (c *userController) Index(ctx *gin.Context) {
 
 func (c *userController) List(ctx *gin.Context) {
 	var req types.ListReq
-	resp, err := c.service.GetAllUsers(ctx, req)
+	l := logic.NewGetUsersLogic()
+	resp, err := l.Handle(ctx, req)
 	httpx.Handle(ctx, resp, err)
 }
 
@@ -48,8 +46,8 @@ func (c *userController) AddUser(ctx *gin.Context) {
 		httpx.Error(ctx, err)
 		return
 	}
-
-	resp, err := c.service.AddUser(ctx, req)
+	l := logic.NewAddUserLogic()
+	resp, err := l.Handle(ctx, req)
 	if err != nil {
 		httpx.Error(ctx, err)
 		return
