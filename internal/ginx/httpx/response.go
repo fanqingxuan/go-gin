@@ -57,13 +57,13 @@ func Error(ctx *gin.Context, err error) {
 		httpStatus = http.StatusOK
 		code = e.Code
 	case errorx.RedisError:
-		message = e.Msg
+		message = "服务器内部错误"
 		httpStatus = http.StatusInternalServerError
-		code = e.Code
+		code = errorx.ErrCodeRedisOperateFailed
 	case errorx.DBError:
-		message = e.Msg
+		message = "服务器内部错误"
 		httpStatus = http.StatusInternalServerError
-		code = e.Code
+		code = errorx.ErrCodeDBOperateFailed
 	case error:
 		httpStatus = http.StatusOK
 		code = errorx.ErrCodeDefaultCommon

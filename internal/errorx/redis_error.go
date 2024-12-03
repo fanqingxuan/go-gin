@@ -1,12 +1,11 @@
 package errorx
 
 type RedisError struct {
-	Code int
-	Msg  string
+	Msg string
 }
 
-func NewRedisError(code int, msg string) RedisError {
-	return RedisError{Code: code, Msg: msg}
+func NewRedisError(err error) RedisError {
+	return RedisError{Msg: err.Error()}
 }
 
 func (e RedisError) Error() string {
