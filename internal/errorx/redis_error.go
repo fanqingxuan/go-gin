@@ -4,7 +4,10 @@ type RedisError struct {
 	Msg string
 }
 
-func NewRedisError(err error) RedisError {
+func NewRedisError(err error) error {
+	if err == nil {
+		return nil
+	}
 	return RedisError{Msg: err.Error()}
 }
 

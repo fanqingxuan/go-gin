@@ -30,7 +30,7 @@ func (l *LoginLogic) Handle(ctx context.Context, req types.LoginReq) (resp *type
 	} else {
 		t := token.TokenId()
 		if err := token.Set(ctx, t, "name", user.Name); err != nil {
-			return nil, errorx.NewRedisError(err)
+			return nil, err
 		}
 		return &types.LoginReply{
 			Token: t,

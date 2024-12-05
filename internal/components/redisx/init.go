@@ -32,6 +32,7 @@ func Init() {
 	}
 	rdb := redis.NewClient(options)
 	rdb.AddHook(&LogHook{})
+	rdb.AddHook(&ErrHook{})
 	err := rdb.Ping(context.Background()).Err()
 	if err != nil {
 		logx.WithContext(context.Background()).Error("redis", err)
