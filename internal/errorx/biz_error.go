@@ -10,11 +10,11 @@ func New(code int, msg string) BizError {
 }
 
 func NewDefault(msg string) BizError {
-	return BizError{Code: ErrCodeDefaultCommon, Msg: msg}
+	return BizError{Code: ErrCodeBizDefault, Msg: msg}
 }
 
 func NewWithError(err error) BizError {
-	return BizError{Code: ErrCodeDefaultCommon, Msg: err.Error()}
+	return BizError{Code: ErrCodeBizDefault, Msg: err.Error()}
 }
 
 func (e BizError) Error() string {

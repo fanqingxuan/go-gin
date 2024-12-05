@@ -66,7 +66,7 @@ func Error(ctx *gin.Context, err error) {
 		code = errorx.ErrCodeDBOperateFailed
 	case error:
 		httpStatus = http.StatusOK
-		code = errorx.ErrCodeDefaultCommon
+		code = errorx.ErrCodeDefault
 		message = err.Error()
 	}
 	result := Result{

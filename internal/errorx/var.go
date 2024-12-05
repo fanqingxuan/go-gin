@@ -3,10 +3,11 @@ package errorx
 import "net/http"
 
 const (
-	ErrCodeDefaultCommon      = 10000 // 默认通用错误码
-	ErrCodeValidateFailed     = 10001 // 验证失败
-	ErrCodeDBOperateFailed    = 10002 // 数据库操作失败
-	ErrCodeRedisOperateFailed = 10003 // redis操作失败
+	ErrCodeDefault            = 10000 // 默认通用错误码
+	ErrCodeBizDefault         = 10001 // 业务默认错误
+	ErrCodeValidateFailed     = 10002 // 验证失败
+	ErrCodeDBOperateFailed    = 10003 // 数据库操作失败
+	ErrCodeRedisOperateFailed = 10004 // redis操作失败
 )
 
 var (
