@@ -3,6 +3,7 @@ package models
 import (
 	"context"
 	"go-gin/internal/components/db"
+	"go-gin/internal/errorx"
 	"time"
 )
 
@@ -41,8 +42,8 @@ func (m *UserModel) Add(ctx context.Context, user *User) (err error) {
 
 func (m *UserModel) GetByUsername(ctx context.Context, name string) (*User, error) {
 	var user User
-	if err := db.WithContext(ctx).First(&user, "username=?", name).Error; err != nil {
-		return nil, err
+	if err := db.WithContext(ctx).First(&user, "usernadme=?", name).Error; err != nil {
+		return nil, errorx.NewDBError(err)
 	}
 	return &user, nil
 }

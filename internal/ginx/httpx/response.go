@@ -2,6 +2,7 @@ package httpx
 
 import (
 	"context"
+	"go-gin/internal/environment"
 	"go-gin/internal/errorx"
 	"go-gin/internal/traceid"
 	"net/http"
@@ -57,11 +58,19 @@ func Error(ctx *gin.Context, err error) {
 		httpStatus = http.StatusOK
 		code = e.Code
 	case errorx.RedisError:
-		message = "服务器内部错误"
+		if environment.IsDebugMode() {
+			message = e.Error()
+		} else {
+			message = "服务器内部错误"
+		}
 		httpStatus = http.StatusInternalServerError
 		code = errorx.ErrCodeRedisOperateFailed
 	case errorx.DBError:
-		message = "服务器内部错误"
+		if environment.IsDebugMode() {
+			message = e.Error()
+		} else {
+			message = "服务器内部错误"
+		}
 		httpStatus = http.StatusInternalServerError
 		code = errorx.ErrCodeDBOperateFailed
 	case error:
