@@ -15,7 +15,7 @@ func dbCheck() gin.HandlerFunc {
 			err := db.Connect()
 			if err != nil {
 				logx.WithContext(ctx).Error("connect db again", err.Error())
-				httpx.Error(ctx, errorx.NewDBError(err))
+				httpx.Error(ctx, errorx.TryToDBError(err))
 				ctx.Abort()
 			}
 		}

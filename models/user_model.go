@@ -28,17 +28,17 @@ func NewUserModel() *UserModel {
 func (m *UserModel) List(ctx context.Context) ([]User, error) {
 	var u []User
 	err := db.WithContext(ctx).Find(&u).Error
-	return u, errorx.NewDBError(err)
+	return u, errorx.TryToDBError(err)
 }
 
 func (m *UserModel) Add(ctx context.Context, user *User) (err error) {
 	err = db.WithContext(ctx).Select("Name").Create(user).Error
-	return errorx.NewDBError(err)
+	return errorx.TryToDBError(err)
 
 }
 
 func (m *UserModel) GetByUsername(ctx context.Context, name string) (*User, error) {
 	var user User
 	err := db.WithContext(ctx).First(&user, "username=?", name).Error
-	return &user, errorx.NewDBError(err)
+	return &user, errorx.TryToDBError(err)
 }

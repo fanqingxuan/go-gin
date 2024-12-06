@@ -14,7 +14,7 @@ func (e DBError) Error() string {
 	return e.Msg
 }
 
-func NewDBError(err error) error {
+func TryToDBError(err error) error {
 	if err == nil {
 		return nil
 	}
