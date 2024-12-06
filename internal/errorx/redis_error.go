@@ -4,7 +4,7 @@ type RedisError struct {
 	Msg string
 }
 
-func NewRedisError(err error) error {
+func TryToRedisError(err error) error {
 	if err == nil {
 		return nil
 	}
