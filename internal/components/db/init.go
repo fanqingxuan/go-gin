@@ -71,6 +71,6 @@ func Connect() (err error) {
 	return
 }
 
-func WithContext(ctx context.Context) *gorm.DB {
-	return instance.WithContext(ctx)
+func WithContext(ctx context.Context) *DB {
+	return &DB{instance.WithContext(ctx)}
 }
