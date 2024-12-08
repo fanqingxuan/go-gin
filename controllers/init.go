@@ -4,29 +4,27 @@ import (
 	"go-gin/events"
 	"go-gin/internal/errorx"
 	"go-gin/internal/g"
-	"go-gin/internal/ginx/httpx"
+	"go-gin/internal/httpx"
 	"go-gin/internal/task"
 	"go-gin/models"
 	"go-gin/tasks"
 	"time"
-
-	"github.com/gin-gonic/gin"
 )
 
-func Init(route *gin.Engine) {
+func Init(route *httpx.Engine) {
 
-	route.NoMethod(func(ctx *gin.Context) {
-		httpx.Error(ctx, errorx.ErrMethodNotAllowed)
+	route.NoMethod(func(ctx *httpx.Context) (interface{}, error) {
+		return nil, errorx.ErrMethodNotAllowed
 	})
-	route.NoRoute(func(ctx *gin.Context) {
-		httpx.Error(ctx, errorx.ErrNoRoute)
+	route.NoRoute(func(ctx *httpx.Context) (interface{}, error) {
+		return nil, errorx.ErrNoRoute
 	})
 	notNeedAuthRouteList(route)
 	needAuthRouteList(route)
 }
 
 // 需要登录的路由
-func needAuthRouteList(route *gin.Engine) {
+func needAuthRouteList(route *httpx.Engine) {
 	r := route.Group("")
 	// r.Use(middlewares.TokenCheck())
 	// 用户信息
@@ -41,12 +39,12 @@ func needAuthRouteList(route *gin.Engine) {
 }
 
 // 不需要登录的路由
-func notNeedAuthRouteList(route *gin.Engine) {
+func notNeedAuthRouteList(route *httpx.Engine) {
 	route.GET("/login", LoginController.Login)
 
 	r := route.Group("/")
 	r.GET("/", UserController.Index)
-	r.GET("/task", func(ctx *gin.Context) {
+	r.GET("/task", func(ctx *httpx.Context) (interface{}, error) {
 		// err := task.DispatchNow(tasks.NewSampleTask("测试1234"))
 		// fmt.Println(err)
 		// err = task.Dispatch(tasks.NewSampleBTask("测试1234"), time.Second)
@@ -55,18 +53,16 @@ func notNeedAuthRouteList(route *gin.Engine) {
 		tasks.NewSampleTask("测试1").DispatchNow()
 		tasks.NewSampleTask("测试2").Dispatch(5 * time.Second)
 		task.NewOption().Queue(task.HIGH).TaskID("test").Dispatch(tasks.NewSampleBTask("hello"))
-		ctx.String(200, "hello world")
+		return "hello world", nil
 	})
-	r.GET("/event", func(ctx *gin.Context) {
+	r.GET("/event", func(ctx *httpx.Context) (interface{}, error) {
 		// event.Fire(ctx, events.NewSampleEvent("hello 测试"))
 		events.NewSampleEvent("333").Fire(ctx)
 		events.NewDemoEvent(&models.User{Name: "hello"}).Fire(ctx)
-		ctx.String(200, "hello world")
+		return "hello world", nil
 	})
-	r.GET("/test", func(ctx *gin.Context) {
-		ctx.JSON(200,
-			g.MapStrInt{"hello": 333},
-		)
+	r.GET("/test", func(ctx *httpx.Context) (interface{}, error) {
+		return g.MapStrInt{"hello": 333}, nil
 	})
 
 	// api测试

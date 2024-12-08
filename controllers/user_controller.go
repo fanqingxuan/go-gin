@@ -4,11 +4,10 @@ import (
 	"go-gin/events"
 	"go-gin/internal/components/logx"
 	"go-gin/internal/event"
-	"go-gin/internal/ginx/httpx"
+	"go-gin/internal/httpx"
 	"go-gin/logic"
 	"go-gin/types"
 
-	"github.com/gin-gonic/gin"
 	"github.com/golang-module/carbon/v2"
 )
 
@@ -22,36 +21,28 @@ type User struct {
 	CreateTime carbon.Carbon `json:"create_time"`
 }
 
-func (c *userController) Index(ctx *gin.Context) {
+func (c *userController) Index(ctx *httpx.Context) (interface{}, error) {
 	event.Fire(ctx, events.NewSampleEvent("hello 测试"))
 	events.NewSampleEvent("333").Fire(ctx)
 	u := User{
 		Name:       "hello",
 		CreateTime: carbon.Parse("now").AddCentury(),
 	}
-	httpx.Ok(ctx, u)
+	return u, nil
 }
 
-func (c *userController) List(ctx *gin.Context) {
+func (c *userController) List(ctx *httpx.Context) (interface{}, error) {
 	var req types.ListReq
 	l := logic.NewGetUsersLogic()
-	resp, err := l.Handle(ctx, req)
-	httpx.Handle(ctx, resp, err)
+	return l.Handle(ctx, req)
 }
 
-func (c *userController) AddUser(ctx *gin.Context) {
+func (c *userController) AddUser(ctx *httpx.Context) (interface{}, error) {
 	var req types.AddUserReq
 	if err := ctx.ShouldBind(&req); err != nil {
 		logx.WithContext(ctx).Warn("ShouldBind异常", err)
-		httpx.Error(ctx, err)
-		return
+		return nil, err
 	}
 	l := logic.NewAddUserLogic()
-	resp, err := l.Handle(ctx, req)
-	if err != nil {
-		httpx.Error(ctx, err)
-		return
-	}
-
-	httpx.Ok(ctx, resp)
+	return l.Handle(ctx, req)
 }

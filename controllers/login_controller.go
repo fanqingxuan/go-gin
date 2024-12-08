@@ -2,12 +2,10 @@ package controllers
 
 import (
 	"go-gin/internal/components/logx"
-	"go-gin/internal/ginx/httpx"
+	"go-gin/internal/httpx"
 	"go-gin/internal/token"
 	"go-gin/logic"
 	"go-gin/types"
-
-	"github.com/gin-gonic/gin"
 )
 
 type loginController struct {
@@ -15,19 +13,17 @@ type loginController struct {
 
 var LoginController = &loginController{}
 
-func (c *loginController) Login(ctx *gin.Context) {
+func (c *loginController) Login(ctx *httpx.Context) (interface{}, error) {
 	l := logic.NewLoginLogic()
 	var req types.LoginReq
 	if err := ctx.ShouldBind(&req); err != nil {
 		logx.WithContext(ctx).Warn("ShouldBind异常", err)
-		httpx.Error(ctx, err)
-		return
+		return nil, err
 	}
-	resp, err := l.Handle(ctx, req)
-	httpx.Handle(ctx, resp, err)
+	return l.Handle(ctx, req)
 }
 
-func (c *loginController) LoginOut(ctx *gin.Context) {
+func (c *loginController) LoginOut(ctx *httpx.Context) (interface{}, error) {
 	token.Flush(ctx, ctx.GetHeader("token"))
-	httpx.OkResponse(ctx)
+	return nil, nil
 }

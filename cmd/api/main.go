@@ -8,10 +8,8 @@ import (
 	"go-gin/internal/components/db"
 	"go-gin/internal/components/logx"
 	"go-gin/internal/components/redisx"
-	"go-gin/internal/ginx"
 	"go-gin/internal/task"
 	_ "go-gin/internal/utils"
-	"go-gin/middlewares"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -41,10 +39,10 @@ func main() {
 	// 初始化第三方服务地址
 	config.InitSvc()
 
-	ginx.InitConfig(ginx.Config{Port: config.GetAppConf().Port})
-	engine := ginx.Init()
-	middlewares.Init(engine)
+	InitConfig(Config{Port: config.GetAppConf().Port})
+	engine := InitServer()
+	InitValidators()
 	controllers.Init(engine)
-	ginx.Start(engine)
+	StartServer(engine)
 
 }

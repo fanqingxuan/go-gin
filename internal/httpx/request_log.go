@@ -1,16 +1,14 @@
-package middlewares
+package httpx
 
 import (
 	"go-gin/internal/components/logx"
 	"net/url"
 	"time"
-
-	"github.com/gin-gonic/gin"
 )
 
-func RequestLog() gin.HandlerFunc {
+func RequestLog() HandlerFunc {
 
-	return func(c *gin.Context) {
+	return func(c *Context) (interface{}, error) {
 		// Start timer
 		start := time.Now()
 		path := c.Request.URL.Path
@@ -37,6 +35,6 @@ func RequestLog() gin.HandlerFunc {
 			Str("proto", c.Request.Proto).
 			Str("user_agent", c.Request.UserAgent()).
 			Send()
-
+		return nil, nil
 	}
 }

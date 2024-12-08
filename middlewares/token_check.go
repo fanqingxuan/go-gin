@@ -3,18 +3,16 @@ package middlewares
 import (
 	"go-gin/consts"
 	"go-gin/internal/errorx"
-	"go-gin/internal/ginx/httpx"
+	"go-gin/internal/httpx"
 	"go-gin/internal/token"
-
-	"github.com/gin-gonic/gin"
 )
 
 type TokenHeader struct {
 	Token string `header:"token" binding:"required"`
 }
 
-func TokenCheck() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
+func TokenCheck() httpx.HandlerFunc {
+	return func(ctx *httpx.Context) {
 		var req TokenHeader
 		if err := ctx.ShouldBindHeader(&req); err != nil {
 			httpx.Error(ctx, consts.ErrUserMustLogin)

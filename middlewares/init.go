@@ -1,8 +1,8 @@
 package middlewares
 
-import "github.com/gin-gonic/gin"
+import "go-gin/internal/httpx"
 
-func Init(r *gin.Engine) {
+func Init(r *httpx.Engine) {
 	r.Use(dbCheck())
 	r.Use(recoverLog())
 }

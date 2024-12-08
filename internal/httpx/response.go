@@ -6,8 +6,6 @@ import (
 	"go-gin/internal/errorx"
 	"go-gin/internal/traceid"
 	"net/http"
-
-	"github.com/gin-gonic/gin"
 )
 
 var (
@@ -26,24 +24,16 @@ type Result struct {
 	TraceId string
 }
 
-func Ok(ctx *gin.Context, data any) {
-	OkWithMessage(ctx, data, DefaultSuccessMessageValue)
-}
-
-func OkResponse(ctx *gin.Context) {
-	OkWithMessage(ctx, nil, DefaultSuccessMessageValue)
-}
-
-func OkWithMessage(ctx *gin.Context, data any, msg string) {
+func Ok(ctx *Context, data any) {
 	result := Result{
 		Code:    DefaultSuccessCodeValue,
 		Data:    data,
-		Message: msg,
+		Message: DefaultSuccessMessageValue,
 	}
 	ctx.JSON(http.StatusOK, transform(ctx, result))
 }
 
-func Error(ctx *gin.Context, err error) {
+func Error(ctx *Context, err error) {
 	var httpStatus int
 	var code int
 	var message string
@@ -85,7 +75,7 @@ func Error(ctx *gin.Context, err error) {
 	ctx.JSON(httpStatus, transform(ctx, result))
 }
 
-func Handle(ctx *gin.Context, data any, err error) {
+func Handle(ctx *Context, data any, err error) {
 	if err != nil {
 		Error(ctx, err)
 	} else {

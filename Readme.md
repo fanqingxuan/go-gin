@@ -15,6 +15,12 @@
 - 引入`gopkg.in/yaml.v3`解析yaml配置文件到golang变量
 - 引入`github.com/go-resty/resty/v2`发起http请求，方便的请求第三方接口
 - 引入`github.com/hibiken/asynq`实现异步队列
+- 引入`gorm.io/gorm`操作数据库
+# 亮点，大大提升了代码的优雅度
+- 封装了db error，redis error,这样业务层，db层减少了很多if error，else error的判断
+- 封装了gin框架，减少了控制器层error相关if else的判断，使代码更美观，清晰，简洁
+- 存在db error，redis error,http error,业务error，以及golang自身的error类型，响应不同的错误码结果
+
 ### 依赖库如下
 ```shell
 github.com/gin-gonic/gin v1.9.1
@@ -44,7 +50,7 @@ github.com/go-resty/resty/v2 v2.13.1
 - crons/ - 定时任务目录
 - middlewares/ -中间件目录
 - models/ -数据表结构目录
-- services/ -业务逻辑目录
+- logic/ -业务逻辑目录
 - types/ 结构目录，用于定义请求参数、响应的数据结构
 - utils/ 工具目录，提供常用的辅助函数，一般不包含业务逻辑和状态信息
 - events/ 事件目录
@@ -63,8 +69,10 @@ github.com/go-resty/resty/v2 v2.13.1
     var UserController = &userController{
     }
 
-    func (c *userController) Index(ctx *gin.Context) {
-        httpx.Ok(ctx, "hello world")
+    func (c *userController) List(ctx *httpx.Context) (interface{}, error) {
+        var req types.ListReq
+        l := logic.NewGetUsersLogic()
+        return l.Handle(ctx, req)
     }
     ```
     然后在`controllers/init.go`文件定义路由即可
@@ -72,14 +80,7 @@ github.com/go-resty/resty/v2 v2.13.1
     user_router := route.Group("/user")
 	user_router.GET("/", UserController.Index)
     ```
-    另外，对于控制器的响应封装了几个公共方法
-    ```go
-    httpx.Ok(ctx, "hello world") // 输出正常的响应
-    httpx.OkWithMessage(ctx *gin.Context, data any, msg string)
-    
-    httpx.Error(ctx, err) //输出异常的响应
-
-    httpx.Handle(ctx *gin.Context, data any, err error) //既可以输出正常的响应，又可以说出异常的响应
+    控制器直接返回logic层处理后的结果，不需要关心响应格式，减少了不必要的if，else判断，自己封装的gin框架底层会根据error自动判断渲染数据还是error数据
     ```
     封装响应的原因是定义了输出的响应结构，如下，永远返回包含code、data、message、trace_id四个字段的结构，使响应结果结构化
     ```shell
@@ -113,25 +114,33 @@ github.com/go-resty/resty/v2 v2.13.1
         "request_id": "8ddb97db-be44-4df0-8110-0d38a0cc4657"
     }
     ```
-- 服务层
+- 业务层
 
-    服务层代码没有什么特别的，需要说明的是方法的第一个参数建议是`context.Context`,一是统一规范，二是可以日志记录traceid
+    业务层采用命令模式，一个logic只负责处理一个业务的处理，例如`getusers_logic.go`
     ```go
-    type UserService struct {
+    type GetUsersLogic struct {
+        model *models.UserModel
     }
 
-    func NewUserService() *UserService {
-        return &UserService{}
+    func NewGetUsersLogic() *GetUsersLogic {
+        return &GetUsersLogic{
+            model: models.NewUserModel(),
+        }
     }
 
-    func (svc *UserService) GetAllUsers(ctx context.Context) ([]models.User, error) {
+    func (l *GetUsersLogic) Handle(ctx context.Context, req types.ListReq) (resp *types.ListReply, err error) {
         var u []models.User
-        if err := db.WithContext(ctx).Find(&u).Error; err != nil {
+        if u, err = l.model.List(ctx); err != nil {
             return nil, err
         }
-        return u, nil
+
+        redisx.GetInstance().HSet(ctx, "name", "age", 43)
+        return &types.ListReply{
+            Users: u,
+        }, nil
 
     }
+    
     ```
 - 数据库
 

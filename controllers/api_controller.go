@@ -3,9 +3,8 @@ package controllers
 import (
 	"crypto/md5"
 	"encoding/hex"
-	"fmt"
-	"go-gin/internal/ginx/httpx"
 	"go-gin/internal/httpc"
+	"go-gin/internal/httpx"
 	"go-gin/rest/login"
 	"go-gin/rest/mylogin"
 	"go-gin/rest/user"
@@ -18,65 +17,37 @@ type apiController struct {
 
 var ApiController = &apiController{}
 
-func (c *apiController) Index(ctx *gin.Context) {
+func (c *apiController) Index(ctx *httpx.Context) (interface{}, error) {
 
-	_, err := httpc.POST(ctx, "http://localhost:8080/api/list").
+	return httpc.POST(ctx, "http://localhost:8080/api/list").
 		SetFormData(httpc.M{"username": "aaaa", "age": "55555"}).
 		Send()
-	if err != nil {
-		httpx.Error(ctx, err)
-		return
-	}
-	httpx.Ok(ctx, "ok")
+
 }
 
-func (c *apiController) IndexA(ctx *gin.Context) {
+func (c *apiController) IndexA(ctx *httpx.Context) (interface{}, error) {
 
-	resp, err := user.Svc.Hello(ctx, &user.HelloReq{UserId: "userId111"})
+	return user.Svc.Hello(ctx, &user.HelloReq{UserId: "userId111"})
 
-	fmt.Println(resp)
-
-	r, err := login.Svc.Login(ctx, &login.LoginReq{Username: "admin", Pwd: "123456"})
-	fmt.Println(r)
-	if err != nil {
-		httpx.Error(ctx, err)
-		return
-	}
-	httpx.Ok(ctx, resp)
 }
 
-func (c *apiController) IndexB(ctx *gin.Context) {
+func (c *apiController) IndexB(ctx *httpx.Context) (interface{}, error) {
 
 	hash := md5.Sum([]byte("BRUCEMUWU2023"))
 	pwd := hex.EncodeToString(hash[:])
-	resp, err := login.Svc.Login(ctx, &login.LoginReq{Username: "1", Pwd: pwd})
-	if err != nil {
-		httpx.Error(ctx, err)
-		return
-	}
-	httpx.Ok(ctx, resp)
+	return login.Svc.Login(ctx, &login.LoginReq{Username: "1", Pwd: pwd})
 }
 
-func (c *apiController) IndexC(ctx *gin.Context) {
-
+func (c *apiController) IndexC(ctx *httpx.Context) (interface{}, error) {
 	hash := md5.Sum([]byte("BRUCEMUWU2"))
 	pwd := hex.EncodeToString(hash[:])
-	resp, err := mylogin.Svc.Login(ctx, &mylogin.LoginReq{Username: "1", Pwd: pwd})
-	if err != nil {
-		httpx.Error(ctx, err)
-		return
-	}
-	httpx.Ok(ctx, resp)
+	return mylogin.Svc.Login(ctx, &mylogin.LoginReq{Username: "1", Pwd: pwd})
 }
 
-func (c *apiController) List(ctx *gin.Context) {
-	ctx.JSON(200, gin.H{
-		"code":    200,
-		"message": "操作成功",
-		"data": gin.H{
-			"userId":   ctx.PostForm("userId"),
-			"username": "张三",
-			"age":      18,
-		},
-	})
+func (c *apiController) List(ctx *httpx.Context) (interface{}, error) {
+	return gin.H{
+		"userId":   ctx.PostForm("userId"),
+		"username": "张三",
+		"age":      18,
+	}, nil
 }

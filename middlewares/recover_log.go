@@ -4,14 +4,12 @@ import (
 	"fmt"
 	"go-gin/internal/components/logx"
 	"go-gin/internal/errorx"
-	"go-gin/internal/ginx/httpx"
+	"go-gin/internal/httpx"
 	"go-gin/internal/utils"
-
-	"github.com/gin-gonic/gin"
 )
 
-func recoverLog() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
+func recoverLog() httpx.HandlerFunc {
+	return func(ctx *httpx.Context) {
 		defer func() {
 			if err := recover(); err != nil {
 				m := map[string]interface{}{
