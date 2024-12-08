@@ -3,13 +3,13 @@ package main
 import (
 	"flag"
 	"go-gin/config"
-	"go-gin/controllers"
 	"go-gin/events"
 	"go-gin/internal/components/db"
 	"go-gin/internal/components/logx"
 	"go-gin/internal/components/redisx"
 	"go-gin/internal/task"
 	_ "go-gin/internal/utils"
+	"go-gin/routes"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -42,7 +42,7 @@ func main() {
 	InitConfig(Config{Port: config.GetAppConf().Port})
 	engine := InitServer()
 	InitValidators()
-	controllers.Init(engine)
+	routes.Init(engine)
 	StartServer(engine)
 
 }
