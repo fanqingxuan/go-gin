@@ -19,7 +19,7 @@ type AddUserReq struct {
 	Ctime  time.Time `form:"ctime"`
 }
 
-type AddUserReply struct {
+type AddUserResp struct {
 	Message string `json:"message"`
 }
 
@@ -27,7 +27,7 @@ type LoginReq struct {
 	Username string `form:"username" binding:"required" label:"用户名"`
 }
 
-type LoginReply struct {
+type LoginResp struct {
 	Token string      `json:"token"`
 	User  models.User `json:"user"`
 }

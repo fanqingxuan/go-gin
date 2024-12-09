@@ -1,9 +1,6 @@
 package controllers
 
 import (
-	"go-gin/events"
-	"go-gin/internal/components/logx"
-	"go-gin/internal/event"
 	"go-gin/internal/httpx"
 	"go-gin/logic"
 	"go-gin/types"
@@ -22,13 +19,14 @@ type User struct {
 }
 
 func (c *userController) Index(ctx *httpx.Context) (interface{}, error) {
-	event.Fire(ctx, events.NewSampleEvent("hello 测试"))
-	events.NewSampleEvent("333").Fire(ctx)
-	u := User{
-		Name:       "hello",
-		CreateTime: carbon.Parse("now").AddCentury(),
-	}
-	return u, nil
+	// event.Fire(ctx, events.NewSampleEvent("hello 测试"))
+	// events.NewSampleEvent("333").Fire(ctx)
+	// u := User{
+	// 	Name:       "hello",
+	// 	CreateTime: carbon.Parse("now").AddCentury(),
+	// }
+	// return u, nil
+	return ShouldBindHandle[interface{}, interface{}](ctx, logic.NewIndexLogic())
 }
 
 func (c *userController) List(ctx *httpx.Context) (interface{}, error) {
@@ -38,11 +36,5 @@ func (c *userController) List(ctx *httpx.Context) (interface{}, error) {
 }
 
 func (c *userController) AddUser(ctx *httpx.Context) (interface{}, error) {
-	var req types.AddUserReq
-	if err := ctx.ShouldBind(&req); err != nil {
-		logx.WithContext(ctx).Warn("ShouldBind异常", err)
-		return nil, err
-	}
-	l := logic.NewAddUserLogic()
-	return l.Handle(ctx, req)
+	return ShouldBindHandle[types.AddUserReq, *types.AddUserResp](ctx, logic.NewAddUserLogic())
 }

@@ -17,14 +17,14 @@ func NewAddUserLogic() *AddUserLogic {
 	}
 }
 
-func (l *AddUserLogic) Handle(ctx context.Context, req types.AddUserReq) (resp *types.AddUserReply, err error) {
+func (l *AddUserLogic) Handle(ctx context.Context, req types.AddUserReq) (resp *types.AddUserResp, err error) {
 	user := models.User{
 		Name: req.Name,
 	}
 	if err = l.model.Add(ctx, &user); err != nil {
 		return
 	}
-	resp = &types.AddUserReply{
+	resp = &types.AddUserResp{
 		Message: fmt.Sprintf("message:%d", user.Id),
 	}
 	return
