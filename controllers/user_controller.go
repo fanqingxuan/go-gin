@@ -26,7 +26,7 @@ func (c *userController) Index(ctx *httpx.Context) (interface{}, error) {
 	// 	CreateTime: carbon.Parse("now").AddCentury(),
 	// }
 	// return u, nil
-	return ShouldBindHandle[interface{}, interface{}](ctx, logic.NewIndexLogic())
+	return ShouldBindHandle(ctx, logic.NewIndexLogic())
 }
 
 func (c *userController) List(ctx *httpx.Context) (interface{}, error) {
@@ -36,5 +36,5 @@ func (c *userController) List(ctx *httpx.Context) (interface{}, error) {
 }
 
 func (c *userController) AddUser(ctx *httpx.Context) (interface{}, error) {
-	return ShouldBindHandle[types.AddUserReq, *types.AddUserResp](ctx, logic.NewAddUserLogic())
+	return ShouldBindHandle(ctx, logic.NewAddUserLogic())
 }

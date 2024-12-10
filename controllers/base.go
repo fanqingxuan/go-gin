@@ -21,18 +21,22 @@ func ShouldBindHandle[Req any, Resp any](c *httpx.Context, logicHandler LogicHan
 	return ShouldBindWithHandle(c, logicHandler, b)
 }
 
+// ShouldBindJSONHandle 处理请求
 func ShouldBindJSONHandle[Req any, Resp any](c *httpx.Context, logicHandler LogicHandler[Req, Resp]) (Resp, error) {
 	return ShouldBindWithHandle(c, logicHandler, binding.JSON)
 }
 
+// ShouldBindQueryHandle 处理请求
 func ShouldBindQueryHandle[Req any, Resp any](ctx *httpx.Context, logicHandler LogicHandler[Req, Resp]) (Resp, error) {
 	return ShouldBindWithHandle(ctx, logicHandler, binding.Query)
 }
 
+// ShouldBindHeaderHandle 处理请求
 func ShouldBindHeaderHandle[Req any, Resp any](ctx *httpx.Context, logicHandler LogicHandler[Req, Resp]) (Resp, error) {
 	return ShouldBindWithHandle(ctx, logicHandler, binding.Header)
 }
 
+// ShouldBindUriHandle 处理请求
 func ShouldBindUriHandle[Req any, Resp any](ctx *httpx.Context, logicHandler LogicHandler[Req, Resp]) (Resp, error) {
 	var req Req
 	var resp Resp
@@ -47,6 +51,7 @@ func ShouldBindUriHandle[Req any, Resp any](ctx *httpx.Context, logicHandler Log
 	return logicHandler.Handle(ctx, req)
 }
 
+// ShouldBindWithHandle 处理请求
 func ShouldBindWithHandle[Req any, Resp any](ctx *httpx.Context, logicHandler LogicHandler[Req, Resp], b binding.Binding) (Resp, error) {
 	var req Req
 	var resp Resp
