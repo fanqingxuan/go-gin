@@ -16,14 +16,11 @@ type CreateUsers20240101120000 struct{}
 // Up 执行迁移
 func (m *CreateUsers20240101120000) Up(db *gorm.DB) error {
 	return db.Exec(`
-		CREATE TABLE users12 (
-			id bigint unsigned NOT NULL AUTO_INCREMENT,
-			name varchar(255) NOT NULL,
-			email varchar(255) NOT NULL,
-			created_at timestamp NULL DEFAULT NULL,
-			updated_at timestamp NULL DEFAULT NULL,
-			PRIMARY KEY (id),
-			UNIQUE KEY users_email_unique (email)
-		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+		CREATE TABLE users (
+			id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+			username VARCHAR(255) DEFAULT '' COMMENT '用户名',
+			age INT DEFAULT 0 COMMENT '年龄',
+			create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间'
+		)
 	`).Error
 }

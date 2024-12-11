@@ -16,12 +16,12 @@ type Deploy20240101120000 struct{}
 // Handle 执行迁移
 func (m *Deploy20240101120000) Handle(db *gorm.DB) error {
 	return db.Exec(`
-		INSERT INTO users (name, email, created_at, updated_at)
-		VALUES ('admin', 'admin@example.com', NOW(), NOW())
+		INSERT INTO users (username, age)
+		VALUES ('admin', 18)
 	`).Error
 }
 
 // Desc 获取迁移描述
 func (m *Deploy20240101120000) Desc() string {
-	return "deploy_20240101120000"
+	return "用户表写入一个默认管理员用户"
 }

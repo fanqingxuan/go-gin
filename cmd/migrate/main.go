@@ -38,7 +38,8 @@ func main() {
 		DontSupportRenameColumn:  true,     // 用 `change` 重命名列，MySQL 8 之前的数据库和 MariaDB 不支持重命名列
 
 	}), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Silent),
+		Logger:                                   logger.Default.LogMode(logger.Silent),
+		DisableForeignKeyConstraintWhenMigrating: true,
 	})
 
 	if err != nil {
@@ -52,5 +53,4 @@ func main() {
 	if err := migration.GetManager().Run(); err != nil {
 		return
 	}
-	color.Println(color.Green("All migrations completed successfully"))
 }

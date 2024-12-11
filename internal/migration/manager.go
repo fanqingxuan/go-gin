@@ -3,18 +3,11 @@ package migration
 import (
 	"fmt"
 	"reflect"
-	"regexp"
 	"sort"
 	"time"
 
 	"github.com/labstack/gommon/color"
 	"gorm.io/gorm"
-)
-
-// 文件命名规则
-var (
-	ddlFilePattern = regexp.MustCompile(`^[a-zA-Z]+\d{14}$`)
-	dmlFilePattern = regexp.MustCompile(`^Deploy\d{14}$`)
 )
 
 // Manager 迁移管理器
@@ -36,10 +29,6 @@ func NewManager(db *gorm.DB) *Manager {
 // RegisterDDL 注册DDL迁移
 func RegisterDDL(migration DDLMigration) error {
 	name := reflect.TypeOf(migration).Elem().Name()
-	if !ddlFilePattern.MatchString(name) {
-		fmt.Printf(color.Red("invalid DDL migration name format: %s\n"), name)
-		return fmt.Errorf("invalid DDL migration name format: %s", name)
-	}
 	GetManager().ddlMigrations[name] = migration
 	return nil
 }
@@ -47,10 +36,6 @@ func RegisterDDL(migration DDLMigration) error {
 // RegisterDML 注册DML迁移
 func RegisterDML(migration DMLMigration) error {
 	name := reflect.TypeOf(migration).Elem().Name()
-	if !dmlFilePattern.MatchString(name) {
-		fmt.Printf(color.Red("invalid DML migration name format: %s\n"), name)
-		return fmt.Errorf("invalid DML migration name format: %s", name)
-	}
 	GetManager().dmlMigrations[name] = migration
 	return nil
 }
@@ -58,7 +43,8 @@ func RegisterDML(migration DMLMigration) error {
 // initMigrationTable 初始化迁移表
 func (m *Manager) initMigrationTable() error {
 	if err := m.db.AutoMigrate(&Migration{}); err != nil {
-		return fmt.Errorf("failed to create migrations table: %v", err)
+		fmt.Printf(color.Red("failed to create migrations table: %v\n"), err)
+		return fmt.Errorf("failed to create migrations table: %v\n", err)
 	}
 	return nil
 }
@@ -67,7 +53,8 @@ func (m *Manager) initMigrationTable() error {
 func (m *Manager) getExecutedMigrations() (map[string]bool, error) {
 	var executedMigrations []Migration
 	if err := m.db.Find(&executedMigrations).Error; err != nil {
-		return nil, fmt.Errorf("failed to get executed migrations: %v", err)
+		fmt.Printf(color.Red("failed to get executed migrations: %v\n"), err)
+		return nil, fmt.Errorf("failed to get executed migrations: %v\n", err)
 	}
 
 	executedMap := make(map[string]bool)
@@ -81,6 +68,7 @@ func (m *Manager) getExecutedMigrations() (map[string]bool, error) {
 func (m *Manager) getCurrentBatch() (int, error) {
 	var currentBatch int
 	if err := m.db.Model(&Migration{}).Select("COALESCE(MAX(batch), 0)").Scan(&currentBatch).Error; err != nil {
+		fmt.Printf(color.Red("failed to get current batch: %v\n"), err)
 		return 0, fmt.Errorf("failed to get current batch: %v", err)
 	}
 	return currentBatch + 1, nil
@@ -103,8 +91,9 @@ func (m *Manager) getSortedMigrationNames() (ddlNames []string, dmlNames []strin
 // recordMigration 记录迁移
 func (m *Manager) recordMigration(name string, batch int) error {
 	record := Migration{
-		Desc:  name,
-		Batch: batch,
+		Desc:      name,
+		Batch:     batch,
+		CreatedAt: time.Now(),
 	}
 	if err := m.db.Create(&record).Error; err != nil {
 		color.Printf(color.Red("Failed to save to migration table: %s, error: %v\n"), name, err)
@@ -115,48 +104,77 @@ func (m *Manager) recordMigration(name string, batch int) error {
 
 // executeDDLMigrations 执行DDL迁移
 func (m *Manager) executeDDLMigrations(names []string, executedMap map[string]bool, batch int) error {
-	color.Println(color.White("Start executing DDL migrations..."))
 	for _, name := range names {
 		if executedMap[name] {
 			continue
 		}
 
-		color.Printf(color.White("Executing DDL migration: %s\n"), name)
+		migration := m.ddlMigrations[name]
+		// 输出开始迁移
+		color.Printf(color.White("Migrating: %s\n"), name)
 
-		if err := m.ddlMigrations[name].Up(m.db); err != nil {
-			color.Printf(color.Red("Migration failed: %s, error: %v\n"), name, err)
+		start := time.Now()
+		if err := migration.Up(m.db); err != nil {
+			color.Printf(color.Red("Failed:    %s (%v)\n"), name, err)
 			return err
 		}
 
 		if err := m.recordMigration(name, batch); err != nil {
+			color.Printf(color.Red("Failed to save to migration table: %s, error: %v\n"), name, err)
 			return err
 		}
-		color.Printf(color.Green("Migration successful: %s\n"), name)
+
+		// 计算执行时间并输出成功信息
+		duration := time.Since(start)
+		color.Printf(color.Green("Migrated:  %s (%d seconds)\n"), name, int(duration.Seconds()))
 	}
 	return nil
 }
 
 // executeDMLMigrations 执行DML迁移
 func (m *Manager) executeDMLMigrations(names []string, executedMap map[string]bool, batch int) error {
-	color.Println(color.White("Start executing DML migrations..."))
 	for _, name := range names {
 		if executedMap[name] {
 			continue
 		}
 
-		color.Printf(color.White("Executing DML migration: %s\n"), name)
+		migration := m.dmlMigrations[name]
+		// 输出开始迁移
+		color.Printf(color.White("Migrating: %s\n"), name)
 
-		if err := m.dmlMigrations[name].Handle(m.db); err != nil {
-			color.Printf(color.Red("Migration failed: %s, error: %v\n"), name, err)
+		start := time.Now()
+		if err := migration.Handle(m.db); err != nil {
+			color.Printf(color.Red("Failed:    %s (%v)\n"), name, err)
 			return err
 		}
 
 		if err := m.recordMigration(name, batch); err != nil {
+			color.Printf(color.Red("Failed to save to migration table: %s, error: %v\n"), name, err)
 			return err
 		}
-		color.Printf(color.Green("Migration successful: %s\n"), name)
+
+		// 计算执行时间并输出成功信息
+		duration := time.Since(start)
+		color.Printf(color.Green("Migrated:  %s (%d seconds)\n"), name, int(duration.Seconds()))
 	}
 	return nil
+}
+
+// hasPendingMigrations 检查是否有待执行的迁移
+func (m *Manager) hasPendingMigrations(ddlNames []string, dmlNames []string, executedMap map[string]bool) bool {
+	// 检查DDL迁移
+	for _, name := range ddlNames {
+		if !executedMap[name] {
+			return true
+		}
+	}
+	// 检查DML迁移
+	for _, name := range dmlNames {
+		if !executedMap[name] {
+			return true
+		}
+	}
+	return false
 }
 
 // Run 执行迁移
@@ -183,6 +201,13 @@ func (m *Manager) Run() error {
 
 	// 获取排序后的迁移名称
 	ddlNames, dmlNames := m.getSortedMigrationNames()
+
+	// 检查是否有需要执行的迁移
+	if !m.hasPendingMigrations(ddlNames, dmlNames, executedMap) {
+		color.Println(color.Green("Nothing to migrate.\n"))
+		return nil
+	}
+
 	// 执行DDL迁移
 	if err := m.executeDDLMigrations(ddlNames, executedMap, currentBatch); err != nil {
 		return err
@@ -194,11 +219,4 @@ func (m *Manager) Run() error {
 	}
 
 	return nil
-}
-
-// GenerateMigrationName 生成迁移文件名
-func GenerateMigrationName(prefix string) string {
-	timestamp := time.Now().Format("20060102150405")
-	// Generate sequence number 001, you may need to adjust this based on existing files
-	return fmt.Sprintf("%s_%s%s", prefix, timestamp, "001")
 }
