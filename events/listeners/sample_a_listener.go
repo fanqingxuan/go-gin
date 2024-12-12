@@ -9,8 +9,6 @@ import (
 type SampleAListener struct {
 }
 
-var _ event.Listener = (*SampleAListener)(nil)
-
 func (l SampleAListener) Handle(ctx context.Context, e *event.Event) error {
 	fmt.Println("SampleAListener")
 	fmt.Println(e.Payload().(string))

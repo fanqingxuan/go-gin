@@ -10,8 +10,6 @@ import (
 type DemoAListener struct {
 }
 
-var _ event.Listener = (*DemoAListener)(nil)
-
 func (l DemoAListener) Handle(ctx context.Context, e *event.Event) error {
 	user := e.Payload().(*models.User)
 	fmt.Println(user.Name)
