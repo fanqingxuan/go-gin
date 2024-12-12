@@ -2,6 +2,7 @@ package migration
 
 import (
 	"fmt"
+	"os"
 	"reflect"
 	"sort"
 	"time"
@@ -26,9 +27,31 @@ func NewManager(db *gorm.DB) *Manager {
 	}
 }
 
+// 添加一个新的验证函数
+func validateMigrationName(name string) error {
+	if len(name) < 14 {
+		err := fmt.Errorf("migration name '%s' is too short, must end with YYYYMMDDHHMMSS format.", name)
+		color.Printf(color.Red("Migration name validation failed: %v\n"), err)
+		return err
+	}
+
+	timestamp := name[len(name)-14:]
+	// 验证时间戳格式
+	_, err := time.Parse("20060102150405", timestamp)
+	if err != nil {
+		err = fmt.Errorf("migration name '%s' must end with YYYYMMDDHHMMSS format.", name)
+		color.Printf(color.Red("Migration name validation failed: %v\n"), err)
+		return err
+	}
+	return nil
+}
+
 // RegisterDDL 注册DDL迁移
 func RegisterDDL(migration DDLMigration) error {
 	name := reflect.TypeOf(migration).Elem().Name()
+	if err := validateMigrationName(name); err != nil {
+		os.Exit(0) // 使用 0 作为退出码，避免显示 exit status 1
+	}
 	GetManager().ddlMigrations[name] = migration
 	return nil
 }
@@ -36,6 +59,9 @@ func RegisterDDL(migration DDLMigration) error {
 // RegisterDML 注册DML迁移
 func RegisterDML(migration DMLMigration) error {
 	name := reflect.TypeOf(migration).Elem().Name()
+	if err := validateMigrationName(name); err != nil {
+		os.Exit(0) // 使用 0 作为退出码，避免显示 exit status 1
+	}
 	GetManager().dmlMigrations[name] = migration
 	return nil
 }
@@ -76,15 +102,29 @@ func (m *Manager) getCurrentBatch() (int, error) {
 
 // getSortedMigrationNames 获取排序后的迁移名称
 func (m *Manager) getSortedMigrationNames() (ddlNames []string, dmlNames []string) {
+	// 提取 DDL 迁移名称
 	for name := range m.ddlMigrations {
 		ddlNames = append(ddlNames, name)
 	}
-	sort.Strings(ddlNames)
+	// 按照时间戳后缀排序（格式：YYYYMMDDHHMMSS）
+	sort.Slice(ddlNames, func(i, j int) bool {
+		// 获取最后14位作为时间戳进行比较
+		iTime := ddlNames[i][len(ddlNames[i])-14:]
+		jTime := ddlNames[j][len(ddlNames[j])-14:]
+		return iTime < jTime
+	})
 
+	// 提取 DML 迁移名称
 	for name := range m.dmlMigrations {
 		dmlNames = append(dmlNames, name)
 	}
-	sort.Strings(dmlNames)
+	// 按照时间戳后缀排序（格式：YYYYMMDDHHMMSS）
+	sort.Slice(dmlNames, func(i, j int) bool {
+		// 获取最后14位作为时间戳进行比较
+		iTime := dmlNames[i][len(dmlNames[i])-14:]
+		jTime := dmlNames[j][len(dmlNames[j])-14:]
+		return iTime < jTime
+	})
 	return
 }
 
@@ -104,6 +144,7 @@ func (m *Manager) recordMigration(name string, batch int) error {
 
 // executeDDLMigrations 执行DDL迁移
 func (m *Manager) executeDDLMigrations(names []string, executedMap map[string]bool, batch int) error {
+	ddlmigrator := NewDDLMigrator(m.db)
 	for _, name := range names {
 		if executedMap[name] {
 			continue
@@ -114,7 +155,7 @@ func (m *Manager) executeDDLMigrations(names []string, executedMap map[string]bo
 		color.Printf(color.White("Migrating: %s\n"), name)
 
 		start := time.Now()
-		if err := migration.Up(m.db); err != nil {
+		if err := migration.Up(ddlmigrator); err != nil {
 			color.Printf(color.Red("Failed:    %s (%v)\n"), name, err)
 			return err
 		}
@@ -140,7 +181,7 @@ func (m *Manager) executeDMLMigrations(names []string, executedMap map[string]bo
 
 		migration := m.dmlMigrations[name]
 		// 输出开始迁移
-		color.Printf(color.White("Migrating: %s\n"), name)
+		color.Printf(color.White("Migrating: %s %s\n"), name, migration.Desc())
 
 		start := time.Now()
 		if err := migration.Handle(m.db); err != nil {
@@ -155,7 +196,7 @@ func (m *Manager) executeDMLMigrations(names []string, executedMap map[string]bo
 
 		// 计算执行时间并输出成功信息
 		duration := time.Since(start)
-		color.Printf(color.Green("Migrated:  %s (%d seconds)\n"), name, int(duration.Seconds()))
+		color.Printf(color.Green("Migrated:  %s %s (%d seconds)\n"), name, migration.Desc(), int(duration.Seconds()))
 	}
 	return nil
 }

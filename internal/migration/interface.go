@@ -6,7 +6,7 @@ import (
 
 // DDLMigration DDL迁移接口
 type DDLMigration interface {
-	Up(db *gorm.DB) error
+	Up(migrator *DDLMigrator) error
 }
 
 // DMLMigration DML迁移接口

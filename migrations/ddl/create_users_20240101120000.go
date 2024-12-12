@@ -2,8 +2,6 @@ package ddl
 
 import (
 	"go-gin/internal/migration"
-
-	"gorm.io/gorm"
 )
 
 func init() {
@@ -14,13 +12,13 @@ func init() {
 type CreateUsers20240101120000 struct{}
 
 // Up 执行迁移
-func (m *CreateUsers20240101120000) Up(db *gorm.DB) error {
-	return db.Exec(`
+func (m *CreateUsers20240101120000) Up(migrator *migration.DDLMigrator) error {
+	return migrator.Exec(`
 		CREATE TABLE users (
 			id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 			username VARCHAR(255) DEFAULT '' COMMENT '用户名',
 			age INT DEFAULT 0 COMMENT '年龄',
 			create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间'
 		)
-	`).Error
+	`)
 }

@@ -24,24 +24,9 @@ func (m *DDLMigrator) HasTable(tablename string) bool {
 	return m.db.Migrator().HasTable(tablename)
 }
 
-// RenameTable 重命名表
-func (m *DDLMigrator) RenameTable(oldtablename, newtablename string) error {
-	return m.db.Migrator().RenameTable(oldtablename, newtablename)
-}
-
-// DropColumn 删除列
-func (m *DDLMigrator) DropColumn(tablename, columnname string) error {
-	return m.db.Migrator().DropColumn(tablename, columnname)
-}
-
 // HasColumn 检查列是否存在
 func (m *DDLMigrator) HasColumn(tablename, columnname string) bool {
 	return m.db.Migrator().HasColumn(tablename, columnname)
-}
-
-// RenameColumn 重命名列
-func (m *DDLMigrator) RenameColumn(tablename, oldcolumnname, newcolumnname string) error {
-	return m.db.Migrator().RenameColumn(tablename, oldcolumnname, newcolumnname)
 }
 
 // CreateIndex 创建索引
@@ -59,9 +44,14 @@ func (m *DDLMigrator) HasIndex(tablename, indexname string) bool {
 	return m.db.Migrator().HasIndex(tablename, indexname)
 }
 
-// RenameIndex 重命名索引
-func (m *DDLMigrator) RenameIndex(tablename, oldindexname, newindexname string) error {
-	return m.db.Migrator().RenameIndex(tablename, oldindexname, newindexname)
+// Exec 执行SQL
+func (m *DDLMigrator) Exec(sql string) error {
+	return m.db.Exec(sql).Error
+}
+
+// Raw 执行SQL
+func (m *DDLMigrator) Raw(sql string) error {
+	return m.db.Raw(sql).Error
 }
 
 // DMLMigrator DML迁移器
