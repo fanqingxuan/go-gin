@@ -125,6 +125,12 @@ func wrap(handler []HandlerFunc, isMiddleware bool) []gin.HandlerFunc {
 			ctx := NewContext(c)
 			resp, err := h(ctx)
 			if isMiddleware {
+				if err != nil {
+					Handle(ctx, resp, err)
+					ctx.Abort()
+					return
+				}
+				ctx.Next()
 				return
 			}
 			Handle(ctx, resp, err)

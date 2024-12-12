@@ -9,6 +9,7 @@ import (
 	"go-gin/internal/components/redisx"
 	"go-gin/internal/task"
 	_ "go-gin/internal/utils"
+	"go-gin/middlewares"
 	"go-gin/routes"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -42,6 +43,7 @@ func main() {
 	InitConfig(Config{Port: config.GetAppConf().Port})
 	engine := InitServer()
 	InitValidators()
+	middlewares.Init(engine)
 	routes.Init(engine)
 	StartServer(engine)
 

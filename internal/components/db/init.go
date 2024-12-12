@@ -31,8 +31,8 @@ func Init() {
 	}
 }
 
-func IsNotOpened() bool {
-	return instance == nil
+func IsConnected() bool {
+	return instance != nil
 }
 
 func Connect() (err error) {

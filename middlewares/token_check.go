@@ -12,22 +12,18 @@ type TokenHeader struct {
 }
 
 func TokenCheck() httpx.HandlerFunc {
-	return func(ctx *httpx.Context) {
+	return func(ctx *httpx.Context) (interface{}, error) {
 		var req TokenHeader
 		if err := ctx.ShouldBindHeader(&req); err != nil {
 			httpx.Error(ctx, consts.ErrUserMustLogin)
 			ctx.Abort()
-			return
+			return nil, err
 		}
 		if has, err := token.Has(ctx, req.Token); err != nil {
-			httpx.Error(ctx, errorx.NewDefault("获取token错误"))
-			ctx.Abort()
-			return
+			return nil, errorx.NewDefault("获取token错误")
 		} else if !has {
-			httpx.Error(ctx, consts.ErrUserNeedLoginAgain)
-			ctx.Abort()
-			return
+			return nil, consts.ErrUserNeedLoginAgain
 		}
-		ctx.Next()
+		return nil, nil
 	}
 }

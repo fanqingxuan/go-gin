@@ -12,8 +12,8 @@ func (j *DBCheckJob) Name() string {
 }
 
 func (j *DBCheckJob) Handle(ctx context.Context) error {
-	if db.IsNotOpened() {
-		return db.Connect()
+	if db.IsConnected() {
+		return nil
 	}
-	return nil
+	return db.Connect()
 }

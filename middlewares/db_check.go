@@ -9,16 +9,13 @@ import (
 
 func dbCheck() httpx.HandlerFunc {
 	return func(ctx *httpx.Context) (interface{}, error) {
-		if db.IsNotOpened() {
+		if !db.IsConnected() {
 			err := db.Connect()
 			if err != nil {
 				logx.WithContext(ctx).Error("connect db again", err.Error())
-				httpx.Error(ctx, errorx.TryToDBError(err))
-				ctx.Abort()
-				return nil, err
+				return nil, errorx.TryToDBError(err)
 			}
 		}
-		ctx.Next()
 		return nil, nil
 	}
 }
