@@ -4,11 +4,13 @@ import (
 	"go-gin/internal/components/logx"
 	"net/url"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
-func RequestLog() HandlerFunc {
+func RequestLog() gin.HandlerFunc {
 
-	return func(c *Context) (interface{}, error) {
+	return func(c *gin.Context) {
 		// Start timer
 		start := time.Now()
 		path := c.Request.URL.Path
@@ -35,6 +37,5 @@ func RequestLog() HandlerFunc {
 			Str("proto", c.Request.Proto).
 			Str("user_agent", c.Request.UserAgent()).
 			Send()
-		return nil, nil
 	}
 }

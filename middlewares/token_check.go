@@ -5,25 +5,28 @@ import (
 	"go-gin/internal/errorx"
 	"go-gin/internal/httpx"
 	"go-gin/internal/token"
+
+	"github.com/gin-gonic/gin"
 )
 
 type TokenHeader struct {
 	Token string `header:"token" binding:"required"`
 }
 
-func TokenCheck() httpx.HandlerFunc {
-	return func(ctx *httpx.Context) (interface{}, error) {
+func TokenCheck() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
 		var req TokenHeader
 		if err := ctx.ShouldBindHeader(&req); err != nil {
-			httpx.Error(ctx, consts.ErrUserMustLogin)
+			httpx.Error(httpx.NewContext(ctx), consts.ErrUserMustLogin)
 			ctx.Abort()
-			return nil, err
 		}
 		if has, err := token.Has(ctx, req.Token); err != nil {
-			return nil, errorx.NewDefault("获取token错误")
+			httpx.Error(httpx.NewContext(ctx), errorx.NewDefault("获取token错误"))
+			ctx.Abort()
 		} else if !has {
-			return nil, consts.ErrUserNeedLoginAgain
+			httpx.Error(httpx.NewContext(ctx), consts.ErrUserNeedLoginAgain)
+			ctx.Abort()
 		}
-		return nil, nil
+		ctx.Next()
 	}
 }

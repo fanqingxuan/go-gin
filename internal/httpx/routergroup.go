@@ -17,7 +17,7 @@ type IRouter interface {
 
 // IRoutes 定义路由方法接口
 type IRoutes interface {
-	Use(...HandlerFunc) IRoutes
+	Use(...gin.HandlerFunc) IRoutes
 	Handle(string, string, ...HandlerFunc) IRoutes
 	Any(string, ...HandlerFunc) IRoutes
 	GET(string, ...HandlerFunc) IRoutes
@@ -49,8 +49,8 @@ func (group *RouterGroup) Group(relativePath string, handlers ...HandlerFunc) *R
 }
 
 // Use 添加中间件
-func (group *RouterGroup) Use(middleware ...HandlerFunc) IRoutes {
-	group.RouterGroup.Use(wrapMiddlewares(middleware)...)
+func (group *RouterGroup) Use(middleware ...gin.HandlerFunc) IRoutes {
+	group.RouterGroup.Use(middleware...)
 	return group
 }
 
@@ -107,32 +107,13 @@ func (group *RouterGroup) Any(relativePath string, handlers ...HandlerFunc) IRou
 	return group
 }
 
-// wrapHandlers 包装处理函数
-func wrapHandlers(handlers []HandlerFunc) []gin.HandlerFunc {
-	return wrap(handlers, false)
-}
-
-// wrapMiddleware 包装中间件函数
-func wrapMiddlewares(middlewares []HandlerFunc) []gin.HandlerFunc {
-	return wrap(middlewares, true)
-}
-
 // wrap 包装处理函数
-func wrap(handler []HandlerFunc, isMiddleware bool) []gin.HandlerFunc {
+func wrapHandlers(handler []HandlerFunc) []gin.HandlerFunc {
 	wrapped := make([]gin.HandlerFunc, len(handler))
 	for i, h := range handler {
 		wrapped[i] = func(c *gin.Context) {
 			ctx := NewContext(c)
 			resp, err := h(ctx)
-			if isMiddleware {
-				if err != nil {
-					Handle(ctx, resp, err)
-					ctx.Abort()
-					return
-				}
-				ctx.Next()
-				return
-			}
 			Handle(ctx, resp, err)
 		}
 	}
