@@ -7,7 +7,6 @@ import (
 )
 
 type HandlerFunc func(*Context) (interface{}, error)
-type MiddlewareFunc func(*Context)
 
 // IRouter 定义路由接口
 type IRouter interface {
@@ -18,6 +17,8 @@ type IRouter interface {
 // IRoutes 定义路由方法接口
 type IRoutes interface {
 	Use(...gin.HandlerFunc) IRoutes
+	Before(...HandlerFunc) IRoutes
+	After(...HandlerFunc) IRoutes
 	Handle(string, string, ...HandlerFunc) IRoutes
 	Any(string, ...HandlerFunc) IRoutes
 	GET(string, ...HandlerFunc) IRoutes
@@ -51,6 +52,42 @@ func (group *RouterGroup) Group(relativePath string, handlers ...HandlerFunc) *R
 // Use 添加中间件
 func (group *RouterGroup) Use(middleware ...gin.HandlerFunc) IRoutes {
 	group.RouterGroup.Use(middleware...)
+	return group
+}
+
+// Before 添加前置中间件
+func (group *RouterGroup) Before(middleware ...HandlerFunc) IRoutes {
+	wrapped := make([]gin.HandlerFunc, len(middleware))
+	for i, h := range middleware {
+		wrapped[i] = func(m HandlerFunc) gin.HandlerFunc {
+			return func(c *gin.Context) {
+				ctx := NewContext(c)
+				_, err := m(ctx)
+				if err != nil {
+					Handle(ctx, nil, err)
+					c.Abort()
+					return
+				}
+				c.Next()
+			}
+		}(h)
+	}
+	group.RouterGroup.Use(wrapped...)
+	return group
+}
+
+// After 添加后置中间件
+func (group *RouterGroup) After(middleware ...HandlerFunc) IRoutes {
+	wrapped := make([]gin.HandlerFunc, len(middleware))
+	for i, h := range middleware {
+		wrapped[i] = func(m HandlerFunc) gin.HandlerFunc {
+			return func(c *gin.Context) {
+				c.Next()
+				m(NewContext(c))
+			}
+		}(h)
+	}
+	group.RouterGroup.Use(wrapped...)
 	return group
 }
 
@@ -115,6 +152,7 @@ func wrapHandlers(handler []HandlerFunc) []gin.HandlerFunc {
 			ctx := NewContext(c)
 			resp, err := h(ctx)
 			Handle(ctx, resp, err)
+			c.Abort()
 		}
 	}
 	return wrapped

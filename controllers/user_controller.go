@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"go-gin/internal/httpx"
 	"go-gin/logic"
 	"go-gin/types"
@@ -26,6 +27,7 @@ func (c *userController) Index(ctx *httpx.Context) (interface{}, error) {
 	// 	CreateTime: carbon.Parse("now").AddCentury(),
 	// }
 	// return u, nil
+	fmt.Println("index")
 	return ShouldBindHandle(ctx, logic.NewIndexLogic())
 }
 

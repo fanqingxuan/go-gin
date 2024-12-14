@@ -3,5 +3,9 @@ package middlewares
 import "go-gin/internal/httpx"
 
 func Init(r *httpx.Engine) {
-	r.Use(TokenCheck())
+
+	r.Before(BeforeSampleA(), BeforeSampleB())
+	r.After(AfterSampleB())
+	// r.Before(TokenCheck())
+
 }
