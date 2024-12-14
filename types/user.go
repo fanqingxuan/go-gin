@@ -24,7 +24,8 @@ type AddUserResp struct {
 }
 
 type LoginReq struct {
-	Username string `form:"username" binding:"required" label:"用户名"`
+	Username string `form:"username" binding:"required,email" label:"用户名"`
+	Pwd      string `form:"pass" binding:"required,min=6" label:"密码"`
 }
 
 type LoginResp struct {
