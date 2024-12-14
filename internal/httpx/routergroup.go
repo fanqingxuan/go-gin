@@ -148,12 +148,14 @@ func (group *RouterGroup) Any(relativePath string, handlers ...HandlerFunc) IRou
 func wrapHandlers(handler []HandlerFunc) []gin.HandlerFunc {
 	wrapped := make([]gin.HandlerFunc, len(handler))
 	for i, h := range handler {
-		wrapped[i] = func(c *gin.Context) {
-			ctx := NewContext(c)
-			resp, err := h(ctx)
-			Handle(ctx, resp, err)
-			c.Abort()
-		}
+		wrapped[i] = func(h HandlerFunc) gin.HandlerFunc {
+			return func(c *gin.Context) {
+				ctx := NewContext(c)
+				resp, err := h(ctx)
+				Handle(ctx, resp, err)
+				c.Abort()
+			}
+		}(h)
 	}
 	return wrapped
 }

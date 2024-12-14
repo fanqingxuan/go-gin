@@ -14,8 +14,8 @@ import (
 
 func RegisterDemoRoutes(r *httpx.RouterGroup) {
 
-	r.After(middlewares.AfterSampleA())
-	r.GET("/", controllers.UserController.Index)
+	r.GET("/", middlewares.AfterSampleA(), controllers.UserController.Index)
+
 	r.GET("/task", func(ctx *httpx.Context) (interface{}, error) {
 		// err := task.DispatchNow(tasks.NewSampleTask("测试1234"))
 		// fmt.Println(err)
