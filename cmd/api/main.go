@@ -2,11 +2,15 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"go-gin/config"
 	"go-gin/events"
 	"go-gin/internal/components/db"
 	"go-gin/internal/components/logx"
 	"go-gin/internal/components/redisx"
+	"go-gin/internal/environment"
+	"go-gin/internal/httpx"
+	"go-gin/internal/httpx/validators"
 	"go-gin/internal/task"
 	_ "go-gin/internal/utils"
 	"go-gin/middlewares"
@@ -39,12 +43,23 @@ func main() {
 
 	// 初始化第三方服务地址
 	config.InitSvc()
+	// 启动http服务
+	startHttpServer(config.GetAppConf().Port)
 
-	InitConfig(Config{Port: config.GetAppConf().Port})
-	engine := InitServer()
-	InitValidators()
+}
+
+func startHttpServer(port string) {
+	if environment.IsDebugMode() {
+		httpx.SetDebugMode()
+	} else {
+		httpx.SetReleaseMode()
+	}
+	engine := httpx.Default()
+	validators.Init()
 	middlewares.Init(engine)
 	routes.Init(engine)
-	StartServer(engine)
-
+	fmt.Printf("Starting server at localhost%s...\n", port)
+	if err := engine.Run(port); err != nil {
+		fmt.Printf("Start server error,err=%v", err)
+	}
 }
