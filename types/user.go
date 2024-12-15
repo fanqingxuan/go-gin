@@ -8,8 +8,10 @@ import (
 type ListReq struct {
 }
 
-type ListReply struct {
-	Users []models.User `json:"users"`
+type ListResp struct {
+	Name    string `json:"name"`
+	Age     int    `json:"age"`
+	AgeTips string `json:"age_tips"`
 }
 
 type AddUserReq struct {

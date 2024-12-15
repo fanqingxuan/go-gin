@@ -2,7 +2,6 @@ package db
 
 import (
 	"context"
-	"go-gin/internal/components/logx"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -27,7 +26,7 @@ func InitConfig(c Config) {
 func Init() {
 	err := Connect()
 	if err != nil {
-		logx.WithContext(context.Background()).Error("db", err)
+		panic(err)
 	}
 }
 
@@ -50,18 +49,18 @@ func Connect() (err error) {
 	})
 	if err != nil {
 		instance = nil
-		return
+		return err
 	}
 
 	sqlDB, err := instance.DB()
 	if err != nil {
 		instance = nil
-		return
+		return err
 	}
 
 	if err = sqlDB.Ping(); err != nil {
 		instance = nil
-		return
+		return err
 	}
 	// SetMaxIdleConns sets the maximum number of connections in the idle connection pool.
 	sqlDB.SetMaxIdleConns(conf.MaxIdleConns)

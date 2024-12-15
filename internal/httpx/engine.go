@@ -25,7 +25,7 @@ func New() *Engine {
 // Default 返回一个带有默认中间件的 Engine 实例
 func Default() *Engine {
 	engine := New()
-	engine.Use(recoverLog(), TraceId(), RequestLog())
+	engine.Use(recoverLog(), TraceId(), RequestLog(), dbCheck())
 	return engine
 }
 
