@@ -1,4 +1,4 @@
-package crons
+package cron
 
 import (
 	"context"

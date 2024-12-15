@@ -3,12 +3,12 @@ package main
 import (
 	"flag"
 	"go-gin/config"
-	"go-gin/crons"
+	"go-gin/cron"
 	"go-gin/event"
 	"go-gin/internal/components/db"
 	"go-gin/internal/components/logx"
 	"go-gin/internal/components/redisx"
-	"go-gin/internal/cron"
+	"go-gin/internal/scheduler"
 )
 
 var configFile = flag.String("f", "./.env", "the config file")
@@ -35,8 +35,8 @@ func main() {
 	// 初始化第三方服务地址
 	config.InitSvc()
 
-	c := cron.New()
-	crons.Init(c)
+	c := scheduler.New()
+	cron.Init(c)
 	c.Run()
 
 }
