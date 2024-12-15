@@ -3,7 +3,7 @@ package user
 import (
 	"context"
 	"go-gin/internal/httpc"
-	"go-gin/utils/jsonx"
+	"go-gin/util/jsonx"
 )
 
 const (

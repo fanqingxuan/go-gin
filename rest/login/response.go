@@ -2,7 +2,7 @@ package login
 
 import (
 	"go-gin/internal/httpc"
-	"go-gin/utils/jsonx"
+	"go-gin/util/jsonx"
 )
 
 var (
