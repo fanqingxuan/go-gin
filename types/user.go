@@ -1,7 +1,7 @@
 package types
 
 import (
-	"go-gin/models"
+	"go-gin/model"
 	"time"
 )
 
@@ -31,6 +31,6 @@ type LoginReq struct {
 }
 
 type LoginResp struct {
-	Token string      `json:"token"`
-	User  models.User `json:"user"`
+	Token string     `json:"token"`
+	User  model.User `json:"user"`
 }

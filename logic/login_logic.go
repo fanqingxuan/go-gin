@@ -5,17 +5,17 @@ import (
 	"go-gin/consts"
 	"go-gin/internal/errorx"
 	"go-gin/internal/token"
-	"go-gin/models"
+	"go-gin/model"
 	"go-gin/types"
 )
 
 type LoginLogic struct {
-	model *models.UserModel
+	model *model.UserModel
 }
 
 func NewLoginLogic() *LoginLogic {
 	return &LoginLogic{
-		model: models.NewUserModel(),
+		model: model.NewUserModel(),
 	}
 }
 

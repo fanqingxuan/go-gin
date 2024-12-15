@@ -1,11 +1,11 @@
-package transformers
+package transformer
 
 import (
-	"go-gin/models"
+	"go-gin/model"
 	"go-gin/types"
 )
 
-func ConvertUserToListResp(u []models.User) []types.ListResp {
+func ConvertUserToListResp(u []model.User) []types.ListResp {
 	var resp []types.ListResp
 	for _, v := range u {
 		var ageTips string

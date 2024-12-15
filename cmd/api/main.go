@@ -14,7 +14,7 @@ import (
 	"go-gin/internal/task"
 	_ "go-gin/internal/utils"
 	"go-gin/middlewares"
-	"go-gin/routes"
+	"go-gin/router"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -57,7 +57,7 @@ func startHttpServer(port string) {
 	engine := httpx.Default()
 	validators.Init()
 	middlewares.Init(engine)
-	routes.Init(engine)
+	router.Init(engine)
 	fmt.Printf("Starting server at localhost%s...\n", port)
 	if err := engine.Run(port); err != nil {
 		fmt.Printf("Start server error,err=%v", err)

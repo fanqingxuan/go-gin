@@ -1,4 +1,4 @@
-package routes
+package router
 
 import (
 	"go-gin/controllers"
@@ -7,7 +7,7 @@ import (
 	"go-gin/internal/httpx"
 	"go-gin/internal/task"
 	"go-gin/middlewares"
-	"go-gin/models"
+	"go-gin/model"
 	"go-gin/tasks"
 	"time"
 )
@@ -30,7 +30,7 @@ func RegisterDemoRoutes(r *httpx.RouterGroup) {
 	r.GET("/event", func(ctx *httpx.Context) (interface{}, error) {
 		// event.Fire(ctx, events.NewSampleEvent("hello 测试"))
 		events.NewSampleEvent("333").Fire(ctx)
-		events.NewDemoEvent(&models.User{Name: "hello"}).Fire(ctx)
+		events.NewDemoEvent(&model.User{Name: "hello"}).Fire(ctx)
 		return "hello world", nil
 	})
 	r.GET("/test", func(ctx *httpx.Context) (interface{}, error) {
