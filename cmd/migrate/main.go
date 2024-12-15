@@ -11,8 +11,8 @@ import (
 	"gorm.io/gorm/logger"
 
 	// 导入所有迁移文件
-	_ "go-gin/migrations/ddl"
-	_ "go-gin/migrations/dml"
+	_ "go-gin/migration/ddl"
+	_ "go-gin/migration/dml"
 )
 
 var configFile = flag.String("f", "./.env", "the config file")
