@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"go-gin/config"
-	"go-gin/events"
+	"go-gin/event"
 	"go-gin/internal/components/db"
 	"go-gin/internal/components/logx"
 	"go-gin/internal/components/redisx"
@@ -39,7 +39,7 @@ func main() {
 	redisx.Init()
 	task.Init(config.GetRedisConf())
 	defer task.Close()
-	events.Init()
+	event.Init()
 
 	// 初始化第三方服务地址
 	config.InitSvc()

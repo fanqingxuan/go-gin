@@ -2,7 +2,8 @@ package router
 
 import (
 	"go-gin/controller"
-	"go-gin/events"
+	"go-gin/event"
+	"go-gin/internal/eventbus"
 	"go-gin/internal/g"
 	"go-gin/internal/httpx"
 	"go-gin/internal/task"
@@ -29,9 +30,9 @@ func RegisterDemoRoutes(r *httpx.RouterGroup) {
 		return "hello world", nil
 	})
 	r.GET("/event", func(ctx *httpx.Context) (interface{}, error) {
-		// event.Fire(ctx, events.NewSampleEvent("hello 测试"))
-		events.NewSampleEvent("333").Fire(ctx)
-		events.NewDemoEvent(&model.User{Name: "hello"}).Fire(ctx)
+		eventbus.Fire(ctx, event.NewSampleEvent("hello 测试"))
+		event.NewSampleEvent("333").Fire(ctx)
+		event.NewDemoEvent(&model.User{Name: "hello"}).Fire(ctx)
 		return "hello world", nil
 	})
 	r.GET("/test", func(ctx *httpx.Context) (interface{}, error) {
