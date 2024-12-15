@@ -6,7 +6,7 @@ import (
 	"go-gin/internal/g"
 	"go-gin/internal/httpx"
 	"go-gin/internal/task"
-	"go-gin/middlewares"
+	"go-gin/middleware"
 	"go-gin/model"
 	"go-gin/tasks"
 	"time"
@@ -14,7 +14,8 @@ import (
 
 func RegisterDemoRoutes(r *httpx.RouterGroup) {
 
-	r.GET("/", middlewares.AfterSampleA(), controller.UserController.Index)
+	rr := r.Group("/")
+	rr.After(middleware.AfterSampleA()).GET("/", controller.UserController.Index)
 
 	r.GET("/task", func(ctx *httpx.Context) (interface{}, error) {
 		// err := task.DispatchNow(tasks.NewSampleTask("测试1234"))

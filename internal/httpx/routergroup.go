@@ -153,7 +153,6 @@ func wrapHandlers(handler []HandlerFunc) []gin.HandlerFunc {
 				ctx := NewContext(c)
 				resp, err := h(ctx)
 				Handle(ctx, resp, err)
-				c.Abort()
 			}
 		}(h)
 	}

@@ -1,13 +1,13 @@
-package middlewares
+package middleware
 
 import (
 	"fmt"
 	"go-gin/internal/httpx"
 )
 
-func AfterSampleA() httpx.HandlerFunc {
+func AfterSampleB() httpx.HandlerFunc {
 	return func(ctx *httpx.Context) (interface{}, error) {
-		fmt.Println("AfterSampleA")
+		fmt.Println("AfterSampleB")
 		return nil, nil
 	}
 }
