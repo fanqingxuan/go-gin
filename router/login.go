@@ -1,11 +1,11 @@
 package router
 
 import (
-	"go-gin/controllers"
+	"go-gin/controller"
 	"go-gin/internal/httpx"
 )
 
 func RegisterLoginRoutes(r *httpx.RouterGroup) {
 	// 退出登录
-	r.GET("/logout", controllers.LoginController.LoginOut)
+	r.GET("/logout", controller.LoginController.LoginOut)
 }

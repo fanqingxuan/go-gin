@@ -1,7 +1,7 @@
 package router
 
 import (
-	"go-gin/controllers"
+	"go-gin/controller"
 	"go-gin/events"
 	"go-gin/internal/g"
 	"go-gin/internal/httpx"
@@ -14,7 +14,7 @@ import (
 
 func RegisterDemoRoutes(r *httpx.RouterGroup) {
 
-	r.GET("/", middlewares.AfterSampleA(), controllers.UserController.Index)
+	r.GET("/", middlewares.AfterSampleA(), controller.UserController.Index)
 
 	r.GET("/task", func(ctx *httpx.Context) (interface{}, error) {
 		// err := task.DispatchNow(tasks.NewSampleTask("测试1234"))

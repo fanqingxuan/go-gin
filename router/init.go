@@ -1,7 +1,7 @@
 package router
 
 import (
-	"go-gin/controllers"
+	"go-gin/controller"
 	"go-gin/internal/errorx"
 	"go-gin/internal/httpx"
 )
@@ -13,8 +13,8 @@ func Init(route *httpx.Engine) {
 	route.NoRoute(func(ctx *httpx.Context) (interface{}, error) {
 		return nil, errorx.ErrNoRoute
 	})
-	route.GET("/login", controllers.LoginController.Login)
-	route.Group("/").GET("/", controllers.UserController.Index)
+	route.GET("/login", controller.LoginController.Login)
+	route.Group("/").GET("/", controller.UserController.Index)
 	RegisterUserRoutes(route.Group("/user"))
 	RegisterLoginRoutes(route.Group("/"))
 	RegisterApiRoutes(route.Group("/api"))
