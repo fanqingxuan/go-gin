@@ -7,8 +7,8 @@ import (
 	"go-gin/internal/components/db"
 	"go-gin/internal/components/logx"
 	"go-gin/internal/components/redisx"
-	"go-gin/internal/task"
-	"go-gin/tasks"
+	"go-gin/internal/taskx"
+	"go-gin/task"
 )
 
 var configFile = flag.String("f", "./.env", "the config file")
@@ -29,9 +29,9 @@ func main() {
 
 	redisx.InitConfig(config.GetRedisConf())
 	redisx.Init()
-	task.InitServer(config.GetRedisConf())
-	tasks.Init()
-	if err := task.Start(); err != nil {
+	taskx.InitServer(config.GetRedisConf())
+	task.Init()
+	if err := taskx.Start(); err != nil {
 		fmt.Printf("could not run server: %v", err)
 	}
 }

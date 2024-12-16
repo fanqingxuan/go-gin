@@ -6,10 +6,10 @@ import (
 	"go-gin/internal/eventbus"
 	"go-gin/internal/g"
 	"go-gin/internal/httpx"
-	"go-gin/internal/task"
+	"go-gin/internal/taskx"
 	"go-gin/middleware"
 	"go-gin/model"
-	"go-gin/tasks"
+	"go-gin/task"
 	"time"
 )
 
@@ -24,9 +24,9 @@ func RegisterDemoRoutes(r *httpx.RouterGroup) {
 		// err = task.Dispatch(tasks.NewSampleBTask("测试1234"), time.Second)
 
 		// fmt.Println(err)
-		tasks.NewSampleTask("测试1").DispatchNow()
-		tasks.NewSampleTask("测试2").Dispatch(5 * time.Second)
-		task.NewOption().Queue(task.HIGH).TaskID("test").Dispatch(tasks.NewSampleBTask("hello"))
+		task.NewSampleTask("测试1").DispatchNow()
+		task.NewSampleTask("测试2").Dispatch(5 * time.Second)
+		taskx.NewOption().Queue(taskx.HIGH).TaskID("test").Dispatch(task.NewSampleBTask("hello"))
 		return "hello world", nil
 	})
 	r.GET("/event", func(ctx *httpx.Context) (interface{}, error) {
