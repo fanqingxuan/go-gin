@@ -1,8 +1,7 @@
 package middleware
 
 import (
-	"go-gin/consts"
-	"go-gin/internal/errorx"
+	"go-gin/const/errcode"
 	"go-gin/internal/httpx"
 	"go-gin/internal/token"
 )
@@ -15,12 +14,12 @@ func TokenCheck() httpx.HandlerFunc {
 	return func(ctx *httpx.Context) (interface{}, error) {
 		var req TokenHeader
 		if err := ctx.ShouldBindHeader(&req); err != nil {
-			return nil, consts.ErrUserMustLogin
+			return nil, errcode.ErrUserMustLogin
 		}
 		if has, err := token.Has(ctx, req.Token); err != nil {
-			return nil, errorx.NewDefault("获取token错误")
+			return nil, errcode.NewDefault("获取token错误")
 		} else if !has {
-			return nil, consts.ErrUserNeedLoginAgain
+			return nil, errcode.ErrUserNeedLoginAgain
 		}
 		return nil, nil
 	}

@@ -1,4 +1,4 @@
-package consts
+package errcode
 
 import (
 	"go-gin/internal/errorx"

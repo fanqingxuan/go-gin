@@ -2,8 +2,7 @@ package logic
 
 import (
 	"context"
-	"go-gin/consts"
-	"go-gin/internal/errorx"
+	"go-gin/const/errcode"
 	"go-gin/internal/token"
 	"go-gin/model"
 	"go-gin/types"
@@ -21,8 +20,8 @@ func NewLoginLogic() *LoginLogic {
 
 func (l *LoginLogic) Handle(ctx context.Context, req types.LoginReq) (resp *types.LoginResp, err error) {
 	if user, err := l.model.GetByUsername(ctx, req.Username); err != nil {
-		if errorx.IsRecordNotFound(err) {
-			return nil, consts.ErrUserNotFound
+		if errcode.IsRecordNotFound(err) {
+			return nil, errcode.ErrUserNotFound
 		} else {
 			return nil, err
 		}
