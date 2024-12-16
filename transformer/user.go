@@ -2,11 +2,11 @@ package transformer
 
 import (
 	"go-gin/model"
-	"go-gin/types"
+	"go-gin/typing"
 )
 
-func ConvertUserToListResp(u []model.User) []types.ListResp {
-	var resp []types.ListResp
+func ConvertUserToListData(u []model.User) []typing.ListData {
+	var resp []typing.ListData
 	for _, v := range u {
 		var ageTips string
 		if *v.Age >= 18 {
@@ -14,10 +14,11 @@ func ConvertUserToListResp(u []model.User) []types.ListResp {
 		} else {
 			ageTips = "未成年"
 		}
-		resp = append(resp, types.ListResp{
+		resp = append(resp, typing.ListData{
+			Id:      int(v.Id),
 			Name:    v.Name,
-			Age:     *v.Age,
 			AgeTips: ageTips,
+			Age:     *v.Age,
 		})
 	}
 	return resp

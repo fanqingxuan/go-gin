@@ -6,7 +6,7 @@ import (
 	"go-gin/internal/components/redisx"
 	"go-gin/model"
 	"go-gin/transformer"
-	"go-gin/types"
+	"go-gin/typing"
 )
 
 type GetUsersLogic struct {
@@ -19,7 +19,7 @@ func NewGetUsersLogic() *GetUsersLogic {
 	}
 }
 
-func (l *GetUsersLogic) Handle(ctx context.Context, req types.ListReq) (resp []types.ListResp, err error) {
+func (l *GetUsersLogic) Handle(ctx context.Context, req typing.ListReq) (resp *typing.ListResp, err error) {
 	var u []model.User
 	if u, err = l.model.List(ctx); errcode.IsError(err) {
 		return nil, err
@@ -27,6 +27,8 @@ func (l *GetUsersLogic) Handle(ctx context.Context, req types.ListReq) (resp []t
 
 	redisx.GetInstance().HSet(ctx, "name", "age", 43)
 
-	return transformer.ConvertUserToListResp(u), nil
+	return &typing.ListResp{
+		Data: transformer.ConvertUserToListData(u),
+	}, nil
 
 }

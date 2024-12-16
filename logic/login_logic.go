@@ -5,7 +5,7 @@ import (
 	"go-gin/const/errcode"
 	"go-gin/internal/token"
 	"go-gin/model"
-	"go-gin/types"
+	"go-gin/typing"
 )
 
 type LoginLogic struct {
@@ -18,7 +18,7 @@ func NewLoginLogic() *LoginLogic {
 	}
 }
 
-func (l *LoginLogic) Handle(ctx context.Context, req types.LoginReq) (resp *types.LoginResp, err error) {
+func (l *LoginLogic) Handle(ctx context.Context, req typing.LoginReq) (resp *typing.LoginResp, err error) {
 	if user, err := l.model.GetByUsername(ctx, req.Username); err != nil {
 		if errcode.IsRecordNotFound(err) {
 			return nil, errcode.ErrUserNotFound
@@ -30,7 +30,7 @@ func (l *LoginLogic) Handle(ctx context.Context, req types.LoginReq) (resp *type
 		if err := token.Set(ctx, t, "name", user.Name); err != nil {
 			return nil, err
 		}
-		return &types.LoginResp{
+		return &typing.LoginResp{
 			Token: t,
 			User:  *user,
 		}, nil

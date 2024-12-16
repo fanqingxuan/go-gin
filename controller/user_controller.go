@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"go-gin/internal/httpx"
 	"go-gin/logic"
-	"go-gin/types"
+	"go-gin/typing"
 
 	"github.com/golang-module/carbon/v2"
 )
@@ -32,7 +32,7 @@ func (c *userController) Index(ctx *httpx.Context) (interface{}, error) {
 }
 
 func (c *userController) List(ctx *httpx.Context) (interface{}, error) {
-	var req types.ListReq
+	var req typing.ListReq
 	l := logic.NewGetUsersLogic()
 	return l.Handle(ctx, req)
 }

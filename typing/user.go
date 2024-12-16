@@ -1,4 +1,4 @@
-package types
+package typing
 
 import (
 	"go-gin/model"
@@ -8,10 +8,15 @@ import (
 type ListReq struct {
 }
 
-type ListResp struct {
+type ListData struct {
+	Id      int    `json:"id"`
 	Name    string `json:"name"`
-	Age     int    `json:"age"`
 	AgeTips string `json:"age_tips"`
+	Age     int    `json:"age"`
+}
+
+type ListResp struct {
+	Data []ListData `json:"data"`
 }
 
 type AddUserReq struct {
