@@ -8,7 +8,7 @@ import (
 	"go-gin/internal/components/db"
 	"go-gin/internal/components/logx"
 	"go-gin/internal/components/redisx"
-	"go-gin/internal/scheduler"
+	"go-gin/internal/cronx"
 )
 
 var configFile = flag.String("f", "./.env", "the config file")
@@ -35,7 +35,7 @@ func main() {
 	// 初始化第三方服务地址
 	config.InitSvc()
 
-	c := scheduler.New()
+	c := cronx.New()
 	cron.Init(c)
 	c.Run()
 
