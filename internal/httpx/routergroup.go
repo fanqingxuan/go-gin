@@ -94,6 +94,7 @@ func (group *RouterGroup) After(middleware ...HandlerFunc) IRoutes {
 // Handle 注册请求处理函数
 func (group *RouterGroup) Handle(httpMethod, relativePath string, handlers ...HandlerFunc) IRoutes {
 	group.RouterGroup.Handle(httpMethod, relativePath, wrapHandlers(handlers)...)
+	debugPrintRoute(httpMethod, calculateAbsolutePath(group.BasePath(), relativePath), len(group.Handlers), combineHandlers(handlers...)...)
 	return group
 }
 
