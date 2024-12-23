@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"go-gin/internal/components/logx"
-	"go-gin/internal/utils"
+	"go-gin/internal/util"
 	"strings"
 	"time"
 
@@ -70,25 +70,25 @@ func (l *DBLog) Trace(ctx context.Context, begin time.Time, fc func() (string, i
 	case err != nil && l.LogLevel >= logger.Error && !errors.Is(err, logger.ErrRecordNotFound):
 		sql, rows := fc()
 		if rows == -1 {
-			logx.WithContext(ctx).Errorf("sql", traceErrStr, utils.FileWithLineNum(), err, float64(elapsed.Nanoseconds())/1e6, "-", sql)
+			logx.WithContext(ctx).Errorf("sql", traceErrStr, util.FileWithLineNum(), err, float64(elapsed.Nanoseconds())/1e6, "-", sql)
 		} else {
-			logx.WithContext(ctx).Errorf("sql", traceErrStr, utils.FileWithLineNum(), err, float64(elapsed.Nanoseconds())/1e6, rows, sql)
+			logx.WithContext(ctx).Errorf("sql", traceErrStr, util.FileWithLineNum(), err, float64(elapsed.Nanoseconds())/1e6, rows, sql)
 		}
 	case elapsed > slowThreshold && l.LogLevel >= logger.Warn:
 		sql, rows := fc()
 		slowLog := fmt.Sprintf("SLOW SQL >= %v", slowThreshold)
 		if rows == -1 {
-			logx.WithContext(ctx).Warnf("sql", traceWarnStr, utils.FileWithLineNum(), slowLog, float64(elapsed.Nanoseconds())/1e6, '-', sql)
+			logx.WithContext(ctx).Warnf("sql", traceWarnStr, util.FileWithLineNum(), slowLog, float64(elapsed.Nanoseconds())/1e6, '-', sql)
 		} else {
-			logx.WithContext(ctx).Warnf("sql", traceWarnStr, utils.FileWithLineNum(), slowLog, float64(elapsed.Nanoseconds())/1e6, rows, sql)
+			logx.WithContext(ctx).Warnf("sql", traceWarnStr, util.FileWithLineNum(), slowLog, float64(elapsed.Nanoseconds())/1e6, rows, sql)
 
 		}
 	case l.LogLevel == logger.Info:
 		sql, rows := fc()
 		if rows == -1 {
-			logx.WithContext(ctx).Debugf("sql", traceStr, utils.FileWithLineNum(), float64(elapsed.Nanoseconds())/1e6, "-", sql)
+			logx.WithContext(ctx).Debugf("sql", traceStr, util.FileWithLineNum(), float64(elapsed.Nanoseconds())/1e6, "-", sql)
 		} else {
-			logx.WithContext(ctx).Debugf("sql", traceStr, utils.FileWithLineNum(), float64(elapsed.Nanoseconds())/1e6, rows, sql)
+			logx.WithContext(ctx).Debugf("sql", traceStr, util.FileWithLineNum(), float64(elapsed.Nanoseconds())/1e6, rows, sql)
 		}
 	}
 }

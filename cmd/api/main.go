@@ -12,7 +12,7 @@ import (
 	"go-gin/internal/httpx"
 	"go-gin/internal/httpx/validators"
 	"go-gin/internal/taskx"
-	_ "go-gin/internal/utils"
+	_ "go-gin/internal/util"
 	"go-gin/middleware"
 	"go-gin/router"
 

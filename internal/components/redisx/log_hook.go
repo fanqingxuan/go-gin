@@ -3,7 +3,7 @@ package redisx
 import (
 	"context"
 	"go-gin/internal/components/logx"
-	"go-gin/internal/utils"
+	"go-gin/internal/util"
 	"net"
 
 	"github.com/redis/go-redis/v9"
@@ -21,7 +21,7 @@ func (LogHook) ProcessHook(next redis.ProcessHook) redis.ProcessHook {
 	return func(ctx context.Context, cmd redis.Cmder) error {
 		err := next(ctx, cmd)
 		if err != nil {
-			logx.WithContext(ctx).Warnf("redis", "%s execute command:%+v, error=%s", utils.FileWithLineNum(), cmd.Args(), err)
+			logx.WithContext(ctx).Warnf("redis", "%s execute command:%+v, error=%s", util.FileWithLineNum(), cmd.Args(), err)
 			return err
 		}
 		return nil
