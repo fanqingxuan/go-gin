@@ -1,10 +1,9 @@
-package controller
+package httpx
 
 import (
 	"context"
 	"errors"
 	"go-gin/internal/components/logx"
-	"go-gin/internal/httpx"
 	"io"
 
 	"github.com/gin-gonic/gin/binding"
@@ -16,28 +15,28 @@ type LogicHandler[Req any, Resp any] interface {
 }
 
 // ShouldBindHandle 处理请求
-func ShouldBindHandle[Req any, Resp any](c *httpx.Context, logicHandler LogicHandler[Req, Resp]) (Resp, error) {
+func ShouldBindHandle[Req any, Resp any](c *Context, logicHandler LogicHandler[Req, Resp]) (Resp, error) {
 	b := binding.Default(c.Request.Method, c.ContentType())
 	return ShouldBindWithHandle(c, logicHandler, b)
 }
 
 // ShouldBindJSONHandle 处理请求
-func ShouldBindJSONHandle[Req any, Resp any](c *httpx.Context, logicHandler LogicHandler[Req, Resp]) (Resp, error) {
+func ShouldBindJSONHandle[Req any, Resp any](c *Context, logicHandler LogicHandler[Req, Resp]) (Resp, error) {
 	return ShouldBindWithHandle(c, logicHandler, binding.JSON)
 }
 
 // ShouldBindQueryHandle 处理请求
-func ShouldBindQueryHandle[Req any, Resp any](ctx *httpx.Context, logicHandler LogicHandler[Req, Resp]) (Resp, error) {
+func ShouldBindQueryHandle[Req any, Resp any](ctx *Context, logicHandler LogicHandler[Req, Resp]) (Resp, error) {
 	return ShouldBindWithHandle(ctx, logicHandler, binding.Query)
 }
 
 // ShouldBindHeaderHandle 处理请求
-func ShouldBindHeaderHandle[Req any, Resp any](ctx *httpx.Context, logicHandler LogicHandler[Req, Resp]) (Resp, error) {
+func ShouldBindHeaderHandle[Req any, Resp any](ctx *Context, logicHandler LogicHandler[Req, Resp]) (Resp, error) {
 	return ShouldBindWithHandle(ctx, logicHandler, binding.Header)
 }
 
 // ShouldBindUriHandle 处理请求
-func ShouldBindUriHandle[Req any, Resp any](ctx *httpx.Context, logicHandler LogicHandler[Req, Resp]) (Resp, error) {
+func ShouldBindUriHandle[Req any, Resp any](ctx *Context, logicHandler LogicHandler[Req, Resp]) (Resp, error) {
 	var req Req
 	var resp Resp
 	if err := ctx.ShouldBindUri(&req); err != nil {
@@ -52,7 +51,7 @@ func ShouldBindUriHandle[Req any, Resp any](ctx *httpx.Context, logicHandler Log
 }
 
 // ShouldBindWithHandle 处理请求
-func ShouldBindWithHandle[Req any, Resp any](ctx *httpx.Context, logicHandler LogicHandler[Req, Resp], b binding.Binding) (Resp, error) {
+func ShouldBindWithHandle[Req any, Resp any](ctx *Context, logicHandler LogicHandler[Req, Resp], b binding.Binding) (Resp, error) {
 	var req Req
 	var resp Resp
 	if err := ctx.ShouldBindWith(&req, b); err != nil {

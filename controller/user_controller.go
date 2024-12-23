@@ -28,7 +28,7 @@ func (c *userController) Index(ctx *httpx.Context) (any, error) {
 	// }
 	// return u, nil
 	fmt.Println("index")
-	return ShouldBindHandle(ctx, logic.NewIndexLogic())
+	return httpx.ShouldBindHandle(ctx, logic.NewIndexLogic())
 }
 
 func (c *userController) List(ctx *httpx.Context) (any, error) {
@@ -38,5 +38,5 @@ func (c *userController) List(ctx *httpx.Context) (any, error) {
 }
 
 func (c *userController) AddUser(ctx *httpx.Context) (any, error) {
-	return ShouldBindHandle(ctx, logic.NewAddUserLogic())
+	return httpx.ShouldBindHandle(ctx, logic.NewAddUserLogic())
 }
