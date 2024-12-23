@@ -18,7 +18,7 @@ func RegisterDemoRoutes(r *httpx.RouterGroup) {
 	rr := r.Group("/")
 	rr.After(middleware.AfterSampleA()).GET("/", controller.UserController.Index)
 
-	r.GET("/task", func(ctx *httpx.Context) (interface{}, error) {
+	r.GET("/task", func(ctx *httpx.Context) (any, error) {
 		// err := task.DispatchNow(tasks.NewSampleTask("测试1234"))
 		// fmt.Println(err)
 		// err = task.Dispatch(tasks.NewSampleBTask("测试1234"), time.Second)
@@ -29,13 +29,13 @@ func RegisterDemoRoutes(r *httpx.RouterGroup) {
 		taskx.NewOption().Queue(taskx.HIGH).TaskID("test").Dispatch(task.NewSampleBTask("hello"))
 		return "hello world", nil
 	})
-	r.GET("/event", func(ctx *httpx.Context) (interface{}, error) {
+	r.GET("/event", func(ctx *httpx.Context) (any, error) {
 		eventbus.Fire(ctx, event.NewSampleEvent("hello 测试"))
 		event.NewSampleEvent("333").Fire(ctx)
 		event.NewDemoEvent(&model.User{Name: "hello"}).Fire(ctx)
 		return "hello world", nil
 	})
-	r.GET("/test", func(ctx *httpx.Context) (interface{}, error) {
+	r.GET("/test", func(ctx *httpx.Context) (any, error) {
 		return g.MapStrInt{"hello": 333}, nil
 	})
 }

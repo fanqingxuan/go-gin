@@ -11,9 +11,9 @@ var (
 
 // 解析返回格式固定的结构，返回结构包含success msg param字段
 type APIResponse struct {
-	Code    *bool       `json:"success"`
-	Message *string     `json:"msg"`
-	Data    interface{} `json:"param"`
+	Code    *bool   `json:"success"`
+	Message *string `json:"msg"`
+	Data    any     `json:"param"`
 }
 
 var _ httpc.IResponse = (*APIResponse)(nil)

@@ -19,7 +19,7 @@ type User struct {
 	CreateTime carbon.Carbon `json:"create_time"`
 }
 
-func (c *userController) Index(ctx *httpx.Context) (interface{}, error) {
+func (c *userController) Index(ctx *httpx.Context) (any, error) {
 	// event.Fire(ctx, events.NewSampleEvent("hello 测试"))
 	// events.NewSampleEvent("333").Fire(ctx)
 	// u := User{
@@ -31,12 +31,12 @@ func (c *userController) Index(ctx *httpx.Context) (interface{}, error) {
 	return ShouldBindHandle(ctx, logic.NewIndexLogic())
 }
 
-func (c *userController) List(ctx *httpx.Context) (interface{}, error) {
+func (c *userController) List(ctx *httpx.Context) (any, error) {
 	var req typing.ListReq
 	l := logic.NewGetUsersLogic()
 	return l.Handle(ctx, req)
 }
 
-func (c *userController) AddUser(ctx *httpx.Context) (interface{}, error) {
+func (c *userController) AddUser(ctx *httpx.Context) (any, error) {
 	return ShouldBindHandle(ctx, logic.NewAddUserLogic())
 }

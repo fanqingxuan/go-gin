@@ -46,15 +46,15 @@ func (l *DBLog) LogMode(level logger.LogLevel) logger.Interface {
 }
 
 // Info print info
-func (l *DBLog) Info(ctx context.Context, msg string, data ...interface{}) {
+func (l *DBLog) Info(ctx context.Context, msg string, data ...any) {
 }
 
 // Warn print warn messages
-func (l *DBLog) Warn(ctx context.Context, msg string, data ...interface{}) {
+func (l *DBLog) Warn(ctx context.Context, msg string, data ...any) {
 }
 
 // Error print error messages
-func (l *DBLog) Error(ctx context.Context, msg string, data ...interface{}) {
+func (l *DBLog) Error(ctx context.Context, msg string, data ...any) {
 }
 
 // Trace print sql message

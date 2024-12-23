@@ -11,11 +11,11 @@ type loginController struct {
 
 var LoginController = &loginController{}
 
-func (c *loginController) Login(ctx *httpx.Context) (interface{}, error) {
+func (c *loginController) Login(ctx *httpx.Context) (any, error) {
 	return ShouldBindHandle(ctx, logic.NewLoginLogic())
 }
 
-func (c *loginController) LoginOut(ctx *httpx.Context) (interface{}, error) {
+func (c *loginController) LoginOut(ctx *httpx.Context) (any, error) {
 	token.Flush(ctx, ctx.GetHeader("token"))
 	return nil, nil
 }

@@ -7,7 +7,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func MustLoad(filename string, v interface{}) error {
+func MustLoad(filename string, v any) error {
 	content, err := os.ReadFile(filename)
 
 	if err != nil {

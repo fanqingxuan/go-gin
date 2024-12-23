@@ -69,7 +69,7 @@ github.com/go-resty/resty/v2 v2.13.1
     var UserController = &userController{
     }
 
-    func (c *userController) List(ctx *httpx.Context) (interface{}, error) {
+    func (c *userController) List(ctx *httpx.Context) (any, error) {
         var req types.ListReq
         l := logic.NewGetUsersLogic()
         return l.Handle(ctx, req)

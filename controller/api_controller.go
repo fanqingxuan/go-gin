@@ -17,7 +17,7 @@ type apiController struct {
 
 var ApiController = &apiController{}
 
-func (c *apiController) Index(ctx *httpx.Context) (interface{}, error) {
+func (c *apiController) Index(ctx *httpx.Context) (any, error) {
 
 	return httpc.POST(ctx, "http://localhost:8080/api/list").
 		SetFormData(httpc.M{"username": "aaaa", "age": "55555"}).
@@ -25,26 +25,26 @@ func (c *apiController) Index(ctx *httpx.Context) (interface{}, error) {
 
 }
 
-func (c *apiController) IndexA(ctx *httpx.Context) (interface{}, error) {
+func (c *apiController) IndexA(ctx *httpx.Context) (any, error) {
 
 	return user.Svc.Hello(ctx, &user.HelloReq{UserId: "userId111"})
 
 }
 
-func (c *apiController) IndexB(ctx *httpx.Context) (interface{}, error) {
+func (c *apiController) IndexB(ctx *httpx.Context) (any, error) {
 
 	hash := md5.Sum([]byte("BRUCEMUWU2023"))
 	pwd := hex.EncodeToString(hash[:])
 	return login.Svc.Login(ctx, &login.LoginReq{Username: "1", Pwd: pwd})
 }
 
-func (c *apiController) IndexC(ctx *httpx.Context) (interface{}, error) {
+func (c *apiController) IndexC(ctx *httpx.Context) (any, error) {
 	hash := md5.Sum([]byte("BRUCEMUWU2"))
 	pwd := hex.EncodeToString(hash[:])
 	return mylogin.Svc.Login(ctx, &mylogin.LoginReq{Username: "1", Pwd: pwd})
 }
 
-func (c *apiController) List(ctx *httpx.Context) (interface{}, error) {
+func (c *apiController) List(ctx *httpx.Context) (any, error) {
 	return gin.H{
 		"userId":   ctx.PostForm("userId"),
 		"username": "张三",

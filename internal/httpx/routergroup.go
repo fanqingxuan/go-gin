@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type HandlerFunc func(*Context) (interface{}, error)
+type HandlerFunc func(*Context) (any, error)
 
 // IRouter 定义路由接口
 type IRouter interface {

@@ -53,12 +53,12 @@ func (r *Request) AddFormData(key string, data []string) *Request {
 	return r
 }
 
-func (r *Request) SetBody(body interface{}) *Request {
+func (r *Request) SetBody(body any) *Request {
 	r.base.SetBody(body)
 	return r
 }
 
-func (r *Request) SetResult(res interface{}) *Request {
+func (r *Request) SetResult(res any) *Request {
 	r.base.SetResult(res)
 	return r
 }

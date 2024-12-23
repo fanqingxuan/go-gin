@@ -17,9 +17,9 @@ type Mqtt struct {
 }
 
 type LoginResp struct {
-	Lsname          string                 `json:"lsname"`
-	Rname           string                 `json:"rname"`
-	MQtt            Mqtt                   `json:"mqtt_config"`
-	appPointFuncArr []string               `json:"appPointFuncArr"`
-	Param           map[string]interface{} `json:"param"`
+	Lsname          string         `json:"lsname"`
+	Rname           string         `json:"rname"`
+	MQtt            Mqtt           `json:"mqtt_config"`
+	appPointFuncArr []string       `json:"appPointFuncArr"`
+	Param           map[string]any `json:"param"`
 }

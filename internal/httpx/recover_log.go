@@ -14,7 +14,7 @@ func recoverLog() gin.HandlerFunc {
 
 		defer func() {
 			if r := recover(); r != nil {
-				m := map[string]interface{}{
+				m := map[string]any{
 					"error": fmt.Sprintf("%v", r),
 					"file":  utils.FileWithLineNum(),
 				}

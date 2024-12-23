@@ -11,9 +11,9 @@ var (
 
 // 解析返回格式固定的结构，返回结构包含code message data字段
 type APIResponse struct {
-	Code    *int        `json:"code"`
-	Message *string     `json:"message"`
-	Data    interface{} `json:"data"`
+	Code    *int    `json:"code"`
+	Message *string `json:"message"`
+	Data    any     `json:"data"`
 }
 
 var _ httpc.IResponse = (*APIResponse)(nil)

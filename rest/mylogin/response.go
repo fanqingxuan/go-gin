@@ -13,7 +13,7 @@ var (
 type APIResponse struct {
 	Code    *bool   `json:"success"`
 	Message *string `json:"msg"`
-	Data    interface{}
+	Data    any
 }
 
 var _ httpc.IRepsonseNonStardard = (*APIResponse)(nil)

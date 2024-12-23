@@ -6,7 +6,7 @@ import (
 )
 
 func BeforeSampleB() httpx.HandlerFunc {
-	return func(ctx *httpx.Context) (interface{}, error) {
+	return func(ctx *httpx.Context) (any, error) {
 		fmt.Println("BeforeSampleB")
 		return nil, nil
 	}

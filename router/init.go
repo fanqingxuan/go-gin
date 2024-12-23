@@ -7,10 +7,10 @@ import (
 )
 
 func Init(route *httpx.Engine) {
-	route.NoMethod(func(ctx *httpx.Context) (interface{}, error) {
+	route.NoMethod(func(ctx *httpx.Context) (any, error) {
 		return nil, errorx.ErrMethodNotAllowed
 	})
-	route.NoRoute(func(ctx *httpx.Context) (interface{}, error) {
+	route.NoRoute(func(ctx *httpx.Context) (any, error) {
 		return nil, errorx.ErrNoRoute
 	})
 	route.GET("/login", controller.LoginController.Login)

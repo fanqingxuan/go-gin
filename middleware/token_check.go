@@ -11,7 +11,7 @@ type TokenHeader struct {
 }
 
 func TokenCheck() httpx.HandlerFunc {
-	return func(ctx *httpx.Context) (interface{}, error) {
+	return func(ctx *httpx.Context) (any, error) {
 		var req TokenHeader
 		if err := ctx.ShouldBindHeader(&req); err != nil {
 			return nil, errcode.ErrUserMustLogin
