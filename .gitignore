@@ -1,9 +1,7 @@
 /.github
-/.devcontainer
 *.exe
 /tmp
 /vendor
 /storage/logs/*
-fresh.conf
 /logs
 .env
