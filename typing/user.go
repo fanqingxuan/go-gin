@@ -39,3 +39,17 @@ type LoginResp struct {
 	Token string     `json:"token"`
 	User  model.User `json:"user"`
 }
+
+type UserData struct {
+	Id   int    `json:"id" form:"id"`
+	Name string `json:"name" form:"name"`
+	Age  int    `json:"age" form:"age"`
+}
+
+type MultiUserAddReq struct {
+	Users []UserData `json:"users" form:"users"`
+}
+
+type MultiUserAddResp struct {
+	Message string `json:"message"`
+}

@@ -11,5 +11,5 @@ func RegisterUserRoutes(r *httpx.RouterGroup) {
 	r.GET("/", controller.UserController.Index)
 	r.GET("/list", controller.UserController.List)
 	r.GET("/adduser", controller.UserController.AddUser)
-
+	r.Any("/multiadduser", controller.UserController.MultiUserAdd)
 }

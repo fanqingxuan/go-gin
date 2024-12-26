@@ -40,3 +40,7 @@ func (c *userController) List(ctx *httpx.Context) (any, error) {
 func (c *userController) AddUser(ctx *httpx.Context) (any, error) {
 	return httpx.ShouldBindHandle(ctx, logic.NewAddUserLogic())
 }
+
+func (c *userController) MultiUserAdd(ctx *httpx.Context) (any, error) {
+	return httpx.ShouldBindHandle(ctx, logic.NewMultiAddUserLogic())
+}
