@@ -58,7 +58,7 @@ github.com/go-resty/resty/v2 v2.13.1
     - listener/ 事件监听器
 - rest/ 请求第三方服务的目录
 - task/ 任务队列目录
-
+- router/ 路由目录
 ### 功能代码
 - 控制器
 
@@ -226,9 +226,15 @@ github.com/go-resty/resty/v2 v2.13.1
         return nil
     }
   ```
-  在`event/init.go`文件进行事件与监听器的绑定，一个事件可以有多个监听器
+  在`event/init.go`文件进行事件与监听器的绑定，使用`eventbus.AddListener`方法`进行绑定,一个事件可以有多个监听器,如果前一个监听器返回error,后面的监听器不会执行
   ```golang
   	eventbus.AddListener(SampleEventName, &listener.SampleAListener{}, &listener.SampleBListener{})
+  ```
+  在控制器触发事件，触发方式
+  ```golang
+  eventbus.Fire(ctx, event.NewSampleEvent("hello 测试"))
+    // 或者
+    event.NewSampleEvent("333").Fire(ctx)
   ```
 - 定时任务
 
