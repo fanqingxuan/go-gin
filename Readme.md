@@ -16,10 +16,11 @@
 - 引入`github.com/go-resty/resty/v2`发起http请求，方便的请求第三方接口
 - 引入`github.com/hibiken/asynq`实现异步队列
 - 引入`gorm.io/gorm`操作数据库
-# 亮点，大大提升了代码的优雅度
-- 封装了db error，redis error,这样业务层，db层减少了很多if error，else error的判断
+# 亮点，很好的优雅度
+- 封装了db error，redis error, db层减少了很多if error，else error的判断
 - 封装了gin框架，减少了控制器层error相关if else的判断，使代码更美观，清晰，简洁
-- 存在db error，redis error,http error,业务error，以及golang自身的error类型，响应不同的错误码结果
+- 封装了db error，redis error,http error,业务error，以及golang自身的error类型，响应不同的错误码结果
+- 封装了gin的参数绑定，提供了shouldbindhandle、shouldbindqueryhandle等方法，使controller代码更优雅
 
 ### 依赖库如下
 ```shell
@@ -44,24 +45,24 @@ github.com/go-resty/resty/v2 v2.13.1
 
 - cmd/ - web服务、cron的主入口目录
 - config/ -配置文件目录
-- consts/ -常量目录
-- controllers/ - 控制器目录
+- const/ -常量目录
+- controller/ - 控制器目录
 - internal/ -内部功能目录,里面方法不建议修改
-- crons/ - 定时任务目录
-- middlewares/ -中间件目录
-- models/ -数据表结构目录
+- cron/ - 定时任务目录
+- middleware/ -中间件目录
+- model/ -数据表结构目录
 - logic/ -业务逻辑目录
-- types/ 结构目录，用于定义请求参数、响应的数据结构
-- utils/ 工具目录，提供常用的辅助函数，一般不包含业务逻辑和状态信息
-- events/ 事件目录
-    - listeners/ 事件监听器
+- typeing/ 结构目录，用于定义请求参数、响应的数据结构
+- util/ 工具目录，提供常用的辅助函数，一般不包含业务逻辑和状态信息
+- event/ 事件目录
+    - listener/ 事件监听器
 - rest/ 请求第三方服务的目录
 - task/ 任务队列目录
 
 ### 功能代码
 - 控制器
 
-    在`controllers`目录下面创建控制器，例如`user_controller.go`
+    在`controller`目录下面创建控制器，例如`user_controller.go`
     ```go
     type userController struct {
     }
@@ -146,8 +147,9 @@ github.com/go-resty/resty/v2 v2.13.1
 
     要使用数据库，为了记录traceid，以及防止乱调用，所以系统只定义了一种获取gorm连接的方式,必须先调用`WithContext(ctx)`才能获得gorm资源，如下
     ```go
-    db.WithContext(ctx).Find(&u).Error
+    db.WithContext(ctx).Find(&u).Error()
     ```
+    Error()方法底层转成DBError，便于上层区分，以及响应判断
 - redis
 
     系统的redis库用的是`go-redis`,没有进行过多的封装，获取redis连接后，使用方法上就跟`go-redis`一样了,调用`GetInstance()`方法获取redis资源对象
@@ -209,13 +211,13 @@ github.com/go-resty/resty/v2 v2.13.1
 
     func (j *SampleJob) Handle(ctx context.Context) error {
 
-        var u models.User
+        var u model.User
         db.WithContext(ctx).Find(&u)
 
         return nil
     }
     ```
-    然后在`crons/init.go`文件定义cron的任务执行频率即可，如下定义`SampleJob`每3s执行一次
+    然后在`cron/init.go`文件定义cron的任务执行频率即可，如下定义`SampleJob`每3s执行一次
     ```
     cron.AddJob("@every 3s", &SampleJob{})
     ```
@@ -233,7 +235,7 @@ github.com/go-resty/resty/v2 v2.13.1
         }
 
         // controller
-        var req types.AddUserReq
+        var req typeing.AddUserReq
             if err := ctx.ShouldBind(&req); err != nil {
                 logx.WithContext(ctx).Warn("ShouldBind异常", err)
                 httpx.Error(ctx, err)
@@ -260,7 +262,7 @@ github.com/go-resty/resty/v2 v2.13.1
     - 支持非`gin`框架方式使用验证器
         提供了`validators.Validate()`方法进行验证结构字段的值是否合理
         ```go
-        var req = types.AddUserReq{
+        var req = typeing.AddUserReq{
             Name: "测试",
         }
         if err := validators.Validate(&req); err != nil {
@@ -271,11 +273,11 @@ github.com/go-resty/resty/v2 v2.13.1
         **注意:**`validators.Validate`和`ctx.ShouldBind`验证失败返回的是`BizError`类型错误,错误码是`ErrCodeValidateFailed`,默认值是`10001`，你也可以通过`errorx.ErrCodeValidateFailed = xxx`在main入口修改默认值
 - 参数、响应结构
 
-    定义了可以规范化请求参数、响应结构的目录，使代码更容易维护，结构定义在`types/`目录，一个模块一个文件名，如`user.go`
+    定义了可以规范化请求参数、响应结构的目录，使代码更容易维护，结构定义在`typeing/`目录，一个模块一个文件名，如`user.go`
     
     结构定义如下
     ```go
-        package types
+        package typeing
 
         import (
             "time"
@@ -295,7 +297,7 @@ github.com/go-resty/resty/v2 v2.13.1
     ```
     使用方式,在`controller`层使用
     ```go
-    var req types.AddUserReq
+    var req typeing.AddUserReq
 	if err := ctx.ShouldBind(&req); err != nil {
 		logx.WithContext(ctx).Warn("ShouldBind异常", err)
 		httpx.Error(ctx, err)
@@ -305,7 +307,7 @@ github.com/go-resty/resty/v2 v2.13.1
     ```
     其实就是使用了`gin`框架本身提供的shouldbind特性，将参数绑定到结构体，后面逻辑直接可以使用结构体里面的字段进行操作了，参数需要包括那些字段，通过结构体很容易看到，实现了参数的可维护性
     ```go
-    resp := types.AddUserReply{
+    resp := typeing.AddUserReply{
 		Message: fmt.Sprintf("add user succcess %s=%d", user.Name, user.Id),
 	}
 	httpx.Ok(ctx, resp)
@@ -384,18 +386,18 @@ github.com/go-resty/resty/v2 v2.13.1
 
     队列使用的是比较热门的库`github.com/hibiken/asynq`,本项目稍微进行了一点点儿封装，简化使用，更加结构化，便于代码的维护,弱化了client和server端指定taskname
     - 队列server目录为`cmd/task`
-    - 队列代码维护在`tasks/`目录
+    - 队列代码维护在`task/`目录
     - 将数据写入队列的方式，封装了3个方法
         ```go
-        task.Dispatch(tasks.NewSampleTask("测试3333"),3*time.Secord) // 使用task包下的Dispatch方法,并添加延迟时间3s后执行
-        task.DispatchWithRetry(tasks.NewSampleTask("测试3333"),)// 使用task包下的Dispatch方法,并添加延迟时间和失败后的重试次数
-        task.DispatchNow(tasks.NewSampleTask("测试3333")) // 使用task包下的Dispatch方法,立即执行
-        tasks.NewSampleTask("测试3333").DispatchNow() // 使用task结构的DispatchNow方法
+        task.Dispatch(taskx.NewSampleTask("测试3333"),3*time.Secord) // 使用task包下的Dispatch方法,并添加延迟时间3s后执行
+        task.DispatchWithRetry(taskx.NewSampleTask("测试3333"),)// 使用task包下的Dispatch方法,并添加延迟时间和失败后的重试次数
+        task.DispatchNow(taskx.NewSampleTask("测试3333")) // 使用task包下的Dispatch方法,立即执行
+        taskx.NewSampleTask("测试3333").DispatchNow() // 使用task结构的DispatchNow方法
         
-        task.NewOption().Queue(task.HIGH).TaskID("test").Dispatch(tasks.NewSampleBTask("hello")) // 指定发送队列
+        task.NewOption().Queue(task.HIGH).TaskID("test").Dispatch(taskx.NewSampleBTask("hello")) // 指定发送队列
 
         ```
-    - server端handler处理,首先需要将没一个task的handler维护到server端,在`tasks/init.go`文件进行添加
+    - server端handler处理,首先需要将没一个task的handler维护到server端,在`task/init.go`文件进行添加
         ```go
         task.Handle(NewSampleTaskHandler()) // Handle是封装的一个方法
         ```
