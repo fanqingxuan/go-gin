@@ -190,6 +190,46 @@ github.com/go-resty/resty/v2 v2.13.1
     {"level":"INFO","path":"/user/list","method":"GET","ip":"127.0.0.1","cost":"227.238215ms","status":200,"proto":"HTTP/1.1","user_agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36","time":"2024-06-22 23:28:20","trace_id":"f606d909-2f4c-4455-b4b9-5eea0684c49a"}
     ```
 
+- 事件
+  事件定义在`event/`目录，事件的监听器定义在`event/listener/`目录
+  事件参考内容如下,使用`eventbus.NewEvent`方法注册事件
+  ```golang
+  package event
+
+    import (
+        "go-gin/internal/eventbus"
+    )
+
+    var SampleEventName = "event.sample"
+
+    func NewSampleEvent(user string) *eventbus.Event {
+        return eventbus.NewEvent(SampleEventName, user)
+    }
+  ```
+  事件监听器`listener`参考内容如下,只需要实现`Handle`方法
+
+  ```golang
+    package listener
+    import (
+        "context"
+        "fmt"
+        "go-gin/internal/eventbus"
+        "go-gin/model"
+    )
+
+    type DemoAListener struct {
+    }
+
+    func (l DemoAListener) Handle(ctx context.Context, e *eventbus.Event) error {
+        user := e.Payload().(*model.User)
+        fmt.Println(user.Name)
+        return nil
+    }
+  ```
+  在`event/init.go`文件进行事件与监听器的绑定，一个事件可以有多个监听器
+  ```golang
+  	eventbus.AddListener(SampleEventName, &listener.SampleAListener{}, &listener.SampleBListener{})
+  ```
 - 定时任务
 
     定时任务的入口文件为`cmd/cron/main.go`,具体业务代码在`crons`目录编写。定时任务业务代码可以像api模式一样使用`log`、`db`
