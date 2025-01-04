@@ -40,7 +40,10 @@ func RegisterDemoRoutes(r *httpx.RouterGroup) {
 	r.GET("/test", func(ctx *httpx.Context) (any, error) {
 
 		a := 43
-		fmt.Println(util.IfElse(a > 50, "hello", "default"))
+		fmt.Println(util.IsTrue(a))
+		util.Unless(a > 40, func() {
+			fmt.Println("hello", a)
+		})
 		return g.MapStrInt{"hello": 333}, nil
 	})
 }
