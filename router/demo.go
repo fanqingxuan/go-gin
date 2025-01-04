@@ -1,6 +1,7 @@
 package router
 
 import (
+	"fmt"
 	"go-gin/controller"
 	"go-gin/event"
 	"go-gin/internal/eventbus"
@@ -10,6 +11,7 @@ import (
 	"go-gin/middleware"
 	"go-gin/model"
 	"go-gin/task"
+	"go-gin/util"
 	"time"
 )
 
@@ -36,6 +38,9 @@ func RegisterDemoRoutes(r *httpx.RouterGroup) {
 		return "hello world", nil
 	})
 	r.GET("/test", func(ctx *httpx.Context) (any, error) {
+
+		a := 43
+		fmt.Println(util.IfElse(a > 50, "hello", "default"))
 		return g.MapStrInt{"hello": 333}, nil
 	})
 }
