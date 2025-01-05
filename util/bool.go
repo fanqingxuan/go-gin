@@ -32,8 +32,8 @@ func Unless[T Scalar](value T, f func()) {
 	}
 }
 
-// Value 返回条件表达式的值
-func Value[T Scalar, U any](condition T, trueValue U, falseValue U) U {
+// Conditional 返回条件表达式的值
+func Conditional[T Scalar, U any](condition T, trueValue U, falseValue U) U {
 	if IsTrue(condition) {
 		return trueValue
 	}
