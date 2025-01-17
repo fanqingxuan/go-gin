@@ -24,6 +24,16 @@ func (o *Option) Queue(name string) *Option {
 	return o
 }
 
+func (o *Option) HighQueue() *Option {
+	o.add(asynq.Queue(HIGH))
+	return o
+}
+
+func (o *Option) LowQueue() *Option {
+	o.add(asynq.Queue(LOW))
+	return o
+}
+
 func (o *Option) TaskID(id string) *Option {
 	o.add(asynq.TaskID(id))
 	return o
@@ -65,6 +75,13 @@ func (o *Option) Group(name string) *Option {
 }
 
 func (o *Option) Dispatch(t *Task) error {
+	return do(t, o.opts...)
+}
+
+func (o *Option) DispatchIf(b bool, t *Task) error {
+	if !b {
+		return nil
+	}
 	return do(t, o.opts...)
 }
 

@@ -11,6 +11,13 @@ func (t *Task) DispatchNow() error {
 	return DispatchNow(t)
 }
 
+func (t *Task) DispatchIf(b bool) error {
+	if !b {
+		return nil
+	}
+	return DispatchNow(t)
+}
+
 func (t *Task) Dispatch(d time.Duration) error {
 	return Dispatch(t, d)
 }

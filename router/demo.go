@@ -26,9 +26,12 @@ func RegisterDemoRoutes(r *httpx.RouterGroup) {
 		// err = task.Dispatch(tasks.NewSampleBTask("测试1234"), time.Second)
 
 		// fmt.Println(err)
-		task.NewSampleTask("测试1").DispatchNow()
+		// task.NewSampleTask("测试1").DispatchNow()
+		task.NewSampleTask("测试1").DispatchIf(true)
 		task.NewSampleTask("测试2").Dispatch(5 * time.Second)
-		taskx.NewOption().Queue(taskx.HIGH).TaskID("test").Dispatch(task.NewSampleBTask("hello"))
+		// taskx.NewOption().Queue(taskx.HIGH).TaskID("test").Dispatch(task.NewSampleBTask("hello"))
+		// taskx.NewOption().Queue(taskx.HIGH).TaskID("test").DispatchIf(true, task.NewSampleBTask("hello"))
+		taskx.NewOption().LowQueue().TaskID("test").DispatchIf(true, task.NewSampleBTask("hello"))
 		return "hello world", nil
 	})
 	r.GET("/event", func(ctx *httpx.Context) (any, error) {

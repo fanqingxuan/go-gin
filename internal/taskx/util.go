@@ -11,6 +11,13 @@ func DispatchNow(t *Task) error {
 	return do(t)
 }
 
+func DispatchIf(b bool, t *Task) error {
+	if !b {
+		return nil
+	}
+	return DispatchNow(t)
+}
+
 func Dispatch(t *Task, d time.Duration) error {
 	return do(t, asynq.ProcessIn(d))
 }
