@@ -9,7 +9,6 @@ import (
 	"go-gin/internal/httpx"
 	"go-gin/internal/taskx"
 	"go-gin/middleware"
-	"go-gin/model"
 	"go-gin/task"
 	"go-gin/util"
 	"time"
@@ -36,8 +35,8 @@ func RegisterDemoRoutes(r *httpx.RouterGroup) {
 	})
 	r.GET("/event", func(ctx *httpx.Context) (any, error) {
 		eventbus.Fire(ctx, event.NewSampleEvent("hello 测试"))
-		event.NewSampleEvent("333").Fire(ctx)
-		event.NewDemoEvent(&model.User{Name: "hello"}).Fire(ctx)
+		event.NewSampleEvent("333").FireIf(ctx, true)
+		// event.NewDemoEvent(&model.User{Name: "hello"}).Fire(ctx)
 		return "hello world", nil
 	})
 	r.GET("/test", func(ctx *httpx.Context) (any, error) {
