@@ -155,3 +155,10 @@ func (db *DB) Scopes(funcs ...func(*gorm.DB) *gorm.DB) *DB {
 func (db *DB) Error() error {
 	return errorx.TryToDBError(db.DB.Error)
 }
+
+// Ping
+func (db *DB) Ping() error {
+	var num int
+	err := db.DB.Raw("select 1").Scan(&num).Error
+	return errorx.TryToDBError(err)
+}

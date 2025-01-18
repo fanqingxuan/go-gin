@@ -26,9 +26,6 @@ func New() *Engine {
 func Default() *Engine {
 	engine := New()
 	engine.Use(recoverLog(), TraceId(), RequestLog(), dbCheck())
-	engine.GET("/ping", func(ctx *Context) (any, error) {
-		return "pong", nil
-	})
 	return engine
 }
 
