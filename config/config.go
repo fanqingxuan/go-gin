@@ -9,11 +9,12 @@ import (
 )
 
 type Config struct {
-	App   App           `yaml:"app"`
-	Redis redisx.Config `yaml:"redis"`
-	DB    db.Config     `yaml:"db"`
-	Log   logx.Config   `yaml:"log"`
-	Svc   SvcConfig     `yaml:"svc"`
+	App     App           `yaml:"app"`
+	Redis   redisx.Config `yaml:"redis"`
+	DB      db.Config     `yaml:"db"`
+	Log     logx.Config   `yaml:"log"`
+	Svc     SvcConfig     `yaml:"svc"`
+	Monitor MonitorConfig `yaml:"monitor"`
 }
 
 var instance *Config

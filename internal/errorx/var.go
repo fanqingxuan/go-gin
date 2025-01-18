@@ -21,6 +21,9 @@ var (
 
 // http错误
 var (
+	ErrorBadRequest        = NewServerError(http.StatusBadRequest)
+	ErrorUnauthorized      = NewServerError(http.StatusUnauthorized)
+	ErrorForbidden         = NewServerError(http.StatusForbidden)
 	ErrMethodNotAllowed    = NewServerError(http.StatusMethodNotAllowed)
 	ErrNoRoute             = NewServerError(http.StatusNotFound)
 	ErrInternalServerError = NewServerError(http.StatusInternalServerError)

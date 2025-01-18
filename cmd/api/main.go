@@ -9,12 +9,14 @@ import (
 	"go-gin/internal/components/logx"
 	"go-gin/internal/components/redisx"
 	"go-gin/internal/environment"
+	"go-gin/internal/errorx"
 	"go-gin/internal/httpx"
 	"go-gin/internal/httpx/validators"
 	"go-gin/internal/queue"
 	_ "go-gin/internal/util"
 	"go-gin/middleware"
 	"go-gin/router"
+	"go-gin/util"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
@@ -83,5 +85,17 @@ func mountMonitor(engine *httpx.Engine) {
 		RootPath:     "/monitor/queue",
 		RedisConnOpt: queue.RedisClientOpt(config.GetRedisConf()),
 	})
-	engine.Engine.GET("/monitor/queue/*any", gin.WrapH(mon))
+
+	r := engine.Engine.Group("/monitor")
+	r.Use(func(ctx *gin.Context) {
+		clientIp := ctx.ClientIP()
+		// 如果客户端ip不在白名单内，直接返回403
+		if !util.InArray(clientIp, config.GetMonitorConf().WhiteIpList) {
+			httpx.Error(httpx.NewContext(ctx), errorx.ErrorForbidden)
+			ctx.Abort()
+			return
+		}
+		ctx.Next()
+	})
+	r.GET("/queue/*any", gin.WrapH(mon))
 }

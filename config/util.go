@@ -21,3 +21,7 @@ func GetLogConf() logx.Config {
 func GetDbConf() db.Config {
 	return instance.DB
 }
+
+func GetMonitorConf() MonitorConfig {
+	return instance.Monitor
+}
