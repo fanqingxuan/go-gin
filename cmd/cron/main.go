@@ -35,8 +35,9 @@ func main() {
 	// 初始化第三方服务地址
 	config.InitSvc()
 
-	c := cronx.New()
-	cron.Init(c)
-	c.Run()
+	// 定时任务
+	cronx.New()
+	cron.Init()
+	cronx.Run()
 
 }

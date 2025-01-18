@@ -1,11 +1,10 @@
 package cron
 
-import (
-	"go-gin/internal/cronx"
-)
+import "go-gin/internal/cronx"
 
-func Init(cron *cronx.MYCron) {
+func Init() {
 
-	cron.AddJob("@every 3s", &DBCheckJob{})
-	cron.AddJob("@every 3s", &SampleJob{})
+	cronx.AddJob("@every 3s", &DBCheckJob{})
+	// cronx.AddJob("@every 3s", &SampleJob{})
+	cronx.Schedule(&SampleJob{}).EveryMinute()
 }

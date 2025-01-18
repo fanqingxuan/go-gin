@@ -10,26 +10,30 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
-type MYCron struct {
-	cron cron.Cron
+var c *cron.Cron
+
+func New() {
+	c = cron.New()
 }
 
-func New() *MYCron {
-	return &MYCron{
-		cron: *cron.New(),
-	}
-}
-
-func (c *MYCron) Run() *MYCron {
-	c.cron.Start()
+func Run() {
+	c.Start()
 	// 程序结束时停止 cron 定时器（可选）
-	defer c.cron.Stop()
+	defer c.Stop()
 	// 主程序可以保持运行状态，等待 cron 任务执行
 	select {}
 }
 
-func (c *MYCron) AddJob(spec string, cmd Job) {
-	_, err := c.cron.AddFunc(spec, func() {
+// Schedule 创建定时任务
+func Schedule(job Job) *JobBuilder {
+	if c == nil {
+		panic("please call cronx.New() first")
+	}
+	return NewJobBuilder(job)
+}
+
+func AddJob(spec string, cmd Job) {
+	_, err := c.AddFunc(spec, func() {
 		ctx := context.WithValue(context.Background(), traceid.TraceIdFieldName, traceid.New())
 		logx.WithContext(ctx).Info("定时任务", fmt.Sprintf("开始执行,cron:%s", cmd.Name()))
 
