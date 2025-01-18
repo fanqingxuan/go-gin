@@ -3,17 +3,17 @@ package task
 import (
 	"context"
 	"fmt"
-	"go-gin/internal/taskx"
+	"go-gin/internal/queue"
 )
 
 const TypeSampleTask = "sample"
 
-func NewSampleTask(p string) *taskx.Task {
-	return taskx.NewTask(TypeSampleTask, p)
+func NewSampleTask(p string) *queue.Task {
+	return queue.NewTask(TypeSampleTask, p)
 }
 
-func NewSampleTaskHandler() *taskx.TaskHandler {
-	return taskx.NewTaskHandler(TypeSampleTask, func(ctx context.Context, data []byte) error {
+func NewSampleTaskHandler() *queue.TaskHandler {
+	return queue.NewTaskHandler(TypeSampleTask, func(ctx context.Context, data []byte) error {
 		fmt.Println(string(data))
 		// Image resizing code ...
 		return nil

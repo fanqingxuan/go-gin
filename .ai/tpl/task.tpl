@@ -8,12 +8,12 @@ import (
 
 const TypeXxxTask = "taskName"
 
-func NewXxxTask(payload string) *taskx.Task {
-	return taskx.NewTask(TypeXxxTask, payload)
+func NewXxxTask(payload string) *queue.Task {
+	return queue.NewTask(TypeXxxTask, payload)
 }
 
-func NewXxxTaskHandler() *taskx.TaskHandler {
-	return taskx.NewTaskHandler(TypeXxxTask, func(ctx context.Context, data []byte) error {
+func NewXxxTaskHandler() *queue.TaskHandler {
+	return queue.NewTaskHandler(TypeXxxTask, func(ctx context.Context, data []byte) error {
 		return nil
 	})
 }

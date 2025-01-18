@@ -1,4 +1,4 @@
-package taskx
+package queue
 
 import (
 	"go-gin/internal/components/redisx"

@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"go-gin/internal/taskx"
+	"go-gin/internal/queue"
 )
 
 const TypeSampleBTask = "sampleB"
@@ -13,12 +13,12 @@ type SampleBTaskPayload struct {
 	UserId []string
 }
 
-func NewSampleBTask(p string) *taskx.Task {
-	return taskx.NewTask(TypeSampleBTask, SampleBTaskPayload{UserId: []string{p}})
+func NewSampleBTask(p string) *queue.Task {
+	return queue.NewTask(TypeSampleBTask, SampleBTaskPayload{UserId: []string{p}})
 }
 
-func NewSampleBTaskHandler() *taskx.TaskHandler {
-	return taskx.NewTaskHandler(TypeSampleBTask,
+func NewSampleBTaskHandler() *queue.TaskHandler {
+	return queue.NewTaskHandler(TypeSampleBTask,
 		func(ctx context.Context, data []byte) error {
 			var p SampleBTaskPayload
 			if err := json.Unmarshal(data, &p); err != nil {

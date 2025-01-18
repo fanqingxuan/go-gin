@@ -435,12 +435,12 @@ github.com/go-resty/resty/v2 v2.13.1
     - 队列代码维护在`task/`目录
     - 将数据写入队列的方式，封装了3个方法
         ```go
-        task.Dispatch(taskx.NewSampleTask("测试3333"),3*time.Secord) // 使用task包下的Dispatch方法,并添加延迟时间3s后执行
-        task.DispatchWithRetry(taskx.NewSampleTask("测试3333"),)// 使用task包下的Dispatch方法,并添加延迟时间和失败后的重试次数
-        task.DispatchNow(taskx.NewSampleTask("测试3333")) // 使用task包下的Dispatch方法,立即执行
-        taskx.NewSampleTask("测试3333").DispatchNow() // 使用task结构的DispatchNow方法
+        task.Dispatch(queue.NewSampleTask("测试3333"),3*time.Secord) // 使用task包下的Dispatch方法,并添加延迟时间3s后执行
+        task.DispatchWithRetry(queue.NewSampleTask("测试3333"),)// 使用task包下的Dispatch方法,并添加延迟时间和失败后的重试次数
+        task.DispatchNow(queue.NewSampleTask("测试3333")) // 使用task包下的Dispatch方法,立即执行
+        tasqueuekx.NewSampleTask("测试3333").DispatchNow() // 使用task结构的DispatchNow方法
         
-        task.NewOption().Queue(task.HIGH).TaskID("test").Dispatch(taskx.NewSampleBTask("hello")) // 指定发送队列
+        task.NewOption().Queue(task.HIGH).TaskID("test").Dispatch(queue.NewSampleBTask("hello")) // 指定发送队列
 
         ```
     - server端handler处理,首先需要将没一个task的handler维护到server端,在`task/init.go`文件进行添加

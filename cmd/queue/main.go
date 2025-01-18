@@ -7,7 +7,7 @@ import (
 	"go-gin/internal/components/db"
 	"go-gin/internal/components/logx"
 	"go-gin/internal/components/redisx"
-	"go-gin/internal/taskx"
+	"go-gin/internal/queue"
 	"go-gin/task"
 )
 
@@ -29,9 +29,9 @@ func main() {
 
 	redisx.InitConfig(config.GetRedisConf())
 	redisx.Init()
-	taskx.InitServer(config.GetRedisConf())
+	queue.InitServer(config.GetRedisConf())
 	task.Init()
-	if err := taskx.Start(); err != nil {
+	if err := queue.Start(); err != nil {
 		fmt.Printf("could not run server: %v", err)
 	}
 }

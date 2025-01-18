@@ -1,8 +1,10 @@
 package task
 
-import "go-gin/internal/taskx"
+import (
+	"go-gin/internal/queue"
+)
 
 func Init() {
-	taskx.AddHandler(NewSampleTaskHandler())
-	taskx.AddHandler(NewSampleBTaskHandler())
+	queue.AddHandler(NewSampleTaskHandler())
+	queue.AddHandler(NewSampleBTaskHandler())
 }

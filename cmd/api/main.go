@@ -11,7 +11,7 @@ import (
 	"go-gin/internal/environment"
 	"go-gin/internal/httpx"
 	"go-gin/internal/httpx/validators"
-	"go-gin/internal/taskx"
+	"go-gin/internal/queue"
 	_ "go-gin/internal/util"
 	"go-gin/middleware"
 	"go-gin/router"
@@ -37,8 +37,8 @@ func main() {
 
 	redisx.InitConfig(config.GetRedisConf())
 	redisx.Init()
-	taskx.Init(config.GetRedisConf())
-	defer taskx.Close()
+	queue.Init(config.GetRedisConf())
+	defer queue.Close()
 	event.Init()
 
 	// 初始化第三方服务地址
