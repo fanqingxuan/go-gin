@@ -23,6 +23,14 @@ type JobBuilder struct {
 	expression string // cron 表达式
 }
 
+// 添加构造函数
+func NewJobBuilder(job Job) *JobBuilder {
+	return &JobBuilder{
+		job:        job,
+		expression: "* * * * *",
+	}
+}
+
 // 基础时间调度方法
 func (jb *JobBuilder) spliceIntoPosition(position int, value string) *JobBuilder {
 	segments := strings.Split(jb.expression, " ")
@@ -325,10 +333,4 @@ func (jb *JobBuilder) EveryOddHour(minute int) {
 		handleJob()
 }
 
-// 添加构造函数
-func NewJobBuilder(job Job) *JobBuilder {
-	return &JobBuilder{
-		job:        job,
-		expression: "* * * * *",
-	}
-}
+

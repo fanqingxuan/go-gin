@@ -5,6 +5,8 @@ import (
 	"go-gin/internal/components/logx"
 	"go-gin/internal/traceid"
 	"reflect"
+	"runtime"
+	"strings"
 	"time"
 
 	"github.com/robfig/cron/v3"
@@ -58,11 +60,38 @@ func AddJob(spec string, cmd Job) {
 	}
 }
 
+// ScheduleFunc 创建函数类型的定时任务
+func ScheduleFunc(fn JobFunc) *JobBuilder {
+	if c == nil {
+		panic("please call cronx.New() first")
+	}
+	return NewJobBuilder(fn)
+}
+
+func AddFunc(spec string, cmd JobFunc) {
+	AddJob(spec, cmd)
+}
+
 // 添加一个工具函数来获取结构体名称
 func getStructName(v interface{}) string {
-	if t := reflect.TypeOf(v); t.Kind() == reflect.Ptr {
-		return t.Elem().Name()
-	} else {
-		return t.Name()
+	t := reflect.TypeOf(v)
+
+	// 处理函数类型
+	if t.Kind() == reflect.Func {
+		// 获取函数的完整路径名
+		fullName := runtime.FuncForPC(reflect.ValueOf(v).Pointer()).Name()
+		// 提取最后一个点号后的函数名
+		if lastDot := strings.LastIndex(fullName, "."); lastDot >= 0 {
+			return fullName[lastDot+1:]
+		}
+		return fullName
 	}
+
+	// 处理指针类型
+	if t.Kind() == reflect.Ptr {
+		return t.Elem().Name()
+	}
+
+	// 处理普通类型
+	return t.Name()
 }

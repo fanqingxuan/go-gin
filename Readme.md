@@ -238,22 +238,17 @@ github.com/go-resty/resty/v2 v2.13.1
   ```
 - 定时任务
 
-    定时任务的入口文件为`cmd/cron/main.go`,具体业务代码在`crons`目录编写。定时任务业务代码可以像api模式一样使用`log`、`db`
+    定时任务的入口文件为`cmd/cron/main.go`,具体业务代码在`cron`目录编写。定时任务业务代码可以像api模式一样使用`log`、`db`
 
-    定义一个job首先要定义一个实现了`cron.Job`的接口的结构,`cron.Job`接口如下
+    定义一个job首先要定义一个实现了`cronx.Job`的接口的结构,`cronx.Job`接口如下
     ```go
     type Job interface {
-        Name() string // 定义job的名称
         Handle(ctx context.Context) error // 实现业务逻辑
     }
     ```
     例子如下
     ```go
     type SampleJob struct{}
-
-    func (j *SampleJob) Name() string {
-        return "sample job"
-    }
 
     func (j *SampleJob) Handle(ctx context.Context) error {
 
@@ -265,9 +260,26 @@ github.com/go-resty/resty/v2 v2.13.1
     ```
     然后在`cron/init.go`文件定义cron的任务执行频率即可，如下定义`SampleJob`每3s执行一次
     ```
-    cron.AddJob("@every 3s", &SampleJob{})
+    cronx.AddJob("@every 3s", &SampleJob{})
+    // cronx.Schedule(&SampleJob{}).EveryMinute()
+    // cronx.Schedule(&SampleJob{}).EveryFiveMinutes()
+    ```
+    提供了`EveryFiveMinutes`、`EveryThreeMinutes`、`EveryTenMinutes`等多种优雅的时候方法
+    定时任务也支持func方式，只需要提供一个`cronx.JobFunc`类型的函数即可，也就是`func(context.Context) error`形式
+    例子如下:
+    ```go
+    func SampleFunc(ctx context.Context) error {
+        fmt.Println("this is a sample function")
+        return nil
+    }
+    ```
+    我只需要像注册结构体方式一样，将func添加的定时任务管理器即可
+    ```go
+    cronx.AddFunc("@every 5s", SampleFunc)
+	cronx.ScheduleFunc(SampleFunc).EveryMinute()
     ```
     定时任务其它执行频率的定义方式可以参考[https://github.com/robfig/cron](https://github.com/robfig/cron)
+
 - 验证器
 
     验证器主要是对`gin`内置的binding进行的扩展
