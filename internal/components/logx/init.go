@@ -16,6 +16,7 @@ var (
 	DBLoggerInstance     zerolog.Logger
 	RestyLoggerInstance  zerolog.Logger
 	CronLoggerInstance   zerolog.Logger
+	QueueLoggerInstance  zerolog.Logger
 )
 
 type Config struct {
@@ -55,9 +56,18 @@ func Init() {
 		FilePattern: time.DateOnly,
 	})
 
+	queueFileWriter := zerolog.SyncWriter(&FileLevelWriter{
+		Dirname:     conf.Path + "access_queue/",
+		FilePattern: time.DateOnly,
+	})
+
 	writers := []io.Writer{fileWriter}
+	cronWriters := []io.Writer{cronFileWriter}
+	queueWriters := []io.Writer{queueFileWriter}
 	if environment.IsDebugMode() {
 		writers = append(writers, &ConsoleLevelWriter{})
+		cronWriters = append(cronWriters, &ConsoleLevelWriter{})
+		queueWriters = append(queueWriters, &ConsoleLevelWriter{})
 	}
 
 	multi := zerolog.MultiLevelWriter(writers...)
@@ -75,5 +85,6 @@ func Init() {
 	})
 	RestyLoggerInstance = zerolog.New(restyFileWriter).Level(zerolog.InfoLevel).With().Timestamp().Logger().Hook(TracingHook{})
 
-	CronLoggerInstance = zerolog.New(cronFileWriter).Level(zerolog.InfoLevel).With().Timestamp().Logger().Hook(TracingHook{})
+	CronLoggerInstance = zerolog.Nop().Output(zerolog.MultiLevelWriter(cronWriters...)).Level(zerolog.InfoLevel).With().Timestamp().Logger().Hook(TracingHook{})
+	QueueLoggerInstance = zerolog.Nop().Output(zerolog.MultiLevelWriter(queueWriters...)).Level(zerolog.InfoLevel).With().Timestamp().Logger().Hook(TracingHook{})
 }

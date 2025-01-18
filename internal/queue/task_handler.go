@@ -25,9 +25,10 @@ func NewTaskHandler(taskName string, handler func(context.Context, []byte) error
 func AddHandler(h *TaskHandler) {
 	mux.HandleFunc(h.taskName, func(ctx context.Context, t *asynq.Task) error {
 		new_ctx := context.WithValue(ctx, traceid.TraceIdFieldName, traceid.New())
-		logx.WithContext(new_ctx).Info("队列", fmt.Sprintf("开始执行,task:%s,payload:%s", t.Type(), string(t.Payload())))
-		start := time.Now()
+		fmt.Println("---" + string(t.Payload()))
+		logx.QueueLoggerInstance.Info().Ctx(new_ctx).Str("task", t.Type()).Str("keywords", "开始执行").Any("payload", string(t.Payload())).Send()
 
+		start := time.Now()
 		err := h.handler(new_ctx, t.Payload())
 
 		TimeStamp := time.Now()
@@ -36,9 +37,11 @@ func AddHandler(h *TaskHandler) {
 			Cost = Cost.Truncate(time.Second)
 		}
 		if err != nil {
-			logx.WithContext(new_ctx).Error("队列", fmt.Sprintf("执行结束,task:%s,cost:%s,error=%s", t.Type(), Cost.String(), err.Error()))
+			logx.QueueLoggerInstance.Error().Ctx(new_ctx).Str("task", t.Type()).Str("keywords", "执行结束").Str("cost", Cost.String()).Str("err", err.Error()).Send()
+
 		} else {
-			logx.WithContext(new_ctx).Info("队列", fmt.Sprintf("执行结束,task:%s,cost:%s", t.Type(), Cost.String()))
+			logx.QueueLoggerInstance.Info().Ctx(new_ctx).Str("task", t.Type()).Str("keywords", "执行结束").Str("cost", Cost.String()).Send()
+
 		}
 		return err
 	})

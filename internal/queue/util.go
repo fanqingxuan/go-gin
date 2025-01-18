@@ -2,6 +2,7 @@ package queue
 
 import (
 	"encoding/json"
+	"strings"
 	"time"
 
 	"github.com/hibiken/asynq"
@@ -31,7 +32,9 @@ func do(t *Task, opts ...asynq.Option) error {
 	if err != nil {
 		return err
 	}
-	_, err = client.Enqueue(asynq.NewTask(t.taskName, p), opts...)
+	str := strings.Trim(string(p), "\"") // 结果: hello
+
+	_, err = client.Enqueue(asynq.NewTask(t.taskName, []byte(str)), opts...)
 	if err != nil {
 		return err
 	}
