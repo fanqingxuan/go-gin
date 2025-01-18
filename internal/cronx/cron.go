@@ -7,7 +7,7 @@ import (
 	"go-gin/internal/traceid"
 	"time"
 
-	"github.com/robfig/cron"
+	"github.com/robfig/cron/v3"
 )
 
 type MYCron struct {
@@ -29,7 +29,7 @@ func (c *MYCron) Run() *MYCron {
 }
 
 func (c *MYCron) AddJob(spec string, cmd Job) {
-	err := c.cron.AddFunc(spec, func() {
+	_, err := c.cron.AddFunc(spec, func() {
 		ctx := context.WithValue(context.Background(), traceid.TraceIdFieldName, traceid.New())
 		logx.WithContext(ctx).Info("定时任务", fmt.Sprintf("开始执行,cron:%s", cmd.Name()))
 
