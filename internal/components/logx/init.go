@@ -46,45 +46,36 @@ func Init() {
 		return strings.ToUpper(l.String())
 	}
 
+	log.Logger = initDefaultInstance(level)
+	AccessLoggerInstance = initLoggerInstance("access")
+	RestyLoggerInstance = initLoggerInstance("httpc")
+	CronLoggerInstance = initLoggerInstance("access_cron")
+	QueueLoggerInstance = initLoggerInstance("access_queue")
+}
+
+func initDefaultInstance(l zerolog.Level) zerolog.Logger {
 	fileWriter := zerolog.SyncWriter(&FileLevelWriter{
 		Dirname:     conf.Path,
 		FilePattern: time.DateOnly,
 	})
 
-	cronFileWriter := zerolog.SyncWriter(&FileLevelWriter{
-		Dirname:     conf.Path + "access_cron/",
-		FilePattern: time.DateOnly,
-	})
-
-	queueFileWriter := zerolog.SyncWriter(&FileLevelWriter{
-		Dirname:     conf.Path + "access_queue/",
-		FilePattern: time.DateOnly,
-	})
-
 	writers := []io.Writer{fileWriter}
-	cronWriters := []io.Writer{cronFileWriter}
-	queueWriters := []io.Writer{queueFileWriter}
 	if environment.IsDebugMode() {
 		writers = append(writers, &ConsoleLevelWriter{})
-		cronWriters = append(cronWriters, &ConsoleLevelWriter{})
-		queueWriters = append(queueWriters, &ConsoleLevelWriter{})
 	}
-
 	multi := zerolog.MultiLevelWriter(writers...)
-	log.Logger = log.Output(multi).Level(level).With().Logger().Hook(TracingHook{})
+	log.Output(multi).Level(l).With().Logger().Hook(TracingHook{})
+	return zerolog.Nop()
+}
 
-	accessFileWriter := zerolog.SyncWriter(&FileLevelWriter{
-		Dirname:     conf.Path + "access/",
+func initLoggerInstance(path string) zerolog.Logger {
+	queueFileWriter := zerolog.SyncWriter(&FileLevelWriter{
+		Dirname:     conf.Path + strings.Trim(path, "/") + "/",
 		FilePattern: time.DateOnly,
 	})
-	AccessLoggerInstance = zerolog.New(accessFileWriter).Level(zerolog.InfoLevel).With().Timestamp().Logger().Hook(TracingHook{})
-
-	restyFileWriter := zerolog.SyncWriter(&FileLevelWriter{
-		Dirname:     conf.Path + "httpc/",
-		FilePattern: time.DateOnly,
-	})
-	RestyLoggerInstance = zerolog.New(restyFileWriter).Level(zerolog.InfoLevel).With().Timestamp().Logger().Hook(TracingHook{})
-
-	CronLoggerInstance = zerolog.Nop().Output(zerolog.MultiLevelWriter(cronWriters...)).Level(zerolog.InfoLevel).With().Timestamp().Logger().Hook(TracingHook{})
-	QueueLoggerInstance = zerolog.Nop().Output(zerolog.MultiLevelWriter(queueWriters...)).Level(zerolog.InfoLevel).With().Timestamp().Logger().Hook(TracingHook{})
+	writers := []io.Writer{queueFileWriter}
+	if environment.IsDebugMode() {
+		writers = append(writers, &ConsoleLevelWriter{})
+	}
+	return zerolog.Nop().Output(zerolog.MultiLevelWriter(writers...)).Level(zerolog.InfoLevel).With().Timestamp().Logger().Hook(TracingHook{})
 }
