@@ -15,30 +15,34 @@
 - 引入`gopkg.in/yaml.v3`解析yaml配置文件到golang变量
 - 引入`github.com/go-resty/resty/v2`发起http请求，方便的请求第三方接口
 - 引入`github.com/hibiken/asynq`实现异步队列
+- 引入`github.com/hibiken/asynqmon` 队列使用情况的漂亮web ui界面
 - 引入`gorm.io/gorm`操作数据库
 # 亮点，很好的优雅度
 - 封装了db error，redis error, db层减少了很多if error，else error的判断
 - 封装了gin框架，减少了控制器层error相关if else的判断，使代码更美观，清晰，简洁
 - 封装了db error，redis error,http error,业务error，以及golang自身的error类型，响应不同的错误码结果
 - 封装了gin的参数绑定，提供了shouldbindhandle、shouldbindqueryhandle等方法，使controller代码更优雅
-
+- crontab、task、event可以优雅的使用
 ### 依赖库如下
 ```shell
-github.com/gin-gonic/gin v1.9.1
-github.com/go-playground/locales v0.14.1
-github.com/go-playground/universal-translator v0.18.1
-github.com/go-playground/validator/v10 v10.14.0
-github.com/go-sql-driver/mysql v1.8.1
-github.com/google/uuid v1.6.0
-github.com/labstack/gommon v0.4.2
-github.com/redis/go-redis/v9 v9.5.1
-github.com/robfig/cron v1.2.0
-github.com/rs/zerolog v1.33.0
-golang.org/x/text v0.14.0
-gopkg.in/yaml.v3 v3.0.1
-gorm.io/driver/mysql v1.5.7
-gorm.io/gorm v1.25.10
-github.com/go-resty/resty/v2 v2.13.1
+	github.com/gin-gonic/gin v1.9.1
+	github.com/go-playground/locales v0.14.1
+	github.com/go-playground/universal-translator v0.18.1
+	github.com/go-playground/validator/v10 v10.14.0
+	github.com/go-resty/resty/v2 v2.13.1
+	github.com/go-sql-driver/mysql v1.8.1
+	github.com/golang-module/carbon/v2 v2.3.12
+	github.com/google/uuid v1.6.0
+	github.com/hibiken/asynq v0.24.1
+	github.com/hibiken/asynqmon v0.7.2
+	github.com/labstack/gommon v0.4.2
+	github.com/redis/go-redis/v9 v9.7.0
+	github.com/robfig/cron/v3 v3.0.1
+	github.com/rs/zerolog v1.33.0
+	golang.org/x/text v0.16.0
+	gopkg.in/yaml.v3 v3.0.1
+	gorm.io/driver/mysql v1.5.7
+	gorm.io/gorm v1.25.10
 ```
 
 ### 目录结构
