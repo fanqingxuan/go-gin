@@ -19,12 +19,7 @@ var (
 
 func InitServer(c redisx.Config) {
 	srv = asynq.NewServer(
-		asynq.RedisClientOpt{
-			Addr:     c.Addr,
-			Username: c.Username,
-			Password: c.Password,
-			DB:       c.DB,
-		},
+		RedisClientOpt(c),
 		asynq.Config{
 			// Specify how many concurrent workers to use
 			Concurrency:    10,
