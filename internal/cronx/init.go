@@ -2,9 +2,9 @@ package cronx
 
 import (
 	"context"
-	"fmt"
 	"go-gin/internal/components/logx"
 	"go-gin/internal/traceid"
+	"reflect"
 	"time"
 
 	"github.com/robfig/cron/v3"
@@ -33,9 +33,10 @@ func Schedule(job Job) *JobBuilder {
 }
 
 func AddJob(spec string, cmd Job) {
+	jobName := getStructName(cmd)
 	_, err := c.AddFunc(spec, func() {
 		ctx := context.WithValue(context.Background(), traceid.TraceIdFieldName, traceid.New())
-		logx.WithContext(ctx).Info("定时任务", fmt.Sprintf("开始执行,cron:%s", cmd.Name()))
+		logx.CronLoggerInstance.Info().Ctx(ctx).Str("cron", jobName).Str("spec", spec).Str("keywords", "开始执行").Send()
 
 		start := time.Now()
 
@@ -47,12 +48,21 @@ func AddJob(spec string, cmd Job) {
 			Cost = Cost.Truncate(time.Second)
 		}
 		if err != nil {
-			logx.WithContext(ctx).Error("定时任务", fmt.Sprintf("执行结束,cron:%s,spec:%s,cost:%s,error=%s", cmd.Name(), spec, Cost.String(), err.Error()))
+			logx.CronLoggerInstance.Error().Ctx(ctx).Str("cron", jobName).Str("spec", spec).Str("keywords", "执行结束").Str("cost", Cost.String()).Str("err", err.Error()).Send()
 		} else {
-			logx.WithContext(ctx).Info("定时任务", fmt.Sprintf("执行结束,cron:%s,spec:%s,cost:%s", cmd.Name(), spec, Cost.String()))
+			logx.CronLoggerInstance.Info().Ctx(ctx).Str("cron", jobName).Str("spec", spec).Str("keywords", "执行结束").Str("cost", Cost.String()).Send()
 		}
 	})
 	if err != nil {
-		logx.WithContext(context.Background()).Error("定时任务", fmt.Sprintf("添加失败,cron:%s,spec:%s", cmd.Name(), spec))
+		logx.CronLoggerInstance.Info().Ctx(context.Background()).Str("cron", jobName).Str("spec", spec).Str("keywords", "添加失败").Send()
+	}
+}
+
+// 添加一个工具函数来获取结构体名称
+func getStructName(v interface{}) string {
+	if t := reflect.TypeOf(v); t.Kind() == reflect.Ptr {
+		return t.Elem().Name()
+	} else {
+		return t.Name()
 	}
 }

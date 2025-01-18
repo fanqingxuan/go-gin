@@ -31,7 +31,6 @@ func (jb *JobBuilder) spliceIntoPosition(position int, value string) *JobBuilder
 	}
 	segments[position-1] = value
 	jb.expression = strings.Join(segments, " ")
-	fmt.Println(jb.expression)
 	return jb
 }
 

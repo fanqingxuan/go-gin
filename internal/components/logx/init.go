@@ -15,6 +15,7 @@ var (
 	AccessLoggerInstance zerolog.Logger
 	DBLoggerInstance     zerolog.Logger
 	RestyLoggerInstance  zerolog.Logger
+	CronLoggerInstance   zerolog.Logger
 )
 
 type Config struct {
@@ -49,6 +50,11 @@ func Init() {
 		FilePattern: time.DateOnly,
 	})
 
+	cronFileWriter := zerolog.SyncWriter(&FileLevelWriter{
+		Dirname:     conf.Path + "access_cron/",
+		FilePattern: time.DateOnly,
+	})
+
 	writers := []io.Writer{fileWriter}
 	if environment.IsDebugMode() {
 		writers = append(writers, &ConsoleLevelWriter{})
@@ -68,4 +74,6 @@ func Init() {
 		FilePattern: time.DateOnly,
 	})
 	RestyLoggerInstance = zerolog.New(restyFileWriter).Level(zerolog.InfoLevel).With().Timestamp().Logger().Hook(TracingHook{})
+
+	CronLoggerInstance = zerolog.New(cronFileWriter).Level(zerolog.InfoLevel).With().Timestamp().Logger().Hook(TracingHook{})
 }
