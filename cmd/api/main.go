@@ -16,7 +16,9 @@ import (
 	"go-gin/middleware"
 	"go-gin/router"
 
+	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/hibiken/asynqmon"
 )
 
 var configFile = flag.String("f", "./.env", "the config file")
@@ -37,18 +39,31 @@ func main() {
 
 	redisx.InitConfig(config.GetRedisConf())
 	redisx.Init()
+
 	queue.Init(config.GetRedisConf())
 	defer queue.Close()
+
 	event.Init()
 
 	// 初始化第三方服务地址
 	config.InitSvc()
-	// 启动http服务
-	startHttpServer(config.GetAppConf().Port)
 
+	// 初始化http服务
+	engine := initHttpServer()
+
+	// 挂载监控
+	mountMonitor(engine)
+
+	// 启动http服务
+	port := config.GetAppConf().Port
+	fmt.Printf("Starting server at localhost%s...\n", port)
+	if err := engine.Run(port); err != nil {
+		fmt.Printf("Start server error,err=%v", err)
+	}
 }
 
-func startHttpServer(port string) {
+// 初始化http服务
+func initHttpServer() *httpx.Engine {
 	if environment.IsDebugMode() {
 		httpx.SetDebugMode()
 	} else {
@@ -58,8 +73,15 @@ func startHttpServer(port string) {
 	validators.Init()
 	middleware.Init(engine)
 	router.Init(engine)
-	fmt.Printf("Starting server at localhost%s...\n", port)
-	if err := engine.Run(port); err != nil {
-		fmt.Printf("Start server error,err=%v", err)
-	}
+	return engine
+}
+
+// 挂载监控
+func mountMonitor(engine *httpx.Engine) {
+	// 挂载队列监控web ui
+	mon := asynqmon.New(asynqmon.Options{
+		RootPath:     "/monitor/queue",
+		RedisConnOpt: queue.RedisClientOpt(config.GetRedisConf()),
+	})
+	engine.Engine.GET("/monitor/queue/*any", gin.WrapH(mon))
 }
