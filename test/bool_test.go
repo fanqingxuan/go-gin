@@ -18,6 +18,6 @@ func TestIsTrue(t *testing.T) {
 
 func TestConditional(t *testing.T) {
 
-	assert.Equal(t, util.Conditional(true, "hello", ""), "hello", "condtional should return first value")
-	assert.Equal(t, util.Conditional(false, "hello", "aa"), "aa", "condtional should return second value")
+	assert.Equal(t, util.When(true, "hello", ""), "hello", "condtional should return first value")
+	assert.Equal(t, util.When(false, "hello", "aa"), "aa", "condtional should return second value")
 }

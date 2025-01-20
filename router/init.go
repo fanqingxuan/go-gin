@@ -22,8 +22,8 @@ func Init(route *httpx.Engine) {
 		db_err := db.WithContext(ctx).Ping()
 		redis_err := redisx.GetInstance().Ping(ctx).Err()
 		return g.MapStrStr{
-			"database": util.Conditional(db_err == nil, "ok", "failed"),
-			"redis":    util.Conditional(redis_err == nil, "ok", "failed"),
+			"database": util.When(db_err == nil, "ok", "failed"),
+			"redis":    util.When(redis_err == nil, "ok", "failed"),
 		}, nil
 	})
 	route.GET("/login", controller.LoginController.Login)

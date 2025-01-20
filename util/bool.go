@@ -11,22 +11,15 @@ func IsFalse[T Scalar](value T) bool {
 	return !IsTrue(value)
 }
 
-// When 执行给定函数,如果给定的标量值为真
-func When[T Scalar](value T, f func()) {
+// WhenFunc 执行给定函数,如果给定的标量值为真
+func WhenFunc[T Scalar](value T, f func()) {
 	if IsTrue(value) {
 		f()
 	}
 }
 
-// Unless 执行给定函数,如果给定的标量值为假
-func Unless[T Scalar](value T, f func()) {
-	if IsFalse(value) {
-		f()
-	}
-}
-
-// Conditional 返回条件表达式的值
-func Conditional[T Scalar, U any](condition T, trueValue U, falseValue U) U {
+// When 返回条件表达式的值
+func When[T Scalar, U any](condition T, trueValue U, falseValue U) U {
 	if IsTrue(condition) {
 		return trueValue
 	}
