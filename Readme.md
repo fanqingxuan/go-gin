@@ -56,7 +56,7 @@
 - middleware/ -中间件目录
 - model/ -数据表结构目录
 - logic/ -业务逻辑目录
-- typeing/ 结构目录，用于定义请求参数、响应的数据结构
+- typing/ 结构目录，用于定义请求参数、响应的数据结构
 - util/ 工具目录，提供常用的辅助函数，一般不包含业务逻辑和状态信息
 - event/ 事件目录
     - listener/ 事件监听器
@@ -297,7 +297,7 @@
         }
 
         // controller
-        var req typeing.AddUserReq
+        var req typing.AddUserReq
             if err := ctx.ShouldBind(&req); err != nil {
                 logx.WithContext(ctx).Warn("ShouldBind异常", err)
                 httpx.Error(ctx, err)
@@ -324,7 +324,7 @@
     - 支持非`gin`框架方式使用验证器
         提供了`validators.Validate()`方法进行验证结构字段的值是否合理
         ```go
-        var req = typeing.AddUserReq{
+        var req = typing.AddUserReq{
             Name: "测试",
         }
         if err := validators.Validate(&req); err != nil {
@@ -335,11 +335,11 @@
         **注意:**`validators.Validate`和`ctx.ShouldBind`验证失败返回的是`BizError`类型错误,错误码是`ErrCodeValidateFailed`,默认值是`10001`，你也可以通过`errorx.ErrCodeValidateFailed = xxx`在main入口修改默认值
 - 参数、响应结构
 
-    定义了可以规范化请求参数、响应结构的目录，使代码更容易维护，结构定义在`typeing/`目录，一个模块一个文件名，如`user.go`
+    定义了可以规范化请求参数、响应结构的目录，使代码更容易维护，结构定义在`typing/`目录，一个模块一个文件名，如`user.go`
     
     结构定义如下
     ```go
-        package typeing
+        package typing
 
         import (
             "time"
@@ -359,7 +359,7 @@
     ```
     使用方式,在`controller`层使用
     ```go
-    var req typeing.AddUserReq
+    var req typing.AddUserReq
 	if err := ctx.ShouldBind(&req); err != nil {
 		logx.WithContext(ctx).Warn("ShouldBind异常", err)
 		httpx.Error(ctx, err)
@@ -369,7 +369,7 @@
     ```
     其实就是使用了`gin`框架本身提供的shouldbind特性，将参数绑定到结构体，后面逻辑直接可以使用结构体里面的字段进行操作了，参数需要包括那些字段，通过结构体很容易看到，实现了参数的可维护性
     ```go
-    resp := typeing.AddUserReply{
+    resp := typing.AddUserReply{
 		Message: fmt.Sprintf("add user succcess %s=%d", user.Name, user.Id),
 	}
 	httpx.Ok(ctx, resp)
@@ -468,6 +468,6 @@
 ```shell
 1. git clone git@github.com:fanqingxuan/go-gin.git
 2. cd go-gin && go mod tidy
-3. web启动方式 go run cmd/api/main.go  -f .env
-4. 定时任务 go run cmd/cron/main.go  -f .env
+3. go run cmd/api/main.go  -f .env   // api启动方式
+4. go run cmd/cron/main.go  -f .env   // 定时任务启动方式
 ```
