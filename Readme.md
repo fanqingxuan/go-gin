@@ -139,7 +139,7 @@
             return nil, err
         }
 
-        redisx.GetInstance().HSet(ctx, "name", "age", 43)
+        redisx.Client().HSet(ctx, "name", "age", 43)
         return &types.ListReply{
             Users: u,
         }, nil
@@ -156,9 +156,9 @@
     Error()方法底层转成DBError，便于上层区分，以及响应判断
 - redis
 
-    系统的redis库用的是`go-redis`,没有进行过多的封装，获取redis连接后，使用方法上就跟`go-redis`一样了,调用`GetInstance()`方法获取redis资源对象
+    系统的redis库用的是`go-redis`,没有进行过多的封装，获取redis连接后，使用方法上就跟`go-redis`一样了,调用`Client()`方法获取redis资源对象
     ```go
-    redisx.GetInstance().HSet(ctx, "name", "age", 43)
+    redisx.Client().HSet(ctx, "name", "age", 43)
     ```
 - 日志
 

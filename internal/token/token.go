@@ -21,17 +21,17 @@ func TokenId() string {
 }
 
 func Set(ctx context.Context, key string, field string, value string) error {
-	if err := redisx.GetInstance().HSet(ctx, transformKey(key), field, value).Err(); err != nil {
+	if err := redisx.Client().HSet(ctx, transformKey(key), field, value).Err(); err != nil {
 		return err
 	}
-	if err := redisx.GetInstance().Expire(ctx, transformKey(key), EXPIRE_TIME).Err(); err != nil {
+	if err := redisx.Client().Expire(ctx, transformKey(key), EXPIRE_TIME).Err(); err != nil {
 		return err
 	}
 	return nil
 }
 
 func Get(ctx context.Context, key string, field string) (string, error) {
-	cmd := redisx.GetInstance().HGet(ctx, transformKey(key), field)
+	cmd := redisx.Client().HGet(ctx, transformKey(key), field)
 	if err := cmd.Err(); err != nil {
 		return "", err
 	}
@@ -39,7 +39,7 @@ func Get(ctx context.Context, key string, field string) (string, error) {
 }
 
 func Has(ctx context.Context, key string) (bool, error) {
-	cmd := redisx.GetInstance().Exists(ctx, transformKey(key))
+	cmd := redisx.Client().Exists(ctx, transformKey(key))
 	if err := cmd.Err(); err != nil {
 		return false, err
 	}
@@ -47,7 +47,7 @@ func Has(ctx context.Context, key string) (bool, error) {
 }
 
 func HasField(ctx context.Context, key string, field string) (bool, error) {
-	cmd := redisx.GetInstance().HExists(ctx, transformKey(key), field)
+	cmd := redisx.Client().HExists(ctx, transformKey(key), field)
 	if err := cmd.Err(); err != nil {
 		return false, err
 	}
@@ -55,21 +55,21 @@ func HasField(ctx context.Context, key string, field string) (bool, error) {
 }
 
 func Delete(ctx context.Context, key string, field string) error {
-	if err := redisx.GetInstance().HDel(ctx, transformKey(key), field).Err(); err != nil {
+	if err := redisx.Client().HDel(ctx, transformKey(key), field).Err(); err != nil {
 		return err
 	}
 	return nil
 }
 
 func Flush(ctx context.Context, key string) error {
-	if err := redisx.GetInstance().Del(ctx, transformKey(key)).Err(); err != nil {
+	if err := redisx.Client().Del(ctx, transformKey(key)).Err(); err != nil {
 		return err
 	}
 	return nil
 }
 
 func GetAll(ctx context.Context, key string) (map[string]string, error) {
-	cmd := redisx.GetInstance().HGetAll(ctx, transformKey(key))
+	cmd := redisx.Client().HGetAll(ctx, transformKey(key))
 	if err := cmd.Err(); err != nil {
 		return nil, err
 	}

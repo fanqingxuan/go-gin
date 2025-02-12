@@ -25,7 +25,7 @@ func (l *GetUsersLogic) Handle(ctx context.Context, req typing.ListReq) (resp *t
 		return nil, err
 	}
 
-	redisx.GetInstance().HSet(ctx, "name", "age", 43)
+	redisx.Client().HSet(ctx, "name", "age", 43)
 
 	return &typing.ListResp{
 		Data: transformer.ConvertUserToListData(u),

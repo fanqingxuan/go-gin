@@ -20,7 +20,7 @@ func Init(route *httpx.Engine) {
 	// 健康检测
 	route.GET("/status", func(ctx *httpx.Context) (any, error) {
 		db_err := db.WithContext(ctx).Ping()
-		redis_err := redisx.GetInstance().Ping(ctx).Err()
+		redis_err := redisx.Client().Ping(ctx).Err()
 		return g.MapStrStr{
 			"database": util.When(db_err == nil, "ok", "failed"),
 			"redis":    util.When(redis_err == nil, "ok", "failed"),

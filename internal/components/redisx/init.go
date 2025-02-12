@@ -40,6 +40,6 @@ func Init() {
 	instance = rdb
 }
 
-func GetInstance() *redis.Client {
+func Client() *redis.Client {
 	return instance
 }
