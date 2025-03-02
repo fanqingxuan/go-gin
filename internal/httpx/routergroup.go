@@ -1,8 +1,6 @@
 package httpx
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -19,7 +17,7 @@ type IRoutes interface {
 	Use(...gin.HandlerFunc) IRoutes
 	Before(...HandlerFunc) IRoutes
 	After(...HandlerFunc) IRoutes
-	Handle(string, string, ...HandlerFunc) IRoutes
+	Handle(HttpMethod, string, ...HandlerFunc) IRoutes
 	Any(string, ...HandlerFunc) IRoutes
 	GET(string, ...HandlerFunc) IRoutes
 	POST(string, ...HandlerFunc) IRoutes
@@ -28,6 +26,7 @@ type IRoutes interface {
 	PUT(string, ...HandlerFunc) IRoutes
 	OPTIONS(string, ...HandlerFunc) IRoutes
 	HEAD(string, ...HandlerFunc) IRoutes
+	Match([]HttpMethod, string, ...HandlerFunc) IRoutes
 }
 
 // RouterGroup 包装 gin.RouterGroup
@@ -92,45 +91,53 @@ func (group *RouterGroup) After(middleware ...HandlerFunc) IRoutes {
 }
 
 // Handle 注册请求处理函数
-func (group *RouterGroup) Handle(httpMethod, relativePath string, handlers ...HandlerFunc) IRoutes {
-	group.RouterGroup.Handle(httpMethod, relativePath, wrapHandlers(handlers)...)
-	debugPrintRoute(httpMethod, calculateAbsolutePath(group.BasePath(), relativePath), len(group.Handlers), combineHandlers(handlers...)...)
+func (group *RouterGroup) Handle(httpMethod HttpMethod, relativePath string, handlers ...HandlerFunc) IRoutes {
+	group.RouterGroup.Handle(string(httpMethod), relativePath, wrapHandlers(handlers)...)
+	debugPrintRoute(string(httpMethod), calculateAbsolutePath(group.BasePath(), relativePath), len(group.Handlers), combineHandlers(handlers...)...)
 	return group
 }
 
 // GET 处理 GET 请求
 func (group *RouterGroup) GET(relativePath string, handlers ...HandlerFunc) IRoutes {
-	return group.Handle(http.MethodGet, relativePath, handlers...)
+	return group.Handle(MethodGet, relativePath, handlers...)
 }
 
 // POST 处理 POST 请求
 func (group *RouterGroup) POST(relativePath string, handlers ...HandlerFunc) IRoutes {
-	return group.Handle(http.MethodPost, relativePath, handlers...)
+	return group.Handle(MethodPost, relativePath, handlers...)
 }
 
 // DELETE 处理 DELETE 请求
 func (group *RouterGroup) DELETE(relativePath string, handlers ...HandlerFunc) IRoutes {
-	return group.Handle(http.MethodDelete, relativePath, handlers...)
+	return group.Handle(MethodDelete, relativePath, handlers...)
 }
 
 // PATCH 处理 PATCH 请求
 func (group *RouterGroup) PATCH(relativePath string, handlers ...HandlerFunc) IRoutes {
-	return group.Handle(http.MethodPatch, relativePath, handlers...)
+	return group.Handle(MethodPatch, relativePath, handlers...)
 }
 
 // PUT 处理 PUT 请求
 func (group *RouterGroup) PUT(relativePath string, handlers ...HandlerFunc) IRoutes {
-	return group.Handle(http.MethodPut, relativePath, handlers...)
+	return group.Handle(MethodPut, relativePath, handlers...)
 }
 
 // OPTIONS 处理 OPTIONS 请求
 func (group *RouterGroup) OPTIONS(relativePath string, handlers ...HandlerFunc) IRoutes {
-	return group.Handle(http.MethodOptions, relativePath, handlers...)
+	return group.Handle(MethodOptions, relativePath, handlers...)
 }
 
 // HEAD 处理 HEAD 请求
 func (group *RouterGroup) HEAD(relativePath string, handlers ...HandlerFunc) IRoutes {
-	return group.Handle(http.MethodHead, relativePath, handlers...)
+	return group.Handle(MethodHead, relativePath, handlers...)
+}
+
+// Match 注册多个请求方法的处理函数
+func (group *RouterGroup) Match(methods []HttpMethod, relativePath string, handlers ...HandlerFunc) IRoutes {
+	for _, method := range methods {
+		group.Handle(method, relativePath, handlers...)
+	}
+	return group
 }
 
 // Any 处理任意 HTTP 方法

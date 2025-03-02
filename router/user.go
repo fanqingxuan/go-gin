@@ -10,6 +10,6 @@ func RegisterUserRoutes(r *httpx.RouterGroup) {
 	// 用户信息
 	r.GET("/", controller.UserController.Index)
 	r.GET("/list", controller.UserController.List)
-	r.GET("/adduser", controller.UserController.AddUser)
+	r.Match([]httpx.HttpMethod{httpx.MethodGet, httpx.MethodPost}, "/adduser", controller.UserController.AddUser)
 	r.Any("/multiadduser", controller.UserController.MultiUserAdd)
 }
