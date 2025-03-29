@@ -20,9 +20,10 @@
 # 亮点，很好的优雅度
 - 封装了db error，redis error, db层减少了很多if error，else error的判断
 - 封装了gin框架，减少了控制器层error相关if else的判断，使代码更美观，清晰，简洁
-- 封装了db error，redis error,http error,业务error，以及golang自身的error类型，响应不同的错误码结果
 - 封装了gin的参数绑定，提供了shouldbindhandle、shouldbindqueryhandle等方法，使controller代码更优雅
-- crontab、task、event可以优雅的使用
+- crontab、task、event、数据库迁移migration可以优雅的使用
+- 提供了状态相关的枚举结构
+- 日志记录traceid,方便排查问题
 ### 依赖库如下
 ```shell
 	github.com/gin-gonic/gin v1.9.1
@@ -50,6 +51,8 @@
 - cmd/ - web服务、cron的主入口目录
 - config/ -配置文件目录
 - const/ -常量目录
+  - errcode - 错误结构
+  - enum - 枚举常量结构
 - controller/ - 控制器目录
 - internal/ -内部功能目录,里面方法不建议修改
 - cron/ - 定时任务目录
@@ -387,16 +390,15 @@
     var (
         ErrUserNotFound = errorx.New(2001, "用户不存在")
     )
-
     ```
 - 错误类型
     系统内置了两种错误类型`BizError`和`ServerError`
     - `ServerError`主要是为了处理no method或者method not allowed以及其他服务上的错误，便于响应返回正确的http状态码和统一一致的响应结构,`errorx`包内置错误常量
-    ```go
-        ErrMethodNotAllowed    = NewServerError(http.StatusMethodNotAllowed)
-        ErrNoRoute             = NewServerError(http.StatusNotFound)
-        ErrInternalServerError = NewServerError(http.StatusInternalServerError)
-    ```
+        ```go
+            ErrMethodNotAllowed    = NewServerError(http.StatusMethodNotAllowed)
+            ErrNoRoute             = NewServerError(http.StatusNotFound)
+            ErrInternalServerError = NewServerError(http.StatusInternalServerError)
+        ```
     - `BizError`是我们业务开发中使用更多的错误结构，就是业务中定义的异常错误类型，这种类型返回的http状态码都是200，响应结构的状态码、消息均来源于`BizError`变量中。`BizError`的变量定义方式如下
         ```go
         errorx.New(20001, "用户不存在")
@@ -410,6 +412,82 @@
             "data": null,
             "message": "用户不存在",
             "trace_id": "dc119c64-d4b9-4af1-9e02-d15fc4ba2e42"
+        }
+        ```
+- 枚举常量
+  - 枚举常量建议定义在`const/enum`目录
+  - 枚举常量定义
+    - 定义一个结构体
+        ```golang
+        // UserStatus 用户状态
+        type UserStatus struct {
+            etype.BaseEnum
+        }
+        ```
+    - 定义一个prefix常量，需要这一部的原因是多张常量类型的code码会重复，需要一种方式解析到code码正确的desc描述，所以使用这个常量将结构体注册到一个map里面，用于`json.Unmarshal`解码常量正确的描述desc字段,以及gorm保存正确的字段到数据库
+        ```golang
+        const PrefixUserStatus etype.PrefixType = "user_status"
+        ```
+    - 要保存正确的值到数据库需要类型实现`sql.Scanner`接口,要解包枚举code正确的描述还要实现`json.Unmarshaler`
+        ```golang
+        // Scan 实现 sql.Scanner 接口
+        func (s *OrderStatus) Scan(value interface{}) error {
+            return s.BaseEnum.Scan(value, PrefixOrderStatus)
+        }
+
+        // UnmarshalJSON 实现 json.Unmarshaler 接口
+        func (s *OrderStatus) UnmarshalJSON(data []byte) error {
+            return s.BaseEnum.UnmarshalJSON(data, PrefixOrderStatus)
+        }
+        ```
+    - 定义枚举常量
+        ```golang
+        // 定义用户状态常量
+        var (
+            USER_STATUS_NORMAL   = NewUserStatus(1, "正常")
+            USER_STATUS_DISABLED = NewUserStatus(2, "禁用")
+            USER_STATUS_DELETED  = NewUserStatus(3, "已删除")
+        )
+        ```
+    - gorm使用枚举常量
+        ```golang
+        type User struct {
+            Id         int64
+            Name       string           `gorm:"column:name" json:"name"`
+            Status     *enum.UserStatus `gorm:"column:status;default:null" json:"status"`
+        }
+        // 添加到数据库
+        user := model.User{
+            Name: req.Name,
+            Status: enum.STATUS_DELETED,
+        }
+        db.WithContext(ctx).Create(&user)
+
+        // 实现了Scanner接口的话，会将status字段解析到结构体的枚举字段Status并自动填充枚举的描述
+        var u model.User
+        db.WithContext(ctx).Find(&u,1)
+        ```
+    - json编码,baseEnum结构已经进行了实现，当json.Marshal的时候，会自动将枚举常量code值转成json
+        ```golang
+            type ListData struct {
+            Id      int              `json:"id"`
+            Name    string           `json:"name"`
+            AgeTips string           `json:"age_tips"`
+            Age     int              `json:"age"`
+            Status  *enum.UserStatus `json:"status"`
+        }
+        // json.Marshal转成json后结果是
+        [{"id":13,"name":"测试你好","age_tips":"未成年","age":2,"status":2}]
+        ```
+    - 每种枚举常量可以定义自己的从code码转成枚举常量的方法，参考如下:
+        ```golang
+        // ParseUserStatus 解析用户状态
+        func ParseUserStatus(code int) (*UserStatus, error) {
+            base, err := etype.ParseBaseEnum(PrefixUserStatus, code)
+            if err != nil {
+                return nil, err
+            }
+            return &UserStatus{BaseEnum: base}, nil
         }
         ```
 - 请求第三方接口
@@ -463,6 +541,14 @@
         ```go
         task.Handle(NewSampleTaskHandler()) // Handle是封装的一个方法
         ```
+- util方法
+  - `util.IsTrue` - 标量判断是否为true
+  - `util.IsFalse` - 标量判断是否为false
+  - `util.WhenFunc` - 标量判断为true时候执行方法
+  - `utils.When(condition,trueValue,falseValue)` -- 标量condition为true，返回trueValue,否则返回falseValue
+  - `jsonx.MarshalToString`和`jsonx.Encode` -- 转成json字符串
+  - `jsonx.UnmarshalFromString`和`jsonx.Decode` -- json字符转转成对应的golang数据
+  - 
 ### 快速启动
 
 ```shell
@@ -470,4 +556,6 @@
 2. cd go-gin && go mod tidy
 3. go run cmd/api/main.go  -f .env   // api启动方式
 4. go run cmd/cron/main.go  -f .env   // 定时任务启动方式
+5. go run cmd/queue/main.go -f .env // 队列服务入口
+6. go run cmd/migrate/main.go -f .env // 数据库迁移入口
 ```
