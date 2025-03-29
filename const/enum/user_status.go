@@ -1,16 +1,10 @@
 package enum
 
 import (
-	"fmt"
 	"go-gin/internal/etype"
 )
 
 const PrefixUserStatus etype.PrefixType = "user_status"
-
-// UserStatus 用户状态
-type UserStatus struct {
-	etype.BaseEnum
-}
 
 // 定义用户状态常量
 var (
@@ -18,6 +12,11 @@ var (
 	USER_STATUS_DISABLED = NewUserStatus(2, "禁用")
 	USER_STATUS_DELETED  = NewUserStatus(3, "已删除")
 )
+
+// UserStatus 用户状态
+type UserStatus struct {
+	etype.BaseEnum
+}
 
 // NewUserStatus 创建用户状态
 func NewUserStatus(code int, desc string) *UserStatus {
@@ -29,13 +28,12 @@ func NewUserStatus(code int, desc string) *UserStatus {
 // ParseUserStatus 解析用户状态
 func ParseUserStatus(code int) (*UserStatus, error) {
 
-	// 使用EnumMapManager获取描述
-	if base, ok := etype.Get(PrefixUserStatus, code); ok {
-		return &UserStatus{
-			BaseEnum: etype.CreateBaseEnumAndSetMap(PrefixUserStatus, code, base.Desc()),
-		}, nil
+	base, err := etype.ParseBaseEnum(PrefixUserStatus, code)
+	if err != nil {
+		return nil, err
 	}
-	return nil, fmt.Errorf("未知的enum码: %d", code)
+
+	return &UserStatus{BaseEnum: base}, nil
 }
 
 // Scan 实现 sql.Scanner 接口

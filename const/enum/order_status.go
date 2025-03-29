@@ -1,16 +1,10 @@
 package enum
 
 import (
-	"fmt"
 	"go-gin/internal/etype"
 )
 
 const PrefixOrderStatus etype.PrefixType = "order_status" // 订单状态前缀
-
-// OrderStatus 订单状态
-type OrderStatus struct {
-	etype.BaseEnum
-}
 
 // 定义订单状态常量
 var (
@@ -21,6 +15,11 @@ var (
 	ORDER_STATUS_CANCELLED = NewOrderStatus(5, "已取消")
 )
 
+// OrderStatus 订单状态
+type OrderStatus struct {
+	etype.BaseEnum
+}
+
 // NewOrderStatus 创建订单状态
 func NewOrderStatus(code int, desc string) *OrderStatus {
 	return &OrderStatus{
@@ -30,12 +29,11 @@ func NewOrderStatus(code int, desc string) *OrderStatus {
 
 // ParseOrderStatus 解析订单状态
 func ParseOrderStatus(code int) (*OrderStatus, error) {
-	if base, ok := etype.Get(PrefixOrderStatus, code); ok {
-		return &OrderStatus{
-			BaseEnum: etype.CreateBaseEnumAndSetMap(PrefixOrderStatus, code, base.Desc()),
-		}, nil
+	base, err := etype.ParseBaseEnum(PrefixOrderStatus, code)
+	if err != nil {
+		return nil, err
 	}
-	return nil, fmt.Errorf("未知的订单状态码: %d", code)
+	return &OrderStatus{BaseEnum: base}, nil
 }
 
 // Scan 实现 sql.Scanner 接口
