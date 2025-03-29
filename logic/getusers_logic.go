@@ -32,7 +32,8 @@ func (l *GetUsersLogic) Handle(ctx context.Context, req typing.ListReq) (resp *t
 
 	var my []model.User
 	err = jsonx.Decode(jsonStr, &my)
-	fmt.Println(my, err)
+	fmt.Println(err)
+	fmt.Printf("%+v\n", my)
 
 	redisx.Client().HSet(ctx, "name", "age", 43)
 
