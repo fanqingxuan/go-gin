@@ -22,11 +22,11 @@ func (l *AddUserLogic) Handle(ctx context.Context, req typing.AddUserReq) (resp 
 	if err != nil {
 		return nil, err
 	}
-	s, _ := enum.ParseUserStatus(2)
+	s := enum.UserType(24)
 	user := model.User{
 		Name: req.Name,
 		// Status: enum.STATUS_DELETED,
-		Status: s,
+		UserType: s,
 	}
 	fmt.Println(user)
 	if err = l.model.Add(ctx, &user); err != nil {

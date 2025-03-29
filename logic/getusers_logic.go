@@ -29,7 +29,7 @@ func (l *GetUsersLogic) Handle(ctx context.Context, req typing.ListReq) (resp *t
 	}
 
 	for _, v := range u {
-		fmt.Println(v.Status, v.Status.Equal(enum.USER_STATUS_DELETED))
+		fmt.Println(v.UserType, v.UserType == enum.UserTypeSupplier, v.UserType.String(), v.UserType.Equal(enum.UserTypeSupplier), v.UserType == enum.UserTypeSupplier)
 	}
 
 	jsonStr, err := jsonx.Encode(u)
