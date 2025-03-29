@@ -2,19 +2,21 @@ package model
 
 import (
 	"context"
+	"go-gin/const/enum"
 	"go-gin/internal/components/db"
 	"time"
 )
 
 type User struct {
 	Id         int64
-	Name       string    `gorm:"column:username" json:"name"`
-	Age        *int      `gorm:"column:age" json:"age"`
-	CreateTime time.Time `gorm:"column:create_time" json:"create_time"`
+	Name       string       `gorm:"column:name" json:"name"`
+	Age        *int         `gorm:"column:age;default:null" json:"age"`
+	CreateTime time.Time    `gorm:"column:create_time" json:"create_time"`
+	Status     *enum.Status `gorm:"column:status;default:null" json:"status"`
 }
 
 func (u *User) TableName() string {
-	return `users`
+	return `user`
 }
 
 type UserModel struct {
@@ -30,7 +32,7 @@ func (m *UserModel) List(ctx context.Context) ([]User, error) {
 }
 
 func (m *UserModel) Add(ctx context.Context, user *User) error {
-	return db.WithContext(ctx).Select("Name").Create(user).Error()
+	return db.WithContext(ctx).Select("Name", "Status").Create(user).Error()
 }
 
 func (m *UserModel) GetByUsername(ctx context.Context, name string) (*User, error) {

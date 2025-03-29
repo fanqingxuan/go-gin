@@ -2,11 +2,13 @@ package logic
 
 import (
 	"context"
+	"fmt"
 	"go-gin/const/errcode"
 	"go-gin/internal/components/redisx"
 	"go-gin/model"
 	"go-gin/transformer"
 	"go-gin/typing"
+	"go-gin/util/jsonx"
 )
 
 type GetUsersLogic struct {
@@ -24,6 +26,13 @@ func (l *GetUsersLogic) Handle(ctx context.Context, req typing.ListReq) (resp *t
 	if u, err = l.model.List(ctx); errcode.IsError(err) {
 		return nil, err
 	}
+
+	jsonStr, err := jsonx.Encode(u)
+	fmt.Println(jsonStr, err)
+
+	var my []model.User
+	err = jsonx.Decode(jsonStr, &my)
+	fmt.Println(my, err)
 
 	redisx.Client().HSet(ctx, "name", "age", 43)
 

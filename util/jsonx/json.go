@@ -55,6 +55,16 @@ func UnmarshalFromReader(reader io.Reader, v any) error {
 	return nil
 }
 
+// Encode encodes v into a json string.
+func Encode(v any) (string, error) {
+	return MarshalToString(v)
+}
+
+// Decode decodes str into v.
+func Decode(str string, v any) error {
+	return UnmarshalFromString(str, v)
+}
+
 func unmarshalUseNumber(decoder *json.Decoder, v any) error {
 	decoder.UseNumber()
 	return decoder.Decode(v)

@@ -19,6 +19,7 @@ func recoverLog() gin.HandlerFunc {
 					"file":  util.FileWithLineNum(),
 				}
 				logx.WithContext(ctx).Error("panic", m)
+				fmt.Println(m)
 				Error(NewContext(ctx), errorx.ErrInternalServerError)
 				ctx.Abort()
 			}
