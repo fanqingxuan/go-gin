@@ -3,6 +3,7 @@ package logic
 import (
 	"context"
 	"fmt"
+	"go-gin/const/enum"
 	"go-gin/const/errcode"
 	"go-gin/internal/components/redisx"
 	"go-gin/model"
@@ -25,6 +26,10 @@ func (l *GetUsersLogic) Handle(ctx context.Context, req typing.ListReq) (resp *t
 	var u []model.User
 	if u, err = l.model.List(ctx); errcode.IsError(err) {
 		return nil, err
+	}
+
+	for _, v := range u {
+		fmt.Println(v.Status, v.Status.Equal(enum.USER_STATUS_DELETED))
 	}
 
 	jsonStr, err := jsonx.Encode(u)

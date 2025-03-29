@@ -10,11 +10,11 @@ type ListReq struct {
 }
 
 type ListData struct {
-	Id      int          `json:"id"`
-	Name    string       `json:"name"`
-	AgeTips string       `json:"age_tips"`
-	Age     int          `json:"age"`
-	Status  *enum.Status `json:"status"`
+	Id      int             `json:"id"`
+	Name    string          `json:"name"`
+	AgeTips string          `json:"age_tips"`
+	Age     int             `json:"age"`
+	Status  enum.UserStatus `json:"status"`
 }
 
 type ListResp struct {

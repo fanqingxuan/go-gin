@@ -9,10 +9,10 @@ import (
 
 type User struct {
 	Id         int64
-	Name       string       `gorm:"column:name" json:"name"`
-	Age        *int         `gorm:"column:age;default:null" json:"age"`
-	CreateTime time.Time    `gorm:"column:create_time" json:"create_time"`
-	Status     *enum.Status `gorm:"column:status;default:null" json:"status"`
+	Name       string          `gorm:"column:name" json:"name"`
+	Age        *int            `gorm:"column:age;default:null" json:"age"`
+	CreateTime time.Time       `gorm:"column:create_time" json:"create_time"`
+	Status     enum.UserStatus `gorm:"column:status;default:null" json:"status"`
 }
 
 func (u *User) TableName() string {
