@@ -1,4 +1,4 @@
-package enum
+package etype
 
 import (
 	"database/sql"
@@ -25,6 +25,14 @@ type IEnum interface {
 type BaseEnum struct {
 	code int
 	desc string
+}
+
+func NewBaseEnum(code int, desc string) *BaseEnum {
+	base := &BaseEnum{
+		code: code,
+		desc: desc,
+	}
+	return base
 }
 
 // Code 获取状态码

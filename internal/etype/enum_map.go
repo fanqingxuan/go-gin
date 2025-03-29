@@ -1,4 +1,4 @@
-package enum
+package etype
 
 import (
 	"go-gin/internal/g"

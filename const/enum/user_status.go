@@ -2,16 +2,17 @@ package enum
 
 import (
 	"fmt"
+	"go-gin/internal/etype"
 )
 
 const (
 	// PrefixUserStatus 用户状态前缀
-	PrefixUserStatus PrefixType = "user_status"
+	PrefixUserStatus etype.PrefixType = "user_status"
 )
 
 // UserStatus 用户状态
 type UserStatus struct {
-	BaseEnum
+	etype.BaseEnum
 }
 
 // 定义用户状态常量
@@ -24,24 +25,18 @@ var (
 // NewUserStatus 创建用户状态
 func NewUserStatus(code int, desc string) *UserStatus {
 	status := &UserStatus{
-		BaseEnum: BaseEnum{
-			code: code,
-			desc: desc,
-		},
+		BaseEnum: *etype.NewBaseEnum(code, desc),
 	}
-	Set(PrefixUserStatus, code, desc)
+	etype.Set(PrefixUserStatus, code, desc)
 	return status
 }
 
 // ParseUserStatus 解析用户状态
 func ParseUserStatus(code int) (*UserStatus, error) {
 	// 使用EnumMapManager获取描述
-	if desc, ok := Get(PrefixUserStatus, code); ok {
+	if desc, ok := etype.Get(PrefixUserStatus, code); ok {
 		return &UserStatus{
-			BaseEnum: BaseEnum{
-				code: code,
-				desc: desc,
-			},
+			BaseEnum: *etype.NewBaseEnum(code, desc),
 		}, nil
 	}
 	return nil, fmt.Errorf("未知的用户状态码: %d", code)
@@ -49,11 +44,11 @@ func ParseUserStatus(code int) (*UserStatus, error) {
 
 // Scan 实现 sql.Scanner 接口
 func (s *UserStatus) Scan(value interface{}) error {
-	return s.BaseEnum.Scan(value, GetAll(PrefixUserStatus))
+	return s.BaseEnum.Scan(value, etype.GetAll(PrefixUserStatus))
 }
 
 // UnmarshalJSON 实现 json.Unmarshaler 接口
 func (s *UserStatus) UnmarshalJSON(data []byte) error {
-	return s.BaseEnum.UnmarshalJSON(data, GetAll(PrefixUserStatus))
+	return s.BaseEnum.UnmarshalJSON(data, etype.GetAll(PrefixUserStatus))
 
 }
