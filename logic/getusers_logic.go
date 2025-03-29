@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"go-gin/const/enum"
 	"go-gin/const/errcode"
-	"go-gin/internal/components/redisx"
+	"go-gin/internal/component/redisx"
 	"go-gin/model"
 	"go-gin/transformer"
 	"go-gin/typing"

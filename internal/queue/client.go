@@ -1,7 +1,7 @@
 package queue
 
 import (
-	"go-gin/internal/components/redisx"
+	"go-gin/internal/component/redisx"
 
 	"github.com/hibiken/asynq"
 )

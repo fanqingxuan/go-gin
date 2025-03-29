@@ -1,9 +1,9 @@
 package config
 
 import (
-	"go-gin/internal/components/db"
-	"go-gin/internal/components/logx"
-	"go-gin/internal/components/redisx"
+	"go-gin/internal/component/db"
+	"go-gin/internal/component/logx"
+	"go-gin/internal/component/redisx"
 )
 
 func GetAppConf() App {

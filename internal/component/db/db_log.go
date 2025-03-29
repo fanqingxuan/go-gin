@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"go-gin/internal/components/logx"
+	"go-gin/internal/component/logx"
 	"go-gin/internal/util"
 	"strings"
 	"time"

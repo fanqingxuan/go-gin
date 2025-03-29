@@ -2,7 +2,7 @@ package cronx
 
 import (
 	"context"
-	"go-gin/internal/components/logx"
+	"go-gin/internal/component/logx"
 	"go-gin/internal/traceid"
 	"reflect"
 	"runtime"

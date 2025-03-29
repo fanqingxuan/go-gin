@@ -1,7 +1,7 @@
 package httpx
 
 import (
-	"go-gin/internal/components/logx"
+	"go-gin/internal/component/logx"
 	"net/url"
 	"time"
 

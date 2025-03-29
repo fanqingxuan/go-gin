@@ -26,7 +26,7 @@ func (l *AddUserLogic) Handle(ctx context.Context, req typing.AddUserReq) (resp 
 	user := model.User{
 		Name: req.Name,
 		// Status: enum.STATUS_DELETED,
-		Status: *s,
+		Status: s,
 	}
 	fmt.Println(user)
 	if err = l.model.Add(ctx, &user); err != nil {

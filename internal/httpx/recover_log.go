@@ -2,7 +2,7 @@ package httpx
 
 import (
 	"fmt"
-	"go-gin/internal/components/logx"
+	"go-gin/internal/component/logx"
 	"go-gin/internal/errorx"
 	"go-gin/internal/util"
 

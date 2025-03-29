@@ -3,7 +3,7 @@ package queue
 import (
 	"context"
 	"fmt"
-	"go-gin/internal/components/logx"
+	"go-gin/internal/component/logx"
 	"go-gin/internal/traceid"
 	"time"
 

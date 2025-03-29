@@ -2,7 +2,7 @@ package cron
 
 import (
 	"context"
-	"go-gin/internal/components/db"
+	"go-gin/internal/component/db"
 )
 
 type DBCheckJob struct{}

@@ -2,7 +2,7 @@ package httpc
 
 import (
 	"context"
-	"go-gin/internal/components/logx"
+	"go-gin/internal/component/logx"
 	"net/http"
 
 	"github.com/go-resty/resty/v2"

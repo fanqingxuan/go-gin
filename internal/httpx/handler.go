@@ -3,7 +3,7 @@ package httpx
 import (
 	"context"
 	"errors"
-	"go-gin/internal/components/logx"
+	"go-gin/internal/component/logx"
 	"io"
 
 	"github.com/gin-gonic/gin/binding"

@@ -3,7 +3,7 @@ package token
 import (
 	"context"
 	"fmt"
-	"go-gin/internal/components/redisx"
+	"go-gin/internal/component/redisx"
 	"strings"
 	"time"
 

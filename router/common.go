@@ -2,8 +2,8 @@ package router
 
 import (
 	"go-gin/controller"
-	"go-gin/internal/components/db"
-	"go-gin/internal/components/redisx"
+	"go-gin/internal/component/db"
+	"go-gin/internal/component/redisx"
 	"go-gin/internal/errorx"
 	"go-gin/internal/g"
 	"go-gin/internal/httpx"

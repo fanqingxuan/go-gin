@@ -5,9 +5,9 @@ import (
 	"go-gin/config"
 	"go-gin/cron"
 	"go-gin/event"
-	"go-gin/internal/components/db"
-	"go-gin/internal/components/logx"
-	"go-gin/internal/components/redisx"
+	"go-gin/internal/component/db"
+	"go-gin/internal/component/logx"
+	"go-gin/internal/component/redisx"
 	"go-gin/internal/cronx"
 )
 

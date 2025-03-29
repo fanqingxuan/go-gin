@@ -1,8 +1,8 @@
 package httpx
 
 import (
-	"go-gin/internal/components/db"
-	"go-gin/internal/components/logx"
+	"go-gin/internal/component/db"
+	"go-gin/internal/component/logx"
 	"go-gin/internal/errorx"
 
 	"github.com/gin-gonic/gin"
