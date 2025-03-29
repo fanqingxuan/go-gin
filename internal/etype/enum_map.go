@@ -1,33 +1,33 @@
 package etype
 
 import (
-	"go-gin/internal/g"
 	"sync"
 )
 
 // PrefixType 前缀类型
 type PrefixType string
+type ValueType map[int]*BaseEnum
 
 // 包级别的二维map变量
 var (
-	enumMap      = make(map[PrefixType]g.MapIntStr)
+	enumMap      = make(map[PrefixType]ValueType)
 	enumMapMutex sync.RWMutex
 )
 
 // Set 设置枚举值
-func Set(prefix PrefixType, code int, value string) {
+func Set(prefix PrefixType, enum *BaseEnum) {
 
 	enumMapMutex.Lock()
 	defer enumMapMutex.Unlock()
 
 	if _, ok := enumMap[prefix]; !ok {
-		enumMap[prefix] = make(g.MapIntStr)
+		enumMap[prefix] = make(ValueType)
 	}
-	enumMap[prefix][code] = value
+	enumMap[prefix][enum.code] = enum
 }
 
 // Get 获取枚举值
-func Get(prefix PrefixType, code int) (string, bool) {
+func Get(prefix PrefixType, code int) (*BaseEnum, bool) {
 
 	enumMapMutex.RLock()
 	defer enumMapMutex.RUnlock()
@@ -36,20 +36,20 @@ func Get(prefix PrefixType, code int) (string, bool) {
 		value, exists := prefixMap[code]
 		return value, exists
 	}
-	return "", false
+	return &BaseEnum{}, false
 }
 
 // GetAll 获取指定前缀的所有值
-func GetAll(prefix PrefixType) g.MapIntStr {
+func GetAll(prefix PrefixType) ValueType {
 	enumMapMutex.RLock()
 	defer enumMapMutex.RUnlock()
 
 	if prefixMap, ok := enumMap[prefix]; ok {
-		result := make(g.MapIntStr, len(prefixMap))
+		result := make(ValueType, len(prefixMap))
 		for k, v := range prefixMap {
 			result[k] = v
 		}
 		return result
 	}
-	return make(g.MapIntStr)
+	return make(ValueType)
 }

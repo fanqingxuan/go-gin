@@ -5,7 +5,6 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"fmt"
-	"go-gin/internal/g"
 )
 
 // IEnum 定义枚举接口
@@ -26,6 +25,8 @@ type BaseEnum struct {
 	code int
 	desc string
 }
+
+// NewBaseEnum 创建基础枚举
 
 func NewBaseEnum(code int, desc string) *BaseEnum {
 	base := &BaseEnum{
@@ -78,7 +79,7 @@ func (e *BaseEnum) MarshalJSON() ([]byte, error) {
 }
 
 // Scan 实现 sql.Scanner 接口
-func (s *BaseEnum) Scan(value any, m g.MapIntStr) error {
+func (s *BaseEnum) Scan(value any, prefix PrefixType) error {
 	if value == nil {
 		s = nil
 		return nil
@@ -93,17 +94,17 @@ func (s *BaseEnum) Scan(value any, m g.MapIntStr) error {
 	default:
 		return fmt.Errorf("不支持的类型转换: %T", value)
 	}
-
-	if desc, ok := m[code]; ok {
+	m := GetAll(prefix)
+	if base, ok := m[code]; ok {
 		s.code = code
-		s.desc = desc
+		s.desc = base.Desc()
 		return nil
 	}
 	return fmt.Errorf("未知的code码: %d", code)
 }
 
 // UnmarshalJSON 实现 json.Unmarshaler 接口
-func (s *BaseEnum) UnmarshalJSON(data []byte, m g.MapIntStr) error {
+func (s *BaseEnum) UnmarshalJSON(data []byte, prefix PrefixType) error {
 	if len(data) == 0 || string(data) == "null" {
 		s = nil
 		return nil
@@ -113,10 +114,10 @@ func (s *BaseEnum) UnmarshalJSON(data []byte, m g.MapIntStr) error {
 	if err := json.Unmarshal(data, &code); err != nil {
 		return err
 	}
-
-	if desc, ok := m[code]; ok {
+	m := GetAll(prefix)
+	if base, ok := m[code]; ok {
 		s.code = code
-		s.desc = desc
+		s.desc = base.Desc()
 		return nil
 	}
 	return fmt.Errorf("未知的code码: %d", code)
