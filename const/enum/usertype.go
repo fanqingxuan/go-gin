@@ -8,6 +8,8 @@ import (
 // 用户类型
 type UserType etype.NumEnum
 
+var _ etype.INumEnum[UserType] = UserType(0)
+
 const (
 	// 正常添加
 	UserTypeNormal UserType = 1
@@ -24,7 +26,7 @@ var userTypeMap = map[UserType]string{
 }
 
 func (b UserType) String() string {
-	return etype.String(b, userTypeMap)
+	return etype.ParseStringFromMap(b, userTypeMap)
 }
 
 func (b UserType) Equal(other UserType) bool {
