@@ -8,17 +8,19 @@ import (
 	"sync"
 )
 
-// PrefixType 前缀类型
+// PrefixType 前缀类型（用于区分不同枚举类型）
 type PrefixType string
+
+// ValueType 枚举值映射
 type ValueType map[int]*BaseEnum
 
-// 包级别的二维map变量
+// 全局枚举注册表
 var (
 	enumMap      = make(map[PrefixType]ValueType)
 	enumMapMutex sync.RWMutex
 )
 
-// set 设置枚举值
+// set 注册枚举值
 func set(prefix PrefixType, enum *BaseEnum) {
 	enumMapMutex.Lock()
 	defer enumMapMutex.Unlock()
@@ -41,33 +43,15 @@ func get(prefix PrefixType, code int) (*BaseEnum, bool) {
 	return nil, false
 }
 
-// getAll 获取指定前缀的所有值
-func getAll(prefix PrefixType) ValueType {
-	enumMapMutex.RLock()
-	defer enumMapMutex.RUnlock()
-
-	if prefixMap, ok := enumMap[prefix]; ok {
-		result := make(ValueType, len(prefixMap))
-		for k, v := range prefixMap {
-			result[k] = v
-		}
-		return result
-	}
-	return make(ValueType)
-}
-
-func createBaseEnumAndSetMap(prefix PrefixType, code int, desc string) BaseEnum {
-	baseenum := NewBaseEnum(prefix, code, desc)
-	set(prefix, baseenum)
-	return *baseenum
-}
-
-// NewEnum 泛型枚举构造函数，自动推断 prefix
+// NewEnum 泛型枚举构造函数
 // T 必须是嵌入了 BaseEnum 的结构体
 func NewEnum[T any](code int, desc string) *T {
 	var t T
 	prefix := getPrefixFromType[T]()
-	base := createBaseEnumAndSetMap(prefix, code, desc)
+
+	// 创建并注册 BaseEnum
+	base := NewBaseEnum(prefix, code, desc)
+	set(prefix, base)
 
 	// 使用反射设置 BaseEnum 字段
 	v := reflect.ValueOf(&t).Elem()
@@ -75,7 +59,7 @@ func NewEnum[T any](code int, desc string) *T {
 		for i := 0; i < v.NumField(); i++ {
 			field := v.Field(i)
 			if field.Type() == reflect.TypeOf(BaseEnum{}) && field.CanSet() {
-				field.Set(reflect.ValueOf(base))
+				field.Set(reflect.ValueOf(*base))
 				break
 			}
 		}
@@ -83,12 +67,12 @@ func NewEnum[T any](code int, desc string) *T {
 	return &t
 }
 
-// Parse 泛型解析函数，通过 code 获取枚举
+// Parse 通过 code 获取枚举（被 ScanEnum/UnmarshalEnum 调用）
 func Parse[T any](code int) (*T, error) {
 	prefix := getPrefixFromType[T]()
 	base, ok := get(prefix, code)
 	if !ok {
-		return nil, fmt.Errorf("未知的enum码: %d", code)
+		return nil, fmt.Errorf("未知的枚举值: %d", code)
 	}
 
 	var t T
@@ -105,7 +89,7 @@ func Parse[T any](code int) (*T, error) {
 	return &t, nil
 }
 
-// ScanEnum 泛型扫描函数，用于实现 sql.Scanner
+// ScanEnum 数据库扫描（被生成代码调用）
 func ScanEnum[T any](value any) (*T, error) {
 	if value == nil {
 		return nil, nil
@@ -118,13 +102,13 @@ func ScanEnum[T any](value any) (*T, error) {
 	case int:
 		code = v
 	default:
-		return nil, fmt.Errorf("不支持的类型转换: %T", value)
+		return nil, fmt.Errorf("不支持的类型: %T", value)
 	}
 
 	return Parse[T](code)
 }
 
-// UnmarshalEnum 泛型反序列化函数，用于实现 json.Unmarshaler
+// UnmarshalEnum JSON 反序列化（被生成代码调用）
 func UnmarshalEnum[T any](data []byte) (*T, error) {
 	if len(data) == 0 || string(data) == "null" {
 		return nil, nil
@@ -139,7 +123,7 @@ func UnmarshalEnum[T any](data []byte) (*T, error) {
 }
 
 // getPrefixFromType 从类型名生成 prefix
-// 例如: OrderStatus -> order_status
+// 例如: UserStatus -> user_status
 func getPrefixFromType[T any]() PrefixType {
 	var t T
 	typeName := reflect.TypeOf(t).Name()

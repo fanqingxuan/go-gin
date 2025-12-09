@@ -9,7 +9,7 @@ type UserStatus struct {
 	etype.BaseEnum
 }
 
-// 定义用户状态常量
+// 用户状态常量
 var (
 	USER_STATUS_NORMAL   = etype.NewEnum[UserStatus](1, "正常")
 	USER_STATUS_DISABLED = etype.NewEnum[UserStatus](2, "禁用")

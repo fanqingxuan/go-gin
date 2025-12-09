@@ -9,7 +9,7 @@ type OrderStatus struct {
 	etype.BaseEnum
 }
 
-// 定义订单状态常量
+// 订单状态常量
 var (
 	ORDER_STATUS_PENDING   = etype.NewEnum[OrderStatus](1, "待支付")
 	ORDER_STATUS_PAID      = etype.NewEnum[OrderStatus](2, "已支付")

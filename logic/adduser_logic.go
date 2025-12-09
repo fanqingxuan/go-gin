@@ -21,7 +21,7 @@ func NewAddUserLogic() *AddUserLogic {
 func (l *AddUserLogic) Handle(ctx context.Context, req typing.AddUserReq) (resp *typing.AddUserResp, err error) {
 	user := model.User{
 		Name:     req.Name,
-		UserType: enum.UserTypeNormal,
+		UserType: enum.USER_TYPE_NORMAL,
 	}
 	if err = l.model.Create(ctx, &user); err != nil {
 		return nil, err

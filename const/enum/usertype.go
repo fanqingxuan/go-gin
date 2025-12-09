@@ -9,9 +9,9 @@ type UserType struct {
 	etype.BaseEnum
 }
 
-// 定义用户类型常量
+// 用户类型常量
 var (
-	UserTypeNormal    = etype.NewEnum[UserType](1, "正常添加")
-	UserTypeFromThird = etype.NewEnum[UserType](2, "从第三方导入")
-	UserTypeSupplier  = etype.NewEnum[UserType](3, "供应商用户")
+	USER_TYPE_NORMAL     = etype.NewEnum[UserType](1, "正常添加")
+	USER_TYPE_FROM_THIRD = etype.NewEnum[UserType](2, "从第三方导入")
+	USER_TYPE_SUPPLIER   = etype.NewEnum[UserType](3, "供应商用户")
 )
