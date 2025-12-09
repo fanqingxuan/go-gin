@@ -1,37 +1,29 @@
 package etype
 
 import (
-	"database/sql"
 	"database/sql/driver"
 	"encoding/json"
 	"fmt"
 )
 
-// IEnum 定义枚举接口
-type IEnum interface {
+// CodeGetter 用于枚举比较的接口
+type CodeGetter interface {
 	Code() int
-	Desc() string
-	String() string
-	// 通过 sql.Scanner 和 sql.Valuer 接口实现数据库的存储和读取
-	// 这两个接口是 go-sql-driver/mysql 包提供的
-	sql.Scanner
-	driver.Valuer
-	json.Marshaler
-	json.Unmarshaler
 }
 
 // BaseEnum 基础枚举结构体
 type BaseEnum struct {
-	code int
-	desc string
+	code   int
+	desc   string
+	prefix PrefixType
 }
 
 // NewBaseEnum 创建基础枚举
-
-func NewBaseEnum(code int, desc string) *BaseEnum {
+func NewBaseEnum(prefix PrefixType, code int, desc string) *BaseEnum {
 	base := &BaseEnum{
-		code: code,
-		desc: desc,
+		code:   code,
+		desc:   desc,
+		prefix: prefix,
 	}
 	return base
 }
@@ -52,14 +44,14 @@ func (e *BaseEnum) String() string {
 }
 
 // Equal 比较两个枚举是否相等
-func (e *BaseEnum) Equal(enum IEnum) bool {
-	if e == nil && enum == nil {
+func (e *BaseEnum) Equal(other CodeGetter) bool {
+	if e == nil && other == nil {
 		return true
 	}
-	if e == nil || enum == nil {
+	if e == nil || other == nil {
 		return false
 	}
-	return e.code == enum.Code() && e.desc == enum.Desc()
+	return e.code == other.Code()
 }
 
 // Value 实现 driver.Valuer 接口
@@ -79,7 +71,7 @@ func (e *BaseEnum) MarshalJSON() ([]byte, error) {
 }
 
 // Scan 实现 sql.Scanner 接口
-func (s *BaseEnum) Scan(value any, prefix PrefixType) error {
+func (s *BaseEnum) Scan(value any) error {
 	if value == nil {
 		s = nil
 		return nil
@@ -94,7 +86,7 @@ func (s *BaseEnum) Scan(value any, prefix PrefixType) error {
 	default:
 		return fmt.Errorf("不支持的类型转换: %T", value)
 	}
-	m := GetAll(prefix)
+	m := getAll(s.prefix)
 	if base, ok := m[code]; ok {
 		s.code = code
 		s.desc = base.Desc()
@@ -104,7 +96,7 @@ func (s *BaseEnum) Scan(value any, prefix PrefixType) error {
 }
 
 // UnmarshalJSON 实现 json.Unmarshaler 接口
-func (s *BaseEnum) UnmarshalJSON(data []byte, prefix PrefixType) error {
+func (s *BaseEnum) UnmarshalJSON(data []byte) error {
 	if len(data) == 0 || string(data) == "null" {
 		s = nil
 		return nil
@@ -114,7 +106,7 @@ func (s *BaseEnum) UnmarshalJSON(data []byte, prefix PrefixType) error {
 	if err := json.Unmarshal(data, &code); err != nil {
 		return err
 	}
-	m := GetAll(prefix)
+	m := getAll(s.prefix)
 	if base, ok := m[code]; ok {
 		s.code = code
 		s.desc = base.Desc()

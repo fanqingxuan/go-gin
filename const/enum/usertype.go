@@ -1,38 +1,17 @@
 package enum
 
 import (
-	"fmt"
 	"go-gin/internal/etype"
 )
 
-// 用户类型
-type UserType etype.NumEnum
+// UserType 用户类型
+type UserType struct {
+	etype.BaseEnum
+}
 
-var _ etype.INumEnum[UserType] = UserType(0)
-
-const (
-	// 正常添加
-	UserTypeNormal UserType = 1
-	// 从第三方导入
-	UserTypeFromThird = 2
-	// 供应商用户
-	UserTypeSupplier = 3
+// 定义用户类型常量
+var (
+	UserTypeNormal    = etype.NewEnum[UserType](1, "正常添加")
+	UserTypeFromThird = etype.NewEnum[UserType](2, "从第三方导入")
+	UserTypeSupplier  = etype.NewEnum[UserType](3, "供应商用户")
 )
-
-var userTypeMap = map[UserType]string{
-	UserTypeNormal:    "正常添加",
-	UserTypeFromThird: "从第三方导入",
-	UserTypeSupplier:  "供应商用户",
-}
-
-func (b UserType) String() string {
-	return etype.ParseStringFromMap(b, userTypeMap)
-}
-
-func (b UserType) Equal(other UserType) bool {
-	return etype.Equal(b, other)
-}
-
-func (b UserType) Format(f fmt.State, r rune) {
-	etype.Format(f, b)
-}

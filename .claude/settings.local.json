@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(go build:*)",
+      "Bash(go mod tidy:*)",
+      "mcp__ide__getDiagnostics",
+      "Bash(go clean:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

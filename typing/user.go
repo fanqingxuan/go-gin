@@ -15,7 +15,7 @@ type ListData struct {
 	AgeTips       string           `json:"age_tips"`
 	Age           int              `json:"age"`
 	Status        *enum.UserStatus `json:"status"`
-	UserType      enum.UserType    `json:"user_type"`
+	UserType      *enum.UserType   `json:"user_type"`
 	UsserTypeText string           `json:"user_type_text"`
 }
 

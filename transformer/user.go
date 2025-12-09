@@ -14,6 +14,10 @@ func ConvertUserToListData(u []model.User) []typing.ListData {
 		} else {
 			ageTips = "未成年"
 		}
+		var userTypeText string
+		if v.UserType != nil {
+			userTypeText = v.UserType.Desc()
+		}
 		resp = append(resp, typing.ListData{
 			Id:            int(v.Id),
 			Name:          v.Name,
@@ -21,7 +25,7 @@ func ConvertUserToListData(u []model.User) []typing.ListData {
 			Age:           2,
 			Status:        v.Status,
 			UserType:      v.UserType,
-			UsserTypeText: v.UserType.String(),
+			UsserTypeText: userTypeText,
 		})
 	}
 	return resp
