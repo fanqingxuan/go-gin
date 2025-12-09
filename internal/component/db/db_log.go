@@ -23,8 +23,8 @@ type DBLog struct {
 }
 
 func ParseLevel(levelStr string) logger.LogLevel {
-	level_str := strings.ToLower(levelStr)
-	switch level_str {
+	l := strings.ToLower(levelStr)
+	switch l {
 	case "debug":
 		return logger.Info
 	case "info":

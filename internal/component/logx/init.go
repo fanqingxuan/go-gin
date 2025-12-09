@@ -64,8 +64,7 @@ func initDefaultInstance(l zerolog.Level) zerolog.Logger {
 		writers = append(writers, &ConsoleLevelWriter{})
 	}
 	multi := zerolog.MultiLevelWriter(writers...)
-	log.Output(multi).Level(l).With().Logger().Hook(TracingHook{})
-	return zerolog.Nop()
+	return zerolog.New(multi).Level(l).With().Timestamp().Logger().Hook(TracingHook{})
 }
 
 func initLoggerInstance(path string) zerolog.Logger {
@@ -77,5 +76,5 @@ func initLoggerInstance(path string) zerolog.Logger {
 	if environment.IsDebugMode() {
 		writers = append(writers, &ConsoleLevelWriter{})
 	}
-	return zerolog.Nop().Output(zerolog.MultiLevelWriter(writers...)).Level(zerolog.InfoLevel).With().Timestamp().Logger().Hook(TracingHook{})
+	return zerolog.New(zerolog.MultiLevelWriter(writers...)).Level(zerolog.InfoLevel).With().Timestamp().Logger().Hook(TracingHook{})
 }

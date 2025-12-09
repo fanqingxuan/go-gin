@@ -74,6 +74,9 @@ func AddFunc(spec string, cmd JobFunc) {
 
 // 添加一个工具函数来获取结构体名称
 func getStructName(v interface{}) string {
+	if v == nil {
+		return "unknown"
+	}
 	t := reflect.TypeOf(v)
 
 	// 处理函数类型

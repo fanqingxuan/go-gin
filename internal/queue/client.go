@@ -15,5 +15,7 @@ func Init(c redisx.Config) {
 }
 
 func Close() {
-	defer client.Close()
+	if client != nil {
+		client.Close()
+	}
 }

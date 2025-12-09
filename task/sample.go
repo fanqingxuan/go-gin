@@ -2,7 +2,7 @@ package task
 
 import (
 	"context"
-	"fmt"
+	"go-gin/internal/component/logx"
 	"go-gin/internal/queue"
 )
 
@@ -14,7 +14,7 @@ func NewSampleTask(p string) *queue.Task {
 
 func NewSampleTaskHandler() *queue.TaskHandler {
 	return queue.NewTaskHandler(TypeSampleTask, func(ctx context.Context, data []byte) error {
-		fmt.Println(string(data))
+		logx.WithContext(ctx).Debug("sample_task", string(data))
 		// Image resizing code ...
 		return nil
 	})

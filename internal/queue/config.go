@@ -6,8 +6,8 @@ import (
 	"github.com/hibiken/asynq"
 )
 
-func RedisClientOpt(c redisx.Config) asynq.RedisClientOpt {
-	return asynq.RedisClientOpt{
+func RedisClientOpt(c redisx.Config) *asynq.RedisClientOpt {
+	return &asynq.RedisClientOpt{
 		Addr:     c.Addr,
 		Username: c.Username,
 		Password: c.Password,

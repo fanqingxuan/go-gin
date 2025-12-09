@@ -3,7 +3,7 @@ package task
 import (
 	"context"
 	"encoding/json"
-	"fmt"
+	"go-gin/internal/component/logx"
 	"go-gin/internal/queue"
 )
 
@@ -22,10 +22,10 @@ func NewSampleBTaskHandler() *queue.TaskHandler {
 		func(ctx context.Context, data []byte) error {
 			var p SampleBTaskPayload
 			if err := json.Unmarshal(data, &p); err != nil {
-				fmt.Println(err)
+				logx.WithContext(ctx).Error("sampleB_task_unmarshal", err.Error())
 				return err
 			}
-			fmt.Println(p.UserId)
+			logx.WithContext(ctx).Debug("sampleB_task", p.UserId)
 			// Image resizing code ...
 			return nil
 		})

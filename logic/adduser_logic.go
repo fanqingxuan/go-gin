@@ -19,16 +19,12 @@ func NewAddUserLogic() *AddUserLogic {
 }
 
 func (l *AddUserLogic) Handle(ctx context.Context, req typing.AddUserReq) (resp *typing.AddUserResp, err error) {
-	if err != nil {
-		return nil, err
-	}
 	user := model.User{
 		Name:     req.Name,
 		UserType: enum.UserTypeNormal,
 	}
-	fmt.Println(user)
-	if err = l.model.Add(ctx, &user); err != nil {
-		return
+	if err = l.model.Create(ctx, &user); err != nil {
+		return nil, err
 	}
 	resp = &typing.AddUserResp{
 		Message: fmt.Sprintf("message:%d", user.Id),

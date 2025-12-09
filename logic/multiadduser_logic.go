@@ -2,7 +2,6 @@ package logic
 
 import (
 	"context"
-	"fmt"
 	"go-gin/model"
 	"go-gin/typing"
 )
@@ -18,13 +17,16 @@ func NewMultiAddUserLogic() *MultiAddUserLogic {
 }
 
 func (l *MultiAddUserLogic) Handle(ctx context.Context, req typing.MultiUserAddReq) (resp *typing.MultiUserAddResp, err error) {
-
-	users := make([]model.User, len(req.Users))
+	users := make([]*model.User, len(req.Users))
 	for i, user := range req.Users {
-		users[i] = model.User{
+		users[i] = &model.User{
 			Name: user.Name,
 		}
 	}
-	fmt.Println(users)
-	return
+	if err = l.model.CreateBatch(ctx, users); err != nil {
+		return nil, err
+	}
+	return &typing.MultiUserAddResp{
+		Message: "批量添加成功",
+	}, nil
 }

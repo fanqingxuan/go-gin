@@ -33,6 +33,9 @@ func NewJobBuilder(job Job) *JobBuilder {
 
 // 基础时间调度方法
 func (jb *JobBuilder) spliceIntoPosition(position int, value string) *JobBuilder {
+	if position < 1 || position > 5 {
+		panic(fmt.Sprintf("position must be between 1 and 5, got %d", position))
+	}
 	segments := strings.Split(jb.expression, " ")
 	if len(segments) != 5 {
 		segments = []string{"*", "*", "*", "*", "*"}
@@ -161,7 +164,7 @@ func (jb *JobBuilder) Weekdays() {
 }
 
 func (jb *JobBuilder) Weekends() {
-	jb.Days(fmt.Sprintf("%d,%d"))
+	jb.Days(fmt.Sprintf("%d,%d", Saturday, Sunday))
 }
 
 func (jb *JobBuilder) Mondays() {
@@ -234,7 +237,8 @@ func (jb *JobBuilder) TwiceMonthly(first, second int, time string) {
 
 // 每天两次
 func (jb *JobBuilder) TwiceDaily(first, second int) {
-	jb.spliceIntoPosition(2, fmt.Sprintf("%d,%d")).
+	jb.spliceIntoPosition(1, "0").
+		spliceIntoPosition(2, fmt.Sprintf("%d,%d", first, second)).
 		handleJob()
 }
 

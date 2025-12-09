@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"go-gin/internal/httpx"
 	"go-gin/logic"
 	"go-gin/typing"
@@ -20,14 +19,6 @@ type User struct {
 }
 
 func (c *userController) Index(ctx *httpx.Context) (any, error) {
-	// event.Fire(ctx, events.NewSampleEvent("hello 测试"))
-	// events.NewSampleEvent("333").Fire(ctx)
-	// u := User{
-	// 	Name:       "hello",
-	// 	CreateTime: carbon.Parse("now").AddCentury(),
-	// }
-	// return u, nil
-	fmt.Println("index")
 	return httpx.ShouldBindHandle(ctx, logic.NewIndexLogic())
 }
 

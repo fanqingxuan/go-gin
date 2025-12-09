@@ -5,3 +5,4 @@
 /storage/logs/*
 /logs
 .env
+/const/enum/*_gen.go

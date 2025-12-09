@@ -4,7 +4,13 @@
       "Bash(go build:*)",
       "Bash(go mod tidy:*)",
       "mcp__ide__getDiagnostics",
-      "Bash(go clean:*)"
+      "Bash(go clean:*)",
+      "Bash(grep:*)",
+      "Bash(cat:*)",
+      "Bash(go get:*)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(go mod vendor:*)",
+      "Bash(go run:*)"
     ],
     "deny": [],
     "ask": []

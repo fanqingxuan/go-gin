@@ -73,7 +73,7 @@ func (e *BaseEnum) MarshalJSON() ([]byte, error) {
 // Scan 实现 sql.Scanner 接口
 func (s *BaseEnum) Scan(value any) error {
 	if value == nil {
-		s = nil
+		*s = BaseEnum{}
 		return nil
 	}
 
@@ -98,7 +98,7 @@ func (s *BaseEnum) Scan(value any) error {
 // UnmarshalJSON 实现 json.Unmarshaler 接口
 func (s *BaseEnum) UnmarshalJSON(data []byte) error {
 	if len(data) == 0 || string(data) == "null" {
-		s = nil
+		*s = BaseEnum{}
 		return nil
 	}
 

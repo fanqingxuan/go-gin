@@ -1,6 +1,7 @@
 package etype
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
 	"strings"
@@ -102,6 +103,39 @@ func Parse[T any](code int) (*T, error) {
 		}
 	}
 	return &t, nil
+}
+
+// ScanEnum 泛型扫描函数，用于实现 sql.Scanner
+func ScanEnum[T any](value any) (*T, error) {
+	if value == nil {
+		return nil, nil
+	}
+
+	var code int
+	switch v := value.(type) {
+	case int64:
+		code = int(v)
+	case int:
+		code = v
+	default:
+		return nil, fmt.Errorf("不支持的类型转换: %T", value)
+	}
+
+	return Parse[T](code)
+}
+
+// UnmarshalEnum 泛型反序列化函数，用于实现 json.Unmarshaler
+func UnmarshalEnum[T any](data []byte) (*T, error) {
+	if len(data) == 0 || string(data) == "null" {
+		return nil, nil
+	}
+
+	var code int
+	if err := json.Unmarshal(data, &code); err != nil {
+		return nil, err
+	}
+
+	return Parse[T](code)
 }
 
 // getPrefixFromType 从类型名生成 prefix
