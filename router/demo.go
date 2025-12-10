@@ -5,6 +5,7 @@ import (
 	"go-gin/controller"
 	"go-gin/event"
 	"go-gin/internal/eventbus"
+	"go-gin/internal/excelx"
 	"go-gin/internal/g"
 	"go-gin/internal/httpx"
 	"go-gin/internal/queue"
@@ -44,5 +45,39 @@ func RegisterDemoRoutes(r *httpx.RouterGroup) {
 		a := 43
 		fmt.Println(util.IsTrue(a))
 		return g.MapStrInt{"hello": 333}, nil
+	})
+
+	// 测试导出 Excel
+	r.GET("/export/excel", func(ctx *httpx.Context) (any, error) {
+		type User struct {
+			ID   int
+			Name string
+			Age  int
+		}
+		users := []User{
+			{ID: 1, Name: "张三", Age: 25},
+			{ID: 2, Name: "李四", Age: 30},
+			{ID: 3, Name: "王五", Age: 28},
+		}
+
+		headers := []string{"ID", "姓名", "年龄"}
+		return nil, excelx.Download(ctx.Context, "用户列表.xlsx", headers, excelx.StructsToRows(users))
+	})
+
+	// 测试导出 CSV
+	r.GET("/export/csv", func(ctx *httpx.Context) (any, error) {
+		type User struct {
+			ID   int
+			Name string
+			Age  int
+		}
+		users := []User{
+			{ID: 1, Name: "张三", Age: 25},
+			{ID: 2, Name: "李四", Age: 30},
+			{ID: 3, Name: "王五", Age: 28},
+		}
+
+		headers := []string{"ID", "姓名", "年龄"}
+		return nil, excelx.DownloadCSV(ctx.Context, "用户列表.csv", headers, excelx.StructsToStringRows(users))
 	})
 }
