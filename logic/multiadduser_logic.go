@@ -2,28 +2,25 @@ package logic
 
 import (
 	"context"
-	"go-gin/model"
+	"go-gin/model/dao"
+	"go-gin/model/entity"
 	"go-gin/typing"
 )
 
-type MultiAddUserLogic struct {
-	model *model.UserModel
-}
+type MultiAddUserLogic struct{}
 
 func NewMultiAddUserLogic() *MultiAddUserLogic {
-	return &MultiAddUserLogic{
-		model: model.NewUserModel(),
-	}
+	return &MultiAddUserLogic{}
 }
 
 func (l *MultiAddUserLogic) Handle(ctx context.Context, req typing.MultiUserAddReq) (resp *typing.MultiUserAddResp, err error) {
-	users := make([]*model.User, len(req.Users))
+	users := make([]*entity.User, len(req.Users))
 	for i, user := range req.Users {
-		users[i] = &model.User{
+		users[i] = &entity.User{
 			Name: user.Name,
 		}
 	}
-	if err = l.model.CreateBatch(ctx, users); err != nil {
+	if err = dao.User.CreateBatch(ctx, users); err != nil {
 		return nil, err
 	}
 	return &typing.MultiUserAddResp{

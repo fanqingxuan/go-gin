@@ -1,11 +1,11 @@
 package transformer
 
 import (
-	"go-gin/model"
+	"go-gin/model/entity"
 	"go-gin/typing"
 )
 
-func ConvertUserToListData(u []*model.User) []typing.ListData {
+func ConvertUserToListData(u []*entity.User) []typing.ListData {
 	var resp []typing.ListData
 	for _, v := range u {
 		var ageTips string

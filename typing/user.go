@@ -2,7 +2,7 @@ package typing
 
 import (
 	"go-gin/const/enum"
-	"go-gin/model"
+	"go-gin/model/entity"
 	"time"
 )
 
@@ -40,8 +40,8 @@ type LoginReq struct {
 }
 
 type LoginResp struct {
-	Token string     `json:"token"`
-	User  model.User `json:"user"`
+	Token string      `json:"token"`
+	User  entity.User `json:"user"`
 }
 
 type UserData struct {

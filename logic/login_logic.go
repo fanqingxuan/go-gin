@@ -4,22 +4,18 @@ import (
 	"context"
 	"go-gin/const/errcode"
 	"go-gin/internal/token"
-	"go-gin/model"
+	"go-gin/model/dao"
 	"go-gin/typing"
 )
 
-type LoginLogic struct {
-	model *model.UserModel
-}
+type LoginLogic struct{}
 
 func NewLoginLogic() *LoginLogic {
-	return &LoginLogic{
-		model: model.NewUserModel(),
-	}
+	return &LoginLogic{}
 }
 
 func (l *LoginLogic) Handle(ctx context.Context, req typing.LoginReq) (resp *typing.LoginResp, err error) {
-	user, err := l.model.GetByName(ctx, req.Username)
+	user, err := dao.User.GetByName(ctx, req.Username)
 	if err != nil {
 		return nil, err
 	}

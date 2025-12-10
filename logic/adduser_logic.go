@@ -4,26 +4,23 @@ import (
 	"context"
 	"fmt"
 	"go-gin/const/enum"
-	"go-gin/model"
+	"go-gin/model/dao"
+	"go-gin/model/entity"
 	"go-gin/typing"
 )
 
-type AddUserLogic struct {
-	model *model.UserModel
-}
+type AddUserLogic struct{}
 
 func NewAddUserLogic() *AddUserLogic {
-	return &AddUserLogic{
-		model: model.NewUserModel(),
-	}
+	return &AddUserLogic{}
 }
 
 func (l *AddUserLogic) Handle(ctx context.Context, req typing.AddUserReq) (resp *typing.AddUserResp, err error) {
-	user := model.User{
+	user := entity.User{
 		Name:     req.Name,
 		UserType: enum.USER_TYPE_NORMAL,
 	}
-	if err = l.model.Create(ctx, &user); err != nil {
+	if err = dao.User.Create(ctx, &user); err != nil {
 		return nil, err
 	}
 	resp = &typing.AddUserResp{
