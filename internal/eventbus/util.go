@@ -2,10 +2,10 @@ package eventbus
 
 import "strings"
 
-func eventName(s string) string {
-	name := strings.TrimSpace(s)
+func validateEventName(s EventName) EventName {
+	name := strings.TrimSpace(string(s))
 	if name == "" {
 		panic("event: the event name cannot be empty")
 	}
-	return name
+	return EventName(name)
 }

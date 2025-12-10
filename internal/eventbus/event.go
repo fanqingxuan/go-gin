@@ -2,19 +2,21 @@ package eventbus
 
 import "context"
 
+type EventName string
+
 type Event struct {
-	name    string
+	name    EventName
 	payload any
 }
 
-func NewEvent(name string, payload any) *Event {
+func NewEvent(name EventName, payload any) *Event {
 	return &Event{
 		name:    name,
 		payload: payload,
 	}
 }
 
-func (e *Event) Name() string {
+func (e *Event) Name() EventName {
 	return e.name
 }
 

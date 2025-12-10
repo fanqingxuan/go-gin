@@ -5,7 +5,7 @@ import (
 	"go-gin/model"
 )
 
-var DemoEventName = "event.demo"
+var DemoEventName eventbus.EventName = "event.demo"
 
 func NewDemoEvent(u *model.User) *eventbus.Event {
 	return eventbus.NewEvent(DemoEventName, u)

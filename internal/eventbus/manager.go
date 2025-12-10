@@ -6,16 +6,16 @@ import (
 )
 
 var (
-	mappings map[string][]Listener
+	mappings map[EventName][]Listener
 	mu       sync.RWMutex
 	once     sync.Once
 )
 
 // AddListener 为事件添加监听器
-func AddListener(eventname string, listener ...Listener) {
-	name := eventName(eventname)
+func AddListener(eventname EventName, listener ...Listener) {
+	name := validateEventName(eventname)
 	once.Do(func() {
-		mappings = make(map[string][]Listener, 1024)
+		mappings = make(map[EventName][]Listener, 1024)
 	})
 
 	mu.Lock()
@@ -25,7 +25,7 @@ func AddListener(eventname string, listener ...Listener) {
 
 // Fire 同步执行事件监听,如果前一个返回error则停止执行
 func Fire(ctx context.Context, event *Event) {
-	name := eventName(event.Name())
+	name := validateEventName(event.Name())
 	mu.RLock()
 	listeners := mappings[name]
 	mu.RUnlock()
@@ -46,7 +46,7 @@ func FireIf(ctx context.Context, condition bool, event *Event) {
 
 // FireAsync 异步执行事件监听
 func FireAsync(ctx context.Context, event *Event) {
-	name := eventName(event.Name())
+	name := validateEventName(event.Name())
 	mu.RLock()
 	listeners := mappings[name]
 	mu.RUnlock()
