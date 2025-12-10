@@ -18,7 +18,10 @@ go run cmd/queue/main.go -f .env
 go run cmd/migrate/main.go -f .env
 
 # Enum code generation
-go run cmd/gen/main.go
+go run cmd/enum/main.go
+
+# Entity code generation (from database tables)
+go run cmd/entity/main.go -f .env
 
 # Run tests
 go test ./test/...
@@ -26,6 +29,55 @@ go test ./test/...
 # Run a single test
 go test ./test/ -run TestIsTrue
 ```
+
+## CMD Commands
+
+### cmd/api
+API 服务入口，启动 HTTP 服务器。
+```bash
+go run cmd/api/main.go -f .env
+```
+- `-f`: 配置文件路径，默认 `.env`
+
+### cmd/cron
+定时任务服务，运行注册在 `cron/init.go` 中的定时任务。
+```bash
+go run cmd/cron/main.go -f .env
+```
+- `-f`: 配置文件路径，默认 `.env`
+
+### cmd/queue
+队列消费者服务，处理 `task/` 目录中定义的异步任务。
+```bash
+go run cmd/queue/main.go -f .env
+```
+- `-f`: 配置文件路径，默认 `.env`
+
+### cmd/migrate
+数据库迁移工具。
+```bash
+go run cmd/migrate/main.go -f .env
+```
+- `-f`: 配置文件路径，默认 `.env`
+
+### cmd/enum
+枚举代码生成器，扫描 `const/enum/` 目录下所有嵌入 `etype.BaseEnum` 的结构体，自动生成 `gen_*.go` 文件（包含 Scan/Value/JSON 序列化方法）。
+```bash
+go run cmd/enum/main.go
+```
+- 无需参数，直接运行
+
+### cmd/entity
+Entity 代码生成器，连接数据库扫描表结构，自动生成 `model/entity/{table}.go` 文件。
+```bash
+# 生成所有表的 entity
+go run cmd/entity/main.go -f .env
+
+# 生成指定表的 entity
+go run cmd/entity/main.go -f .env -t user,order,product
+```
+- `-f`: 配置文件路径，默认 `.env`
+- `-t`: 指定要生成的表名，多个表用逗号分隔，为空则生成所有表
 
 ## Architecture Overview
 
@@ -40,15 +92,26 @@ router/ → controller/ → logic/ → model/
 - **router/**: Route definitions grouped by module (user.go, login.go, etc.)
 - **controller/**: Thin layer returning `(any, error)` - framework handles response formatting
 - **logic/**: Business logic using Command pattern - one logic struct per operation (e.g., `GetUsersLogic`)
-- **model/**: GORM models with wrapped database access
+- **model/**: Data layer with two sub-packages:
+  - `model/entity/`: Table structures (GORM models)
+  - `model/dao/`: Data Access Objects with singleton instances
 
 ### Key Conventions
 
 **Controllers return data directly** - no manual JSON response handling:
 ```go
 func (c *userController) List(ctx *httpx.Context) (any, error) {
-    return logic.NewGetUsersLogic().Handle(ctx, req)
+    return httpx.ShouldBindHandle(ctx, logic.NewGetUsersLogic())
 }
+```
+
+**DAO uses singleton pattern** - no need to instantiate in logic:
+```go
+// model/dao/user.go
+var User = &userDao{}
+
+// logic layer usage
+user, err := dao.User.GetByName(ctx, name)
 ```
 
 **Database access requires context** - always use `db.WithContext(ctx)`:
@@ -111,6 +174,20 @@ Defined in `typing/` directory. Request structs use `form:` tags for binding, `l
 - Job structs implement `cronx.Job` interface with `Handle(ctx context.Context) error`
 - Register in `cron/init.go`: `cronx.AddJob("@every 3s", &SampleJob{})`
 - Also supports `cronx.ScheduleFunc(fn).EveryMinute()` pattern
+
+### Excel/CSV Export
+
+Use `internal/excelx` package for file exports:
+```go
+// Excel download
+excelx.Download(ctx.Context, "users.xlsx", headers, excelx.StructsToRows(users))
+
+// CSV download
+excelx.DownloadCSV(ctx.Context, "users.csv", headers, excelx.StructsToStringRows(users))
+
+// Multi-sheet Excel
+excelx.DownloadMultiSheet(ctx.Context, "report.xlsx", []excelx.Sheet{...})
+```
 
 ---
 

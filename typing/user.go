@@ -1,7 +1,6 @@
 package typing
 
 import (
-	"go-gin/const/enum"
 	"go-gin/model/entity"
 	"time"
 )
@@ -10,13 +9,12 @@ type ListReq struct {
 }
 
 type ListData struct {
-	Id           int              `json:"id"`
-	Name         string           `json:"name"`
-	AgeTips      string           `json:"age_tips"`
-	Age          int              `json:"age"`
-	Status       *enum.UserStatus `json:"status"`
-	UserType     *enum.UserType   `json:"user_type"`
-	UserTypeText string           `json:"user_type_text"`
+	Id           int    `json:"id"`
+	Name         string `json:"name"`
+	AgeTips      string `json:"age_tips"`
+	Age          int    `json:"age"`
+	Status       *int   `json:"status"`
+	StatusText   string `json:"status_text"`
 }
 
 type ListResp struct {

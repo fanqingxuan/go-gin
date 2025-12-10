@@ -1,6 +1,8 @@
 package transformer
 
 import (
+	"go-gin/const/enum"
+	"go-gin/internal/etype"
 	"go-gin/model/entity"
 	"go-gin/typing"
 )
@@ -19,14 +21,20 @@ func ConvertUserToListData(u []*entity.User) []typing.ListData {
 			}
 		}
 
+		var statusText string
+		if v.Status != nil {
+			if status, err := etype.Parse[enum.UserStatus](*v.Status); err == nil {
+				statusText = status.String()
+			}
+		}
+
 		resp = append(resp, typing.ListData{
-			Id:           int(v.Id),
-			Name:         v.Name,
-			AgeTips:      ageTips,
-			Age:          age,
-			Status:       v.Status,
-			UserType:     v.UserType,
-			UserTypeText: v.Status.String(),
+			Id:         int(v.Id),
+			Name:       v.Name,
+			AgeTips:    ageTips,
+			Age:        age,
+			Status:     v.Status,
+			StatusText: statusText,
 		})
 	}
 	return resp

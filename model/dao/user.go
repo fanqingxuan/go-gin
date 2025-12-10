@@ -3,11 +3,12 @@ package dao
 import (
 	"context"
 	"go-gin/internal/component/db"
+	"go-gin/internal/daox"
 	"go-gin/model/entity"
 )
 
 type userDao struct {
-	BaseDao[entity.User]
+	daox.BaseDao[entity.User]
 }
 
 var User = &userDao{}
