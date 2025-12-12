@@ -5,6 +5,7 @@ import (
 	"database/sql"
 
 	"go-gin/internal/errorx"
+	"go-gin/internal/g"
 
 	"gorm.io/gorm"
 )
@@ -59,11 +60,11 @@ func Raw(ctx context.Context, sql string, args ...any) *RawModel {
 
 // ============ 原生 SQL 查询 ============
 
-// Query 执行查询 SQL，返回多行结果
-func Query(ctx context.Context, sql string, args ...any) ([]map[string]any, error) {
+// Query 执行查询 SQL，返回 Result
+func Query(ctx context.Context, sql string, args ...any) (Result, error) {
 	var result []map[string]any
 	err := instance.WithContext(ctx).Raw(sql, args...).Scan(&result).Error
-	return result, errorx.TryToDBError(err)
+	return toResult(result), errorx.TryToDBError(err)
 }
 
 // Exec 执行非查询 SQL（INSERT/UPDATE/DELETE）
@@ -77,29 +78,31 @@ func Exec(ctx context.Context, sql string, args ...any) (sql.Result, error) {
 
 // ============ 便捷查询方法 ============
 
-// GetAll 查询多条记录
-func GetAll(ctx context.Context, sql string, args ...any) ([]map[string]any, error) {
-	return Query(ctx, sql, args...)
+// GetAll 查询多条记录，返回 Result
+func GetAll(ctx context.Context, sql string, args ...any) (Result, error) {
+	var results []map[string]any
+	err := instance.WithContext(ctx).Raw(sql, args...).Scan(&results).Error
+	return toResult(results), errorx.TryToDBError(err)
 }
 
-// GetOne 查询单条记录
-func GetOne(ctx context.Context, sql string, args ...any) (map[string]any, error) {
+// GetOne 查询单条记录，返回 Record
+func GetOne(ctx context.Context, sql string, args ...any) (Record, error) {
 	var result map[string]any
 	err := instance.WithContext(ctx).Raw(sql, args...).Scan(&result).Error
-	return result, errorx.TryToDBError(err)
+	return toRecord(result), errorx.TryToDBError(err)
 }
 
-// GetValue 查询单个值
-func GetValue(ctx context.Context, sql string, args ...any) (any, error) {
+// GetValue 查询单个值，返回 Value
+func GetValue(ctx context.Context, sql string, args ...any) (Value, error) {
 	var result map[string]any
 	err := instance.WithContext(ctx).Raw(sql, args...).Scan(&result).Error
 	if err != nil {
 		return nil, errorx.TryToDBError(err)
 	}
 	for _, v := range result {
-		return v, nil
+		return g.NewVar(v), nil
 	}
-	return nil, nil
+	return g.NewVar(nil), nil
 }
 
 // GetCount 查询数量
@@ -110,16 +113,16 @@ func GetCount(ctx context.Context, sql string, args ...any) (int64, error) {
 }
 
 // GetArray 查询单列返回数组
-func GetArray(ctx context.Context, sql string, args ...any) ([]any, error) {
+func GetArray(ctx context.Context, sql string, args ...any) ([]Value, error) {
 	var results []map[string]any
 	err := instance.WithContext(ctx).Raw(sql, args...).Scan(&results).Error
 	if err != nil {
 		return nil, errorx.TryToDBError(err)
 	}
-	arr := make([]any, 0, len(results))
+	arr := make([]Value, 0, len(results))
 	for _, row := range results {
 		for _, v := range row {
-			arr = append(arr, v)
+			arr = append(arr, g.NewVar(v))
 			break
 		}
 	}
