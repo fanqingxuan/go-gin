@@ -57,7 +57,10 @@
 - internal/ -内部功能目录,里面方法不建议修改
 - cron/ - 定时任务目录
 - middleware/ -中间件目录
-- model/ -数据表结构目录
+- model/ -数据层目录
+  - entity/ - 表结构映射（强类型，GORM models）
+  - do/ - Data Object（any 类型，用于 Where/Data 条件构建）
+  - dao/ - Data Access Object（单例模式，链式调用 API）
 - logic/ -业务逻辑目录
 - typing/ 结构目录，用于定义请求参数、响应的数据结构
 - util/ 工具目录，提供常用的辅助函数，一般不包含业务逻辑和状态信息
@@ -66,6 +69,7 @@
 - rest/ 请求第三方服务的目录
 - task/ 任务队列目录
 - router/ 路由目录
+- migration/ 数据库迁移目录
 ### 功能代码
 - 控制器
 
@@ -126,33 +130,63 @@
 
     业务层采用命令模式，一个logic只负责处理一个业务的处理，例如`getusers_logic.go`
     ```go
-    type GetUsersLogic struct {
-        model *models.UserModel
-    }
+    type GetUsersLogic struct{}
 
     func NewGetUsersLogic() *GetUsersLogic {
-        return &GetUsersLogic{
-            model: models.NewUserModel(),
-        }
+        return &GetUsersLogic{}
     }
 
-    func (l *GetUsersLogic) Handle(ctx context.Context, req types.ListReq) (resp *types.ListReply, err error) {
-        var u []models.User
-        if u, err = l.model.List(ctx); err != nil {
+    func (l *GetUsersLogic) Handle(ctx context.Context, req typing.ListReq) (*typing.ListReply, error) {
+        var users []entity.User
+        err := dao.User.Ctx(ctx).
+            Where(do.User{Status: 1}).
+            Order("id DESC").
+            All(&users)
+        if err != nil {
             return nil, err
         }
 
-        redisx.Client().HSet(ctx, "name", "age", 43)
-        return &types.ListReply{
-            Users: u,
-        }, nil
-
+        return &typing.ListReply{Users: users}, nil
     }
-    
     ```
 - 数据库
 
-    要使用数据库，为了记录traceid，以及防止乱调用，所以系统只定义了一种获取gorm连接的方式,必须先调用`WithContext(ctx)`才能获得gorm资源，如下
+    推荐使用 GoFrame 风格的 DAO 链式调用 API：
+    ```go
+    // 查询
+    var users []entity.User
+    err := dao.User.Ctx(ctx).
+        Where(do.User{Status: 1}).
+        Where("age > ?", 18).
+        Order("id DESC").
+        Page(1, 10).
+        All(&users)
+
+    // 插入
+    _, err := dao.User.Ctx(ctx).
+        Data(do.User{Name: "test", Status: 1}).
+        Insert()
+
+    // 更新
+    _, err := dao.User.Ctx(ctx).
+        Data(do.User{Status: 2}).
+        Where(do.User{Id: 1}).
+        Update()
+
+    // 删除
+    _, err := dao.User.Ctx(ctx).
+        Where(do.User{Id: 1}).
+        Delete()
+
+    // 使用 Columns 常量避免硬编码字段名
+    cols := dao.User.Columns()
+    err := dao.User.Ctx(ctx).
+        Fields(cols.Id, cols.Name).
+        Where(cols.Status+" = ?", 1).
+        All(&users)
+    ```
+
+    底层仍可使用 `db.WithContext(ctx)` 直接操作 GORM（仅在 DAO 内部使用）：
     ```go
     db.WithContext(ctx).Find(&u).Error()
     ```
@@ -221,14 +255,14 @@
         "context"
         "fmt"
         "go-gin/internal/eventbus"
-        "go-gin/model"
+        "go-gin/model/entity"
     )
 
     type DemoAListener struct {
     }
 
     func (l DemoAListener) Handle(ctx context.Context, e *eventbus.Event) error {
-        user := e.Payload().(*model.User)
+        user := e.Payload().(*entity.User)
         fmt.Println(user.Name)
         return nil
     }
@@ -258,10 +292,8 @@
     type SampleJob struct{}
 
     func (j *SampleJob) Handle(ctx context.Context) error {
-
-        var u model.User
-        db.WithContext(ctx).Find(&u)
-
+        var u entity.User
+        dao.User.Ctx(ctx).Where(do.User{Id: 1}).One(&u)
         return nil
     }
     ```
@@ -289,266 +321,117 @@
 
 - 验证器
 
-    验证器主要是对`gin`内置的binding进行的扩展
-    - 支持中文化提示
-        ```go
-        type AddUserReq struct {
-            Name   string    `form:"name" binding:"required"`
-            Age    int       `form:"age" binding:"required"`
-            Status bool      `form:"status"`
-            Ctime  time.Time `form:"ctime"`
-        }
+    验证器主要是对`gin`内置的binding进行的扩展，支持中文化提示和自定义字段名
+    ```go
+    type AddUserReq struct {
+        Name   string    `form:"name" binding:"required"`
+        Age    int       `form:"age" binding:"required" label:"年龄"`
+        Status bool      `form:"status"`
+    }
+    ```
+    使用`label`标签定义字段名字，验证失败时提示`年龄为必填字段`而不是`Age为必填字段`
 
-        // controller
-        var req typing.AddUserReq
-            if err := ctx.ShouldBind(&req); err != nil {
-                logx.WithContext(ctx).Warn("ShouldBind异常", err)
-                httpx.Error(ctx, err)
-                return
-            }
-        ```
-        如上如果参数不包括name的时候，会提示如下,自动进行了中文化处理
-        ```
-        {"code":10001,"data":null,"message":"Name为必填字段\n年龄为必填字段\n","trace_id":"695517e3-1b68-4845-839d-c0e58d8f3a43"}
-    - 支持自定义提示语的字段名字
-
-        使用`label`标签定义字段名字
-
-        ```go
-        type AddUserReq struct {
-            Name   string    `form:"name" binding:"required"`
-            Age    int       `form:"age" binding:"required" label:"年龄"`
-            Status bool      `form:"status"`
-            Ctime  time.Time `form:"ctime"`
-        }
-        ```
-        如上提示语不再提示`Age为必填字段`，而是提示`年龄为必填字段`
-
-    - 支持非`gin`框架方式使用验证器
-        提供了`validators.Validate()`方法进行验证结构字段的值是否合理
-        ```go
-        var req = typing.AddUserReq{
-            Name: "测试",
-        }
-        if err := validators.Validate(&req); err != nil {
-            httpx.Error(ctx, err)
-            return
-        }
-        ```
-        **注意:**`validators.Validate`和`ctx.ShouldBind`验证失败返回的是`BizError`类型错误,错误码是`ErrCodeValidateFailed`,默认值是`10001`，你也可以通过`errorx.ErrCodeValidateFailed = xxx`在main入口修改默认值
+    验证失败返回`BizError`类型错误，错误码默认`10001`
 - 参数、响应结构
 
-    定义了可以规范化请求参数、响应结构的目录，使代码更容易维护，结构定义在`typing/`目录，一个模块一个文件名，如`user.go`
-    
-    结构定义如下
+    请求参数和响应结构定义在`typing/`目录，一个模块一个文件名，如`user.go`
     ```go
-        package typing
+    type AddUserReq struct {
+        Name   string `form:"name" binding:"required"`
+        Age    int    `form:"age" binding:"required" label:"年龄"`
+    }
 
-        import (
-            "time"
-        )
-
-        type AddUserReq struct {
-            Name   string    `form:"name"`
-            Age    int       `form:"age"`
-            Status bool      `form:"status"`
-            Ctime  time.Time `form:"ctime"`
-        }
-
-        type AddUserReply struct {
-            Message string `json:"message"`
-        }
-
+    type AddUserReply struct {
+        Message string `json:"message"`
+    }
     ```
-    使用方式,在`controller`层使用
+    Controller 使用 `httpx.ShouldBindHandle` 自动绑定参数并调用 Logic：
     ```go
-    var req typing.AddUserReq
-	if err := ctx.ShouldBind(&req); err != nil {
-		logx.WithContext(ctx).Warn("ShouldBind异常", err)
-		httpx.Error(ctx, err)
-		return
-	}
-
+    func (c *userController) AddUser(ctx *httpx.Context) (any, error) {
+        return httpx.ShouldBindHandle(ctx, logic.NewAddUserLogic())
+    }
     ```
-    其实就是使用了`gin`框架本身提供的shouldbind特性，将参数绑定到结构体，后面逻辑直接可以使用结构体里面的字段进行操作了，参数需要包括那些字段，通过结构体很容易看到，实现了参数的可维护性
-    ```go
-    resp := typing.AddUserReply{
-		Message: fmt.Sprintf("add user succcess %s=%d", user.Name, user.Id),
-	}
-	httpx.Ok(ctx, resp)
-    ```
-    响应结构体如上，结构体数据响应中转成json渲染到`data`域，这样实现相应的结构化和可维护性，响应结果如下
-    ```
-    {"code":0,"data":{"message":"add user succcess ddddd=125"},"message":"成功","trace_id":"b1a9e4f8-7772-4c3a-bb3d-99a22d6a0ff6"}
-    ```
-    
 
 - 常量
 
-    未来系统中可能会存在很多业务常量，这里预先建立了目录，当前内置了一些关于错误的预定义常量，这样在业务逻辑中直接使用即可，不需要到处写相同的错误，另外使错误相关更加集中，方便管理，也提高了可维护性
+    业务错误常量定义在`const/errcode`目录：
     ```go
-    var (
-        ErrUserNotFound = errorx.New(2001, "用户不存在")
-    )
+    var ErrUserNotFound = errorx.New(20001, "用户不存在")
     ```
 - 错误类型
-    系统内置了两种错误类型`BizError`和`ServerError`
-    - `ServerError`主要是为了处理no method或者method not allowed以及其他服务上的错误，便于响应返回正确的http状态码和统一一致的响应结构,`errorx`包内置错误常量
-        ```go
-            ErrMethodNotAllowed    = NewServerError(http.StatusMethodNotAllowed)
-            ErrNoRoute             = NewServerError(http.StatusNotFound)
-            ErrInternalServerError = NewServerError(http.StatusInternalServerError)
-        ```
-    - `BizError`是我们业务开发中使用更多的错误结构，就是业务中定义的异常错误类型，这种类型返回的http状态码都是200，响应结构的状态码、消息均来源于`BizError`变量中。`BizError`的变量定义方式如下
-        ```go
-        errorx.New(20001, "用户不存在")
-        errorx.NewDefault("用户不存在")  // code默认值为ErrCodeDefaultCommon的值，也就是10000
-        ```
-        注意，新增的业务错误码建议从20000开始，因为`internal`底层可能会定义10000-20000之内的业务错误码，例如校验失败的错误码是`ErrCodeValidateFailed`值为10001,通用错误`ErrCodeDefaultCommon`值为10000
-    - `error`,error应该是其他错误的超类，如果非上述两种错误，我们统一用`error`捕获，并且返回响应http状态码200,code为默认值`ErrCodeDefaultCommon`，也就是10000
-        ```
-        {
-            "code": 10000,
-            "data": null,
-            "message": "用户不存在",
-            "trace_id": "dc119c64-d4b9-4af1-9e02-d15fc4ba2e42"
-        }
-        ```
+    - `BizError`: 业务错误，HTTP 200，自定义 code - `errorx.New(20001, "用户不存在")`
+    - `ServerError`: 服务错误，返回对应 HTTP 状态码 - `errorx.NewServerError(http.StatusNotFound)`
+    - 业务错误码建议从 20000 开始（10000-20000 保留给框架）
 - 枚举常量
-  - 枚举常量建议定义在`const/enum`目录
-  - 枚举常量定义
-    - 定义一个结构体
+  - 枚举常量定义在 `const/enum` 目录
+  - 定义枚举只需两步：
+    1. 定义结构体和常量：
         ```golang
-        // UserStatus 用户状态
+        // const/enum/user_status.go
+        package enum
+
+        import "go-gin/internal/etype"
+
         type UserStatus struct {
             etype.BaseEnum
         }
-        ```
-    - 定义一个prefix常量，需要这一部的原因是多张常量类型的code码会重复，需要一种方式解析到code码正确的desc描述，所以使用这个常量将结构体注册到一个map里面，用于`json.Unmarshal`解码常量正确的描述desc字段,以及gorm保存正确的字段到数据库
-        ```golang
-        const PrefixUserStatus etype.PrefixType = "user_status"
-        ```
-    - 要保存正确的值到数据库需要类型实现`sql.Scanner`接口,要解包枚举code正确的描述还要实现`json.Unmarshaler`
-        ```golang
-        // Scan 实现 sql.Scanner 接口
-        func (s *OrderStatus) Scan(value interface{}) error {
-            return s.BaseEnum.Scan(value, PrefixOrderStatus)
-        }
 
-        // UnmarshalJSON 实现 json.Unmarshaler 接口
-        func (s *OrderStatus) UnmarshalJSON(data []byte) error {
-            return s.BaseEnum.UnmarshalJSON(data, PrefixOrderStatus)
-        }
-        ```
-    - 定义枚举常量
-        ```golang
-        // 定义用户状态常量
         var (
-            USER_STATUS_NORMAL   = NewUserStatus(1, "正常")
-            USER_STATUS_DISABLED = NewUserStatus(2, "禁用")
-            USER_STATUS_DELETED  = NewUserStatus(3, "已删除")
+            USER_STATUS_NORMAL   = etype.NewEnum[UserStatus](1, "正常")
+            USER_STATUS_DISABLED = etype.NewEnum[UserStatus](2, "禁用")
         )
         ```
-    - gorm使用枚举常量
-        ```golang
-        type User struct {
-            Id         int64
-            Name       string           `gorm:"column:name" json:"name"`
-            Status     *enum.UserStatus `gorm:"column:status;default:null" json:"status"`
-        }
-        // 添加到数据库
-        user := model.User{
-            Name: req.Name,
-            Status: enum.STATUS_DELETED,
-        }
-        db.WithContext(ctx).Create(&user)
+    2. 运行代码生成器自动生成 `gen_*.go` 文件（包含 Scan/Value/JSON 方法）：
+        ```bash
+        go run ./cmd/make/... make:enum
+        ```
+  - 使用示例：
+    ```golang
+    // Entity 中使用枚举
+    type User struct {
+        Id     int64            `gorm:"column:id" json:"id"`
+        Name   string           `gorm:"column:name" json:"name"`
+        Status *enum.UserStatus `gorm:"column:status" json:"status"`
+    }
 
-        // 实现了Scanner接口的话，会将status字段解析到结构体的枚举字段Status并自动填充枚举的描述
-        var u model.User
-        db.WithContext(ctx).Find(&u,1)
-        ```
-    - json编码,baseEnum结构已经进行了实现，当json.Marshal的时候，会自动将枚举常量code值转成json
-        ```golang
-            type ListData struct {
-            Id      int              `json:"id"`
-            Name    string           `json:"name"`
-            AgeTips string           `json:"age_tips"`
-            Age     int              `json:"age"`
-            Status  *enum.UserStatus `json:"status"`
-        }
-        // json.Marshal转成json后结果是
-        [{"id":13,"name":"测试你好","age_tips":"未成年","age":2,"status":2}]
-        ```
-    - 每种枚举常量可以定义自己的从code码转成枚举常量的方法，参考如下:
-        ```golang
-        // ParseUserStatus 解析用户状态
-        func ParseUserStatus(code int) (*UserStatus, error) {
-            base, err := etype.ParseBaseEnum(PrefixUserStatus, code)
-            if err != nil {
-                return nil, err
-            }
-            return &UserStatus{BaseEnum: base}, nil
-        }
-        ```
+    // 创建记录
+    user := entity.User{Name: "test", Status: enum.USER_STATUS_NORMAL}
+    dao.User.Ctx(ctx).Data(&user).Insert()
+
+    // 查询时自动解析枚举
+    var u entity.User
+    dao.User.Ctx(ctx).Where(do.User{Id: 1}).One(&u)
+    fmt.Println(u.Status.Desc()) // 输出: 正常
+
+    // JSON 序列化只输出 code 值
+    // {"id":1,"name":"test","status":1}
+    ```
 - 请求第三方接口
-接入了`go-resty`库，并做了简单封装，便于开箱即用
-    
-    - 原生方式
-        ```
-        resp, err := httpc.POST(ctx, "http://localhost:8080/api/list").
-            SetFormData(httpc.M{"username": "aaaa", "age": "55555"}).
-            Send()
-        ```
-        如上,主要对go-resty进行了简单封装，封装成了`httpc`库,并提供了`POST`,`GET`常用两种请求方式
-    - 服务方式
-    
-        如果第三方接口交互较多，可以作为服务进行对接，首先在`main.go`文件配置第三方服务地址,例如
-        ```go
-        user.Init("http://localhost:8080")
-        ```
-        然后在`rest`目录定义服务相关文件主要包括
-        - `init.go`启动文件
-        - `response.go`接口返回格式以及解析响应结果
-        - `svc.go` 定义服务接口、参数以及响应结构，进行明确要求，便于代码的可维护性
-        - `svc.impl.go` 对svc.go中接口的实现
-        定义要上面几个文件之后，便可以在自己的业务文件中发起请求了
-            ```go
-            hash := md5.Sum([]byte("abcd"))
-            pwd := hex.EncodeToString(hash[:])
-            resp, err := login.Svc.Login(ctx, &login.LoginReq{Username: "1", Pwd: pwd})
-            if err != nil {
-                httpx.Error(ctx, err)
-                return
-            }
-            ```
+
+    使用`httpc`库（基于 go-resty 封装）：
+    ```go
+    resp, err := httpc.POST(ctx, "http://localhost:8080/api/list").
+        SetFormData(httpc.M{"username": "test"}).
+        Send()
+    ```
+    复杂的第三方服务可在`rest/`目录定义服务接口
 
 - 队列
 
-    队列使用的是比较热门的库`github.com/hibiken/asynq`,本项目稍微进行了一点点儿封装，简化使用，更加结构化，便于代码的维护,弱化了client和server端指定taskname
-    - 队列server目录为`cmd/task`
-    - 队列代码维护在`task/`目录
-    - 将数据写入队列的方式，封装了3个方法
-        ```go
-        task.Dispatch(queue.NewSampleTask("测试3333"),3*time.Secord) // 使用task包下的Dispatch方法,并添加延迟时间3s后执行
-        task.DispatchWithRetry(queue.NewSampleTask("测试3333"),)// 使用task包下的Dispatch方法,并添加延迟时间和失败后的重试次数
-        task.DispatchNow(queue.NewSampleTask("测试3333")) // 使用task包下的Dispatch方法,立即执行
-        tasqueuekx.NewSampleTask("测试3333").DispatchNow() // 使用task结构的DispatchNow方法
-        
-        task.NewOption().Queue(task.HIGH).TaskID("test").Dispatch(queue.NewSampleBTask("hello")) // 指定发送队列
+    队列使用`github.com/hibiken/asynq`库，队列服务入口为`cmd/queue`，任务代码维护在`task/`目录
+    ```go
+    // 发送任务
+    task.DispatchNow(task.NewSampleTask("测试"))           // 立即执行
+    task.Dispatch(task.NewSampleTask("测试"), 3*time.Second) // 延迟3s执行
 
-        ```
-    - server端handler处理,首先需要将没一个task的handler维护到server端,在`task/init.go`文件进行添加
-        ```go
-        task.Handle(NewSampleTaskHandler()) // Handle是封装的一个方法
-        ```
+    // 在 task/init.go 注册 handler
+    task.Handle(NewSampleTaskHandler())
+    ```
 - util方法
-  - `util.IsTrue` - 标量判断是否为true
-  - `util.IsFalse` - 标量判断是否为false
-  - `util.WhenFunc` - 标量判断为true时候执行方法
-  - `utils.When(condition,trueValue,falseValue)` -- 标量condition为true，返回trueValue,否则返回falseValue
-  - `jsonx.MarshalToString`和`jsonx.Encode` -- 转成json字符串
-  - `jsonx.UnmarshalFromString`和`jsonx.Decode` -- json字符转转成对应的golang数据
-  - 
+  - `util.IsTrue/IsFalse` - 标量判断
+  - `util.When(condition, trueValue, falseValue)` - 三元表达式
+  - `jsonx.Encode/Decode` - JSON 序列化/反序列化
+
 ### 快速启动
 
 ```shell
@@ -558,4 +441,20 @@
 4. go run cmd/cron/main.go  -f .env   // 定时任务启动方式
 5. go run cmd/queue/main.go -f .env // 队列服务入口
 6. go run cmd/migrate/main.go -f .env // 数据库迁移入口
+```
+
+### 代码生成工具
+
+统一的代码生成工具 `cmd/make/`，注意必须使用 `./cmd/make/...` 语法：
+
+```shell
+# 生成枚举方法 (扫描 const/enum/ 生成 gen_*.go)
+go run ./cmd/make/... make:enum
+
+# 生成 entity/do/dao 三层代码 (从数据库表结构)
+go run ./cmd/make/... make:dao -f .env
+go run ./cmd/make/... make:dao -f .env -t user,order  # 指定表
+
+# 生成迁移文件模板
+go run ./cmd/make/... make:migration create_orders
 ```
