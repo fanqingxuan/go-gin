@@ -109,6 +109,23 @@ func GetCount(ctx context.Context, sql string, args ...any) (int64, error) {
 	return count, errorx.TryToDBError(err)
 }
 
+// GetArray 查询单列返回数组
+func GetArray(ctx context.Context, sql string, args ...any) ([]any, error) {
+	var results []map[string]any
+	err := instance.WithContext(ctx).Raw(sql, args...).Scan(&results).Error
+	if err != nil {
+		return nil, errorx.TryToDBError(err)
+	}
+	arr := make([]any, 0, len(results))
+	for _, row := range results {
+		for _, v := range row {
+			arr = append(arr, v)
+			break
+		}
+	}
+	return arr, nil
+}
+
 // GetScan 查询并扫描到指定结构
 func GetScan(ctx context.Context, dest any, sql string, args ...any) error {
 	return errorx.TryToDBError(instance.WithContext(ctx).Raw(sql, args...).Scan(dest).Error)
