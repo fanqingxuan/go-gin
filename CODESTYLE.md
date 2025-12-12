@@ -44,8 +44,8 @@ func NewAddUserLogic() *AddUserLogic {
 }
 
 func (l *AddUserLogic) Handle(ctx context.Context, req typing.AddUserReq) (*typing.AddUserResp, error) {
-    user := entity.User{Name: req.Name}
-    if err := dao.User.Create(ctx, &user); err != nil {
+    _, err := dao.User.Ctx(ctx).Data(do.User{Name: req.Name}).Insert()
+    if err != nil {
         return nil, err
     }
     return &typing.AddUserResp{Message: "success"}, nil
@@ -57,26 +57,43 @@ func (l *AddUserLogic) Handle(ctx context.Context, req typing.AddUserReq) (*typi
 ### 目录结构
 ```
 model/
-├── dao/           # Data Access Object
-│   ├── base.go    # BaseDao 通用 CRUD 方法
-│   └── user.go    # 具体 DAO 实现
-└── entity/        # 表结构定义
-    └── user.go    # User 实体 + BaseEntity
+├── entity/        # 表结构定义（强类型，自动生成）
+│   └── user.go
+├── do/            # Data Object（any 类型，用于 Where/Data）
+│   └── user.go
+└── dao/           # Data Access Object
+    ├── internal/  # 内部实现（自动生成）
+    │   └── user.go
+    └── user.go    # 外部接口（可自定义扩展）
 ```
 
-### Entity 定义
+### Entity 定义（自动生成）
 ```go
 // model/entity/user.go
 package entity
 
 type User struct {
-    BaseEntity
-    Id   int64
-    Name string `gorm:"column:name" json:"name"`
+    Id        int        `gorm:"column:id;primaryKey" json:"id"`
+    Name      string     `gorm:"column:name" json:"name"`
+    Status    *int       `gorm:"column:status" json:"status"`
+    CreatedAt *time.Time `gorm:"column:created_at" json:"created_at"`
 }
 
-func (u *User) TableName() string {
+func (e *User) TableName() string {
     return "user"
+}
+```
+
+### DO 定义（自动生成）
+```go
+// model/do/user.go
+package do
+
+type User struct {
+    Id        any
+    Name      any
+    Status    any
+    CreatedAt any
 }
 ```
 
@@ -86,14 +103,19 @@ func (u *User) TableName() string {
 package dao
 
 type userDao struct {
-    BaseDao[entity.User]
+    *internal.UserDao
 }
 
-var User = &userDao{}  // 单例，直接使用 dao.User
+var User = &userDao{internal.NewUserDao()}
 
 // 自定义方法
 func (d *userDao) GetByName(ctx context.Context, name string) (*entity.User, error) {
-    // ...
+    var user entity.User
+    err := d.Ctx(ctx).Where(do.User{Name: name}).One(&user)
+    if errors.Is(err, gorm.ErrRecordNotFound) {
+        return nil, nil
+    }
+    return &user, err
 }
 ```
 
@@ -104,8 +126,8 @@ func (d *userDao) GetByName(ctx context.Context, name string) (*entity.User, err
 3. **禁止忽略错误** - 必须处理或显式标注 `_ = err`
 4. **禁止在 Controller 中写业务逻辑** - 业务逻辑放入 Logic 层
 5. **禁止在 Logic 中实例化 DAO** - 使用 `dao.Xxx` 单例
-6. **禁止在 Controller/Logic 中直接操作 db** - 数据库操作必须封装在 DAO 层
-7. **禁止在 Controller/Logic 中硬编码表字段名** - 字段操作封装在 DAO 层
+6. **禁止在 Controller/Logic 中直接操作 db** - 使用 `dao.Xxx.Ctx(ctx)` 链式调用
+7. **禁止在 Controller/Logic 中硬编码表字段名** - 使用 `do.Xxx` 或 `dao.Xxx.Columns()`
 
 ```go
 // ❌ 禁止在 Logic 中直接操作 db
@@ -114,21 +136,24 @@ func (l *AddUserLogic) Handle(ctx context.Context, req typing.AddUserReq) (*typi
     db.WithContext(ctx).Model(&user).Update("status", 1)          // 禁止
 }
 
-// ✅ 正确做法：在 DAO 中封装
-// dao/user.go
-func (d *userDao) GetByName(ctx context.Context, name string) (*entity.User, error) {
-    var user entity.User
-    result := db.WithContext(ctx).First(&user, "name = ?", name)
-    return &user, result.Error()
-}
-
-func (d *userDao) UpdateStatus(ctx context.Context, id int64, status int) error {
-    return db.WithContext(ctx).Model(&entity.User{}).Where("id = ?", id).Update("status", status).Error()
-}
-
-// logic/xxx_logic.go
+// ✅ 正确做法：使用 DAO 链式调用
 func (l *AddUserLogic) Handle(ctx context.Context, req typing.AddUserReq) (*typing.AddUserResp, error) {
-    user, err := dao.User.GetByName(ctx, req.Name)  // 正确
-    dao.User.UpdateStatus(ctx, user.Id, 1)          // 正确
+    // 查询
+    var user entity.User
+    err := dao.User.Ctx(ctx).Where(do.User{Name: req.Name}).One(&user)
+
+    // 更新
+    _, err = dao.User.Ctx(ctx).
+        Data(do.User{Status: 1}).
+        Where(do.User{Id: user.Id}).
+        Update()
+
+    return &typing.AddUserResp{Message: "success"}, err
 }
+
+// ✅ 使用 Columns 常量避免硬编码
+cols := dao.User.Columns()
+err := dao.User.Ctx(ctx).
+    Where(cols.Status+" = ?", 1).
+    All(&users)
 ```

@@ -20,8 +20,8 @@ go run cmd/migrate/main.go -f .env
 # Enum code generation
 go run cmd/enum/main.go
 
-# Entity code generation (from database tables)
-go run cmd/entity/main.go -f .env
+# Model code generation (entity/do/dao from database tables)
+go run cmd/gen/main.go -f .env
 
 # Run tests
 go test ./test/...
@@ -67,17 +67,22 @@ go run cmd/enum/main.go
 ```
 - 无需参数，直接运行
 
-### cmd/entity
-Entity 代码生成器，连接数据库扫描表结构，自动生成 `model/entity/{table}.go` 文件。
+### cmd/gen
+Model 代码生成器，连接数据库扫描表结构，自动生成 entity/do/dao 三层代码。
 ```bash
-# 生成所有表的 entity
-go run cmd/entity/main.go -f .env
+# 生成所有表的 model 代码
+go run cmd/gen/main.go -f .env
 
-# 生成指定表的 entity
-go run cmd/entity/main.go -f .env -t user,order,product
+# 生成指定表的 model 代码
+go run cmd/gen/main.go -f .env -t user,order,product
 ```
 - `-f`: 配置文件路径，默认 `.env`
 - `-t`: 指定要生成的表名，多个表用逗号分隔，为空则生成所有表
+- 生成文件：
+  - `model/entity/{table}.go` - 表结构映射（强类型）
+  - `model/do/{table}.go` - Data Object（any 类型，用于 Where/Data）
+  - `model/dao/internal/{table}.go` - DAO 内部实现
+  - `model/dao/{table}.go` - DAO 外部接口（仅首次生成，可自定义扩展）
 
 ## Architecture Overview
 
@@ -92,9 +97,10 @@ router/ → controller/ → logic/ → model/
 - **router/**: Route definitions grouped by module (user.go, login.go, etc.)
 - **controller/**: Thin layer returning `(any, error)` - framework handles response formatting
 - **logic/**: Business logic using Command pattern - one logic struct per operation (e.g., `GetUsersLogic`)
-- **model/**: Data layer with two sub-packages:
-  - `model/entity/`: Table structures (GORM models)
-  - `model/dao/`: Data Access Objects with singleton instances
+- **model/**: Data layer with three sub-packages:
+  - `model/entity/`: Table structures (GORM models, 强类型)
+  - `model/do/`: Data Objects (any 类型，用于 Where/Data 条件构建)
+  - `model/dao/`: Data Access Objects with singleton instances and Model chain API
 
 ### Key Conventions
 
@@ -105,18 +111,48 @@ func (c *userController) List(ctx *httpx.Context) (any, error) {
 }
 ```
 
-**DAO uses singleton pattern** - no need to instantiate in logic:
+**DAO uses GoFrame-style Model chain API**:
 ```go
-// model/dao/user.go
-var User = &userDao{}
+// 查询
+var users []entity.User
+err := dao.User.Ctx(ctx).
+    Where(do.User{Status: 1}).
+    Where("age > ?", 18).
+    Order("id DESC").
+    Page(1, 10).
+    All(&users)
 
-// logic layer usage
-user, err := dao.User.GetByName(ctx, name)
+// 插入
+_, err := dao.User.Ctx(ctx).
+    Data(do.User{Name: "test", Status: 1}).
+    Insert()
+
+// 更新
+_, err := dao.User.Ctx(ctx).
+    Data(do.User{Status: 2}).
+    Where(do.User{Id: 1}).
+    Update()
+
+// 删除
+_, err := dao.User.Ctx(ctx).
+    Where(do.User{Id: 1}).
+    Delete()
+
+// 使用 Columns 常量
+cols := dao.User.Columns()
+err := dao.User.Ctx(ctx).
+    Fields(cols.Id, cols.Name).
+    Where(cols.Status+" = ?", 1).
+    All(&users)
 ```
 
-**Database access requires context** - always use `db.WithContext(ctx)`:
+**Database access requires context** - always use `dao.Xxx.Ctx(ctx)`:
 ```go
-db.WithContext(ctx).Find(&u).Error()  // Error() returns wrapped DBError
+// 推荐：使用 DAO 链式调用
+dao.User.Ctx(ctx).Where(do.User{Id: 1}).One(&user)
+
+// 底层：直接使用 db 包（仅在 DAO 内部使用）
+db.WithContext(ctx).Find(&u).Error()
 ```
 
 **Logging uses context for trace ID**:

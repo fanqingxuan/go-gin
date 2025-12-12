@@ -70,6 +70,7 @@ func Connect() (err error) {
 	return
 }
 
-func WithContext(ctx context.Context) *DB {
-	return &DB{instance.WithContext(ctx)}
+// NewModel 创建一个新的 Model 实例用于链式操作（GoFrame 风格）
+func NewModel(ctx context.Context, table string) *Model {
+	return newModel(ctx, table)
 }

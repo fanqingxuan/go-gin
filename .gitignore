@@ -6,4 +6,6 @@
 /logs
 .env
 const/enum/gen_*.go
+model/dao/internal/*.go
 model/entity/*.go
+model/do/*.go

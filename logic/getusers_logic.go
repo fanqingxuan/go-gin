@@ -4,6 +4,7 @@ import (
 	"context"
 	"go-gin/const/errcode"
 	"go-gin/model/dao"
+	"go-gin/model/entity"
 	"go-gin/transformer"
 	"go-gin/typing"
 )
@@ -15,12 +16,13 @@ func NewGetUsersLogic() *GetUsersLogic {
 }
 
 func (l *GetUsersLogic) Handle(ctx context.Context, req typing.ListReq) (resp *typing.ListResp, err error) {
-	u, err := dao.User.List(ctx, "1=1")
+	var users []*entity.User
+	err = dao.User.Ctx(ctx).All(&users)
 	if errcode.IsError(err) {
 		return nil, err
 	}
 
 	return &typing.ListResp{
-		Data: transformer.ConvertUserToListData(u),
+		Data: transformer.ConvertUserToListData(users),
 	}, nil
 }

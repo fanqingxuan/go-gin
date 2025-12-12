@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"go-gin/model/dao"
-	"go-gin/model/entity"
+	"go-gin/model/do"
 	"go-gin/typing"
 )
 
@@ -15,14 +15,12 @@ func NewAddUserLogic() *AddUserLogic {
 }
 
 func (l *AddUserLogic) Handle(ctx context.Context, req typing.AddUserReq) (resp *typing.AddUserResp, err error) {
-	user := entity.User{
-		Name: req.Name,
-	}
-	if err = dao.User.Create(ctx, &user); err != nil {
+	id, err := dao.User.Ctx(ctx).Data(do.User{Name: req.Name}).InsertAndGetId()
+	if err != nil {
 		return nil, err
 	}
 	resp = &typing.AddUserResp{
-		Message: fmt.Sprintf("message:%d", user.Id),
+		Message: fmt.Sprintf("message:%d", id),
 	}
 	return
 }
