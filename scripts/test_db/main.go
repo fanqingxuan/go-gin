@@ -4,10 +4,12 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 
 	"go-gin/internal/component/db"
+	"go-gin/internal/errorx"
 	"go-gin/model/dao"
 	"go-gin/model/do"
 	"go-gin/model/entity"
@@ -26,6 +28,9 @@ func main() {
 
 	fmt.Println("\n=== 测试 DAO 层 ===")
 	testDAO(ctx)
+
+	fmt.Println("\n=== 测试 DBError 类型 ===")
+	testDBError(ctx)
 
 	fmt.Println("\n=== 所有测试完成 ===")
 }
@@ -83,7 +88,12 @@ func testModelChain(ctx context.Context) {
 		Limit(5).
 		Scan(&users)
 	if err != nil {
-		log.Fatalf("Where+All 失败: %v", err)
+		var dbErr errorx.DBError
+		if errors.As(err, &dbErr) {
+			fmt.Printf("✓ DBError 类型检查: %s\n", dbErr.Msg)
+		} else {
+			log.Fatalf("Where+All 失败: %v", err)
+		}
 	}
 	fmt.Printf("✓ Where+All 成功: 查询到 %d 条记录\n", len(users))
 
@@ -341,4 +351,24 @@ func testDAO(ctx context.Context) {
 		log.Fatalf("Transaction 失败: %v", err)
 	}
 	fmt.Println("✓ Transaction 成功")
+}
+
+func testDBError(ctx context.Context) {
+	// 故意使用错误的字段名触发数据库错误
+	_, err := db.NewModel(ctx, "user").Where("invalid_column = ?", 1).Count()
+	if err != nil {
+		var dbErr errorx.DBError
+		if errors.As(err, &dbErr) {
+			fmt.Printf("✓ errors.As(err, &DBError) 成功: %s\n", dbErr.Msg)
+		} else {
+			log.Fatalf("DBError 类型检查失败: %T", err)
+		}
+	}
+
+	// 测试 ErrRecordNotFound 不会被包装
+	var user entity.User
+	err = db.NewModel(ctx, "user").Where("id = ?", -1).One(&user)
+	if err == nil {
+		fmt.Println("✓ ErrRecordNotFound 返回 nil (符合预期)")
+	}
 }

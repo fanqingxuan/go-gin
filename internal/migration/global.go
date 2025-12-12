@@ -15,8 +15,7 @@ var (
 func GetManager() *Manager {
 	once.Do(func() {
 		manager = &Manager{
-			ddlMigrations: make(map[string]DDLMigration),
-			dmlMigrations: make(map[string]DMLMigration),
+			migrations: make(map[string]Migration),
 		}
 	})
 	return manager
