@@ -1,6 +1,3 @@
-// 生成迁移文件
-// 用法: go run cmd/make_migration/main.go create_orders
-//       go run cmd/make_migration/main.go add_email_to_users
 package main
 
 import (
@@ -38,16 +35,16 @@ type MigrationData struct {
 	Description string
 }
 
-func main() {
-	if len(os.Args) < 2 {
-		fmt.Println("用法: go run cmd/make_migration/main.go <migration_name>")
-		fmt.Println("示例: go run cmd/make_migration/main.go create_orders")
+func runMigration(args []string) {
+	if len(args) < 1 {
+		fmt.Println("用法: go run ./cmd/make/... make:migration <name>")
+		fmt.Println("示例: go run ./cmd/make/... make:migration create_orders")
 		os.Exit(1)
 	}
 
-	name := os.Args[1]
+	name := args[0]
 	timestamp := time.Now().Format("20060102150405")
-	fileName := fmt.Sprintf("migration/%s_%s.go", toSnakeCase(name), timestamp)
+	fileName := fmt.Sprintf("migration/%s_%s.go", strings.ToLower(strings.ReplaceAll(name, "-", "_")), timestamp)
 	structName := toPascalCase(name) + timestamp
 
 	data := MigrationData{
@@ -70,18 +67,4 @@ func main() {
 	}
 
 	fmt.Printf("已创建: %s\n", fileName)
-}
-
-func toPascalCase(s string) string {
-	parts := strings.Split(s, "_")
-	for i, part := range parts {
-		if len(part) > 0 {
-			parts[i] = strings.ToUpper(part[:1]) + part[1:]
-		}
-	}
-	return strings.Join(parts, "")
-}
-
-func toSnakeCase(s string) string {
-	return strings.ToLower(strings.ReplaceAll(s, "-", "_"))
 }
