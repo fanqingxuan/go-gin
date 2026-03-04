@@ -141,11 +141,11 @@ go-gin/
 ```
 
 支持多种请求绑定方式：
-- `httpx.ShouldBindHandle` - 自动根据 Content-Type 绑定
-- `httpx.ShouldBindJSONHandle` - JSON 绑定
-- `httpx.ShouldBindQueryHandle` - Query 参数绑定
-- `httpx.ShouldBindUriHandle` - URI 参数绑定
-- `httpx.ShouldBindHeaderHandle` - Header 绑定
+- `httpx.Handle` - 自动根据 Content-Type 绑定
+- `httpx.HandleJSON` - JSON 绑定
+- `httpx.HandleQuery` - Query 参数绑定
+- `httpx.HandleUri` - URI 参数绑定
+- `httpx.HandleHeader` - Header 绑定
 
 路由组支持 `Before`/`After` 中间件：
 ```go
@@ -372,7 +372,7 @@ type orderController struct{}
 var OrderController = &orderController{}
 
 func (c *orderController) Create(ctx *httpx.Context) (any, error) {
-    return httpx.ShouldBindHandle(ctx, logic.NewCreateOrderLogic())
+    return httpx.Handle(ctx, logic.NewCreateOrderLogic())
 }
 ```
 
@@ -569,6 +569,27 @@ logx.WithContext(ctx).Warn("keyword", message)
 5. 禁止在 Logic 中实例化 DAO - 使用 `dao.Xxx` 单例
 6. 禁止在 Controller/Logic 中直接操作 db - 使用 `dao.Xxx.Ctx(ctx)` 链式调用
 7. 禁止在 Controller/Logic 中硬编码表字段名 - 使用 `do.Xxx` 或 `dao.Xxx.Columns()`
+
+---
+
+## Reference Documentation
+
+详细参考文档位于 `docs/` 目录：
+
+| 文档 | 说明 |
+|------|------|
+| [model.md](docs/model.md) | Model 数据模型 (entity/do/dao 三层结构、代码生成) |
+| [controller.md](docs/controller.md) | Controller 控制器层 (请求绑定、使用模式) |
+| [logic.md](docs/logic.md) | Logic 业务逻辑层 (Handle 签名模式、命名规范) |
+| [dao.md](docs/dao.md) | DAO 链式调用完整 API 参考 |
+| [const.md](docs/const.md) | 常量与枚举定义、业务错误码 |
+| [cmd.md](docs/cmd.md) | CMD 入口命令 (api, cron, queue, migrate, make) |
+| [cron.md](docs/cron.md) | 定时任务 (结构体/函数方式、流式调度) |
+| [event.md](docs/event.md) | 事件系统 (事件定义、监听器、触发) |
+| [middleware.md](docs/middleware.md) | 中间件 (Before/After、Token 校验) |
+| [task.md](docs/task.md) | 异步队列任务 (Asynq/Redis) |
+| [rest.md](docs/rest.md) | REST 第三方服务调用 |
+| [transformer.md](docs/transformer.md) | 数据转换层 (entity → typing) |
 
 ---
 

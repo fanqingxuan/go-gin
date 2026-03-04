@@ -345,10 +345,10 @@
         Message string `json:"message"`
     }
     ```
-    Controller 使用 `httpx.ShouldBindHandle` 自动绑定参数并调用 Logic：
+    Controller 使用 `httpx.Handle` 自动绑定参数并调用 Logic：
     ```go
     func (c *userController) AddUser(ctx *httpx.Context) (any, error) {
-        return httpx.ShouldBindHandle(ctx, logic.NewAddUserLogic())
+        return httpx.Handle(ctx, logic.NewAddUserLogic())
     }
     ```
 

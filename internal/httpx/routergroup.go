@@ -63,7 +63,7 @@ func (group *RouterGroup) Before(middleware ...HandlerFunc) IRoutes {
 				ctx := NewContext(c)
 				_, err := m(ctx)
 				if err != nil {
-					Handle(ctx, nil, err)
+					handleResponse(ctx, nil, err)
 					c.Abort()
 					return
 				}
@@ -85,7 +85,7 @@ func (group *RouterGroup) After(middleware ...HandlerFunc) IRoutes {
 				ctx := NewContext(c)
 				_, err := m(ctx)
 				if err != nil {
-					Handle(ctx, nil, err)
+					handleResponse(ctx, nil, err)
 				}
 			}
 		}(h)
@@ -164,7 +164,7 @@ func wrapHandlers(handler []HandlerFunc) []gin.HandlerFunc {
 			return func(c *gin.Context) {
 				ctx := NewContext(c)
 				resp, err := h(ctx)
-				Handle(ctx, resp, err)
+				handleResponse(ctx, resp, err)
 			}
 		}(h)
 	}

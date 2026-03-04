@@ -75,7 +75,7 @@ func Error(ctx *Context, err error) {
 	ctx.JSON(httpStatus, transform(ctx, result))
 }
 
-func Handle(ctx *Context, data any, err error) {
+func handleResponse(ctx *Context, data any, err error) {
 	if err != nil {
 		Error(ctx, err)
 	} else {

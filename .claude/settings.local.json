@@ -14,7 +14,8 @@
       "Bash(wc -l /Users/json/code/go_project/go-gin/controller/*.go /Users/json/code/go_project/go-gin/logic/*.go /Users/json/code/go_project/go-gin/router/*.go 2>/dev/null | tail -1)",
       "Bash(go test ./test/... 2>&1)",
       "Bash(go test -count=1 ./test/... 2>&1)",
-      "Bash(git remote get-url origin 2>/dev/null)"
+      "Bash(git remote get-url origin 2>/dev/null)",
+      "Bash(go test ./test/...)"
     ],
     "deny": [],
     "ask": []

@@ -83,7 +83,7 @@ router/ → controller/ → logic/ → model/
 **Controllers return data directly** - no manual JSON response handling:
 ```go
 func (c *userController) List(ctx *httpx.Context) (any, error) {
-    return httpx.ShouldBindHandle(ctx, logic.NewGetUsersLogic())
+    return httpx.Handle(ctx, logic.NewGetUsersLogic())
 }
 ```
 
@@ -202,7 +202,3 @@ excelx.DownloadMultiSheet(ctx.Context, "report.xlsx", []excelx.Sheet{...})
 ```
 
 ---
-
-## Code Style
-
-@CODESTYLE.md
