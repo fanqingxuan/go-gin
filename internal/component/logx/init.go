@@ -12,11 +12,11 @@ import (
 )
 
 var (
-	AccessLoggerInstance zerolog.Logger
-	DBLoggerInstance     zerolog.Logger
-	RestyLoggerInstance  zerolog.Logger
-	CronLoggerInstance   zerolog.Logger
-	QueueLoggerInstance  zerolog.Logger
+	AccessLogger zerolog.Logger
+	DBLogger     zerolog.Logger
+	RestyLogger  zerolog.Logger
+	CronLogger   zerolog.Logger
+	QueueLogger  zerolog.Logger
 )
 
 type Config struct {
@@ -47,10 +47,10 @@ func Init() {
 	}
 
 	log.Logger = initDefaultInstance(level)
-	AccessLoggerInstance = initLoggerInstance("access")
-	RestyLoggerInstance = initLoggerInstance("httpc")
-	CronLoggerInstance = initLoggerInstance("access_cron")
-	QueueLoggerInstance = initLoggerInstance("access_queue")
+	AccessLogger = initLoggerInstance("access")
+	RestyLogger = initLoggerInstance("httpc")
+	CronLogger = initLoggerInstance("access_cron")
+	QueueLogger = initLoggerInstance("access_queue")
 }
 
 func initDefaultInstance(l zerolog.Level) zerolog.Logger {

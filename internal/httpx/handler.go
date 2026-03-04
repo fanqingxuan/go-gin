@@ -47,7 +47,7 @@ func ShouldBindUriHandle[Req any, Resp any](ctx *Context, logicHandler LogicHand
 		logx.WithContext(ctx).Warn("ShouldBindUri异常", err)
 		return resp, err
 	}
-	return logicHandler.Handle(ctx, req)
+	return logicHandler.Handle(ctx.Request.Context(), req)
 }
 
 // ShouldBindWithHandle 处理请求
@@ -62,5 +62,5 @@ func ShouldBindWithHandle[Req any, Resp any](ctx *Context, logicHandler LogicHan
 		logx.WithContext(ctx).Warn("ShouldBind异常", err.Error())
 		return resp, err
 	}
-	return logicHandler.Handle(ctx, req)
+	return logicHandler.Handle(ctx.Request.Context(), req)
 }

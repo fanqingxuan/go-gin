@@ -11,7 +11,7 @@ func DispatchNow(t *Task) error {
 	return do(t)
 }
 
-func DispatchIf(b bool, t *Task) error {
+func DispatchIf(t *Task, b bool) error {
 	if !b {
 		return nil
 	}

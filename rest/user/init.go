@@ -1,8 +1,6 @@
 package user
 
-var (
-	Svc IUserSvc = (*UserSvc)(nil)
-)
+var Svc IUserSvc
 
 func Init(url string) {
 	Svc = NewUserSvc(url)

@@ -11,10 +11,10 @@ var (
 	mux *asynq.ServeMux
 )
 
-var (
-	HIGH   = "critical"
-	NORMAL = "default"
-	LOW    = "low"
+const (
+	QueueHigh   = "critical"
+	QueueNormal = "default"
+	QueueLow    = "low"
 )
 
 func InitServer(c redisx.Config) {
@@ -26,9 +26,9 @@ func InitServer(c redisx.Config) {
 			StrictPriority: true,
 			// Optionally specify multiple queues with different priority.
 			Queues: map[string]int{
-				HIGH:   6,
-				NORMAL: 3,
-				LOW:    1,
+				QueueHigh:   6,
+				QueueNormal: 3,
+				QueueLow:    1,
 			},
 			// See the godoc for other configuration options
 		},

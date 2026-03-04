@@ -16,23 +16,16 @@ type APIResponse struct {
 	Data    any
 }
 
-var _ httpc.IRepsonseNonStardard = (*APIResponse)(nil)
+var _ httpc.IResponseNonStandard = (*APIResponse)(nil)
 
 // 解析响应结构
 func (r *APIResponse) Parse(b []byte) error {
-	err := jsonx.Unmarshal(b, &r)
-	if err != nil {
-		return err
-	}
-	return nil
+	return jsonx.Unmarshal(b, &r)
 }
 
 // 验证返回格式
 func (r *APIResponse) Valid() bool {
-	if r.Code == nil || r.Message == nil {
-		return false
-	}
-	return true
+	return r.Code != nil && r.Message != nil
 }
 
 // 验证返回状态码
@@ -47,10 +40,5 @@ func (r *APIResponse) Msg() string {
 
 // 解析数据体
 func (r *APIResponse) ParseData(b []byte) error {
-	// 尝试将 data 字段解析为给定的结构体类型
-	err := jsonx.Unmarshal(b, r.Data)
-	if err != nil {
-		return err
-	}
-	return nil
+	return jsonx.Unmarshal(b, r.Data)
 }

@@ -26,11 +26,6 @@ func (v *Var) Val() any {
 	return v.value
 }
 
-// Interface 是 Val 的别名
-func (v *Var) Interface() any {
-	return v.Val()
-}
-
 // Set 设置值
 func (v *Var) Set(value any) {
 	v.value = value

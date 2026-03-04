@@ -25,12 +25,17 @@ func (o *Option) Queue(name string) *Option {
 }
 
 func (o *Option) HighQueue() *Option {
-	o.add(asynq.Queue(HIGH))
+	o.add(asynq.Queue(QueueHigh))
 	return o
 }
 
 func (o *Option) LowQueue() *Option {
-	o.add(asynq.Queue(LOW))
+	o.add(asynq.Queue(QueueLow))
+	return o
+}
+
+func (o *Option) NormalQueue() *Option {
+	o.add(asynq.Queue(QueueNormal))
 	return o
 }
 
@@ -78,7 +83,7 @@ func (o *Option) Dispatch(t *Task) error {
 	return do(t, o.opts...)
 }
 
-func (o *Option) DispatchIf(b bool, t *Task) error {
+func (o *Option) DispatchIf(t *Task, b bool) error {
 	if !b {
 		return nil
 	}

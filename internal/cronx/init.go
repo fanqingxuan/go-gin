@@ -4,26 +4,44 @@ import (
 	"context"
 	"go-gin/internal/component/logx"
 	"go-gin/internal/traceid"
+	"os"
+	"os/signal"
 	"reflect"
 	"runtime"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/robfig/cron/v3"
 )
 
-var c *cron.Cron
+var (
+	c         *cron.Cron
+	parentCtx context.Context
+	cancel    context.CancelFunc
+)
 
 func New() {
 	c = cron.New()
+	parentCtx, cancel = context.WithCancel(context.Background())
 }
 
+// Run starts cron and blocks until receiving a termination signal (SIGINT/SIGTERM).
 func Run() {
 	c.Start()
-	// 程序结束时停止 cron 定时器（可选）
-	defer c.Stop()
-	// 主程序可以保持运行状态，等待 cron 任务执行
-	select {}
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+
+	cancel()
+	c.Stop()
+}
+
+// Stop cancels all running jobs and stops the cron scheduler.
+func Stop() {
+	cancel()
+	c.Stop()
 }
 
 // Schedule 创建定时任务
@@ -37,26 +55,26 @@ func Schedule(job Job) *JobBuilder {
 func AddJob(spec string, cmd Job) {
 	jobName := getStructName(cmd)
 	_, err := c.AddFunc(spec, func() {
-		ctx := context.WithValue(context.Background(), traceid.TraceIdFieldName, traceid.New())
-		logx.CronLoggerInstance.Info().Ctx(ctx).Str("cron", jobName).Str("spec", spec).Str("keywords", "开始执行").Send()
+		ctx := context.WithValue(parentCtx, traceid.TraceIdFieldName, traceid.New())
+		logx.CronLogger.Info().Ctx(ctx).Str("cron", jobName).Str("spec", spec).Str("keywords", "开始执行").Send()
 
 		start := time.Now()
 
 		err := cmd.Handle(ctx)
 
-		TimeStamp := time.Now()
-		Cost := TimeStamp.Sub(start)
-		if Cost > time.Minute {
-			Cost = Cost.Truncate(time.Second)
+		timestamp := time.Now()
+		cost := timestamp.Sub(start)
+		if cost > time.Minute {
+			cost = cost.Truncate(time.Second)
 		}
 		if err != nil {
-			logx.CronLoggerInstance.Error().Ctx(ctx).Str("cron", jobName).Str("spec", spec).Str("keywords", "执行结束").Str("cost", Cost.String()).Str("err", err.Error()).Send()
+			logx.CronLogger.Error().Ctx(ctx).Str("cron", jobName).Str("spec", spec).Str("keywords", "执行结束").Str("cost", cost.String()).Str("err", err.Error()).Send()
 		} else {
-			logx.CronLoggerInstance.Info().Ctx(ctx).Str("cron", jobName).Str("spec", spec).Str("keywords", "执行结束").Str("cost", Cost.String()).Send()
+			logx.CronLogger.Info().Ctx(ctx).Str("cron", jobName).Str("spec", spec).Str("keywords", "执行结束").Str("cost", cost.String()).Send()
 		}
 	})
 	if err != nil {
-		logx.CronLoggerInstance.Info().Ctx(context.Background()).Str("cron", jobName).Str("spec", spec).Str("keywords", "添加失败").Send()
+		logx.CronLogger.Info().Ctx(context.Background()).Str("cron", jobName).Str("spec", spec).Str("keywords", "添加失败").Send()
 	}
 }
 

@@ -10,8 +10,8 @@ import (
 type DemoAListener struct {
 }
 
-func (l DemoAListener) Handle(ctx context.Context, e *eventbus.Event) error {
-	user := e.Payload().(*entity.User)
+func (l *DemoAListener) Handle(ctx context.Context, e *eventbus.Event) error {
+	user := eventbus.PayloadAs[*entity.User](e)
 	fmt.Println(user.Name)
 	return nil
 }

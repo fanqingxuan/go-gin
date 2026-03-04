@@ -22,17 +22,17 @@ func RequestLog() gin.HandlerFunc {
 		if raw != "" {
 			path = path + "?" + raw
 		}
-		TimeStamp := time.Now()
-		Cost := TimeStamp.Sub(start)
-		if Cost > time.Minute {
-			Cost = Cost.Truncate(time.Second)
+		timestamp := time.Now()
+		cost := timestamp.Sub(start)
+		if cost > time.Minute {
+			cost = cost.Truncate(time.Second)
 		}
 
-		logx.AccessLoggerInstance.Info().Ctx(c).
+		logx.AccessLogger.Info().Ctx(c).
 			Str("path", path).
 			Str("method", c.Request.Method).
 			Str("ip", c.ClientIP()).
-			Str("cost", Cost.String()).
+			Str("cost", cost.String()).
 			Int("status", c.Writer.Status()).
 			Str("proto", c.Request.Proto).
 			Str("user_agent", c.Request.UserAgent()).

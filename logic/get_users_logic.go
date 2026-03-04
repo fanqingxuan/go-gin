@@ -2,7 +2,7 @@ package logic
 
 import (
 	"context"
-	"go-gin/const/errcode"
+	"go-gin/internal/errorx"
 	"go-gin/model/dao"
 	"go-gin/model/entity"
 	"go-gin/transformer"
@@ -18,7 +18,7 @@ func NewGetUsersLogic() *GetUsersLogic {
 func (l *GetUsersLogic) Handle(ctx context.Context, req typing.ListReq) (resp *typing.ListResp, err error) {
 	var users []*entity.User
 	err = dao.User.Ctx(ctx).All(&users)
-	if errcode.IsError(err) {
+	if errorx.IsError(err) {
 		return nil, err
 	}
 

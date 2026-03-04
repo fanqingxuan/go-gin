@@ -12,7 +12,7 @@ type IResponse interface {
 	ParseData() error
 }
 
-type IRepsonseNonStardard interface {
+type IResponseNonStandard interface {
 	IBaseResponse
 	ParseData([]byte) error
 }

@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	HELLO_URL = "/api/list" // hello的接口路径
+	helloURL = "/api/list" // hello的接口路径
 )
 
 type UserSvc struct {
@@ -33,10 +33,10 @@ func (us *UserSvc) Hello(ctx context.Context, req *HelloReq) (resp *HelloResp, e
 	err = us.Client().
 		NewRequest().
 		SetContext(ctx).
-		POST(HELLO_URL).
+		POST(helloURL).
 		SetFormData(params).
 		AddFormData("userA", []string{"11", "22"}).
 		SetResult(&result).
-		Exec()
+		SendAndParse()
 	return
 }

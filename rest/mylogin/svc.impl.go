@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	Login_URL = "/logistics/apps/php/login.php?do=login#hello=json" // 登录接口
+	loginURL = "/logistics/apps/php/login.php?do=login#hello=json" // 登录接口
 )
 
 type LoginSvc struct {
@@ -27,9 +27,9 @@ func (us *LoginSvc) Login(ctx context.Context, req *LoginReq) (resp *LoginResp, 
 	err = us.Client().
 		NewRequest().
 		SetContext(ctx).
-		POST(Login_URL).
+		POST(loginURL).
 		SetFormData(params).
 		SetResult(&result).
-		Exec()
+		SendAndParse()
 	return
 }

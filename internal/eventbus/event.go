@@ -24,6 +24,11 @@ func (e *Event) Payload() any {
 	return e.payload
 }
 
+// PayloadAs returns the event payload with type assertion.
+func PayloadAs[T any](e *Event) T {
+	return e.Payload().(T)
+}
+
 func (e *Event) Fire(ctx context.Context) {
 	Fire(ctx, e)
 }

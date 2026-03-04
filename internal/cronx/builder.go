@@ -237,12 +237,21 @@ func (jb *JobBuilder) TwiceMonthly(first, second int, time string) {
 
 // 每天两次
 func (jb *JobBuilder) TwiceDaily(first, second int) {
+	if first < 0 || first > 23 || second < 0 || second > 23 {
+		panic("Hour must be between 0 and 23")
+	}
 	jb.spliceIntoPosition(1, "0").
 		spliceIntoPosition(2, fmt.Sprintf("%d,%d", first, second)).
 		handleJob()
 }
 
 func (jb *JobBuilder) TwiceDailyAt(first, second, minute int) {
+	if first < 0 || first > 23 || second < 0 || second > 23 {
+		panic("Hour must be between 0 and 23")
+	}
+	if minute < 0 || minute > 59 {
+		panic("Minute must be between 0 and 59")
+	}
 	jb.spliceIntoPosition(1, strconv.Itoa(minute)).
 		spliceIntoPosition(2, fmt.Sprintf("%d,%d", first, second)).
 		handleJob()

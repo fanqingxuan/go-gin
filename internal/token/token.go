@@ -2,7 +2,6 @@ package token
 
 import (
 	"context"
-	"fmt"
 	"go-gin/internal/component/redisx"
 	"strings"
 	"time"
@@ -11,8 +10,8 @@ import (
 )
 
 const (
-	TOKEN_PREFIX = "token:"
-	EXPIRE_TIME  = 7 * 24 * time.Hour
+	tokenPrefix = "token:"
+	expireTime  = 7 * 24 * time.Hour
 )
 
 func TokenId() string {
@@ -21,13 +20,11 @@ func TokenId() string {
 }
 
 func Set(ctx context.Context, key string, field string, value string) error {
-	if err := redisx.Client().HSet(ctx, transformKey(key), field, value).Err(); err != nil {
+	k := transformKey(key)
+	if err := redisx.Client().HSet(ctx, k, field, value).Err(); err != nil {
 		return err
 	}
-	if err := redisx.Client().Expire(ctx, transformKey(key), EXPIRE_TIME).Err(); err != nil {
-		return err
-	}
-	return nil
+	return redisx.Client().Expire(ctx, k, expireTime).Err()
 }
 
 func Get(ctx context.Context, key string, field string) (string, error) {
@@ -55,17 +52,11 @@ func HasField(ctx context.Context, key string, field string) (bool, error) {
 }
 
 func Delete(ctx context.Context, key string, field string) error {
-	if err := redisx.Client().HDel(ctx, transformKey(key), field).Err(); err != nil {
-		return err
-	}
-	return nil
+	return redisx.Client().HDel(ctx, transformKey(key), field).Err()
 }
 
 func Flush(ctx context.Context, key string) error {
-	if err := redisx.Client().Del(ctx, transformKey(key)).Err(); err != nil {
-		return err
-	}
-	return nil
+	return redisx.Client().Del(ctx, transformKey(key)).Err()
 }
 
 func GetAll(ctx context.Context, key string) (map[string]string, error) {
@@ -77,5 +68,5 @@ func GetAll(ctx context.Context, key string) (map[string]string, error) {
 }
 
 func transformKey(key string) string {
-	return fmt.Sprintf("%s:%s", TOKEN_PREFIX, key)
+	return tokenPrefix + key
 }

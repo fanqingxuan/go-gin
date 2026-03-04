@@ -91,7 +91,7 @@ func mountMonitor(engine *httpx.Engine) {
 		clientIp := ctx.ClientIP()
 		// 如果客户端ip不在白名单内，直接返回403
 		if !util.InArray(clientIp, config.GetMonitorConf().WhiteIpList) {
-			httpx.Error(httpx.NewContext(ctx), errorx.ErrorForbidden)
+			httpx.Error(httpx.NewContext(ctx), errorx.ErrForbidden)
 			ctx.Abort()
 			return
 		}

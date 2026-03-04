@@ -84,7 +84,8 @@ func (r *Request) Send() (*resty.Response, error) {
 	return r.base.Send()
 }
 
-func (r *Request) Exec() error {
+// SendAndParse sends the request, validates the response format, and parses the data.
+func (r *Request) SendAndParse() error {
 	resp, err := r.base.Send()
 	if err != nil {
 		return errorx.ErrThirdAPIConnectFailed
@@ -104,7 +105,7 @@ func (r *Request) Exec() error {
 			return errorx.ErrThirdAPIBusinessFailed
 		}
 		switch res := r.base.Result.(type) {
-		case IRepsonseNonStardard:
+		case IResponseNonStandard:
 			if err := res.ParseData([]byte(resp.String())); err != nil {
 				return errorx.ErrThirdAPIDataParseFailed
 			}

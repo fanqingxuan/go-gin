@@ -82,7 +82,11 @@ func (group *RouterGroup) After(middleware ...HandlerFunc) IRoutes {
 		wrapped[i] = func(m HandlerFunc) gin.HandlerFunc {
 			return func(c *gin.Context) {
 				c.Next()
-				m(NewContext(c))
+				ctx := NewContext(c)
+				_, err := m(ctx)
+				if err != nil {
+					Handle(ctx, nil, err)
+				}
 			}
 		}(h)
 	}

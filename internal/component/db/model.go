@@ -145,6 +145,9 @@ func (m *Model) WhereNot(column string, value any) *Model {
 }
 
 // Wheref builds condition string using fmt.Sprintf and target arguments.
+// WARNING: This method uses fmt.Sprintf to build SQL, bypassing parameterized queries.
+// Only use for dynamic column names or table structure, NEVER for user input values.
+// For user input, use Where("column = ?", value) instead.
 func (m *Model) Wheref(format string, args ...any) *Model {
 	return m.Where(fmt.Sprintf(format, args...))
 }
@@ -271,6 +274,18 @@ func (m *Model) One(dest any) error {
 	return errorx.TryToDBError(err)
 }
 
+// Found queries a single record into dest and returns whether the record was found.
+func (m *Model) Found(dest any) (bool, error) {
+	err := m.buildQuery().First(dest).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return false, nil
+	}
+	if err != nil {
+		return false, errorx.TryToDBError(err)
+	}
+	return true, nil
+}
+
 func (m *Model) All(dest any) error {
 	return errorx.TryToDBError(m.buildQuery().Find(dest).Error)
 }
@@ -344,11 +359,6 @@ func (m *Model) Replace() (int64, error) {
 	data := m.prepareData()
 	result := m.db.Table(m.table).Clauses(clause.Insert{Modifier: "REPLACE"}).Create(data)
 	return result.RowsAffected, errorx.TryToDBError(result.Error)
-}
-
-// UpdateAndGetAffected performs update and returns affected rows.
-func (m *Model) UpdateAndGetAffected() (int64, error) {
-	return m.Update()
 }
 
 func (m *Model) Pluck(column string, dest any) error {
